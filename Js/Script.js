@@ -483,7 +483,7 @@ let products = [
     id: 17,
     name: "Netflix",
     category: "voucher",
-    iconUrl: "img/canva.jpeg",
+    iconUrl: "img/netflix.webp",
     prices: [
       { "productsName": "Sharing - 1 Bulan (1 Profile 1 User)", "price": "Rp35.000" },
       { "productsName": "Sharing - 1 Bulan (1 Profile 2 User)", "price": "Rp22.000" },
@@ -497,7 +497,7 @@ let products = [
     id: 18,
     name: "Chat GPT",
     category: "voucher",
-    iconUrl: "img/canva.jpeg",
+    iconUrl: "img/gpt.webp",
     prices: [
       { "productsName": "Sharing - 1 Bulan (4 - 5 User)", "price": "Rp48.000" },
       { "productsName": "Private - 1 Bulan", "price": "Rp53.000" },
