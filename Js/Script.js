@@ -701,7 +701,7 @@ function renderProducts() {
                                 data-product-id="${product.id}">
                             Lihat Semua Produk (${product.prices.length})
                         </button>
-                    ` 
+                    `
       : "";
 
     productCard.innerHTML = `
@@ -712,7 +712,7 @@ function renderProducts() {
                                 </div>
                                 <div>
                                     <h3 class="text-lg font-semibold">${product.name}</h3>
-                                    <p class="text-sm text-gray-500">${product.prices.length} produk</p>
+                                    <p class="text-sm text-gray-500">${product.prices.length} Produk Tersedia</p>
                                 </div>
                             </div>
                             <div class="border rounded-lg overflow-hidden">
