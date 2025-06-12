@@ -121,7 +121,7 @@ let products = [
       { productsName: "20100 Diamond", price: "Rp5.096.000" },
       { productsName: "20195 Diamond", price: "Rp5.126.000" },
       { productsName: "21330 Diamond", price: "Rp5.401.000" },
-      { productsName: "28980 Diamond", price: "Rp7.337.000" },
+      { productsName: "28980 Diamond", price: "Rp7.337.000" }
     ],
     needServer: true,
     formType: "game",
@@ -185,11 +185,11 @@ let products = [
     iconUrl: "img/pubgm.jpg",
     prices: [
       { "productsName": "60 UC", "price": "Rp 16.000" },
-    { "productsName": "325 UC", "price": "Rp 78.000" },
-    { "productsName": "660 UC", "price": "Rp 155.000" },
-    { "productsName": "1800 UC", "price": "Rp 396.000" },
-    { "productsName": "3850 UC", "price": "Rp 792.000" },
-    { "productsName": "8100 UC", "price": "Rp 1.583.000" },
+      { "productsName": "325 UC", "price": "Rp 78.000" },
+      { "productsName": "660 UC", "price": "Rp 155.000" },
+      { "productsName": "1800 UC", "price": "Rp 396.000" },
+      { "productsName": "3850 UC", "price": "Rp 792.000" },
+      { "productsName": "8100 UC", "price": "Rp 1.583.000" },
     ],
     needServer: false,
     formType: "game",
@@ -597,11 +597,11 @@ function generateFormFields(product) {
                                     focus:outline-none focus:ring-2 focus:ring-amber-600 focus:border-transparent" required>
                                     <option value="" disabled selected>Pilih Server</option>
                                      ${product.servers
-                                       .map(
-                                         (server) =>
-                                           `<option value="${server}">${server}</option>`
-                                       )
-                                       .join("")}
+          .map(
+            (server) =>
+              `<option value="${server}">${server}</option>`
+          )
+          .join("")}
                                 </select>
                             </div>
                             <div class="mb-4">
