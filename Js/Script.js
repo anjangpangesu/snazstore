@@ -699,9 +699,9 @@ function renderProducts() {
       ? `
                         <button class="view-details-btn w-full py-3 px-4 text-center bg-amber-500 hover:bg-amber-600 transition-colors duration-300 text-white font-medium" 
                                 data-product-id="${product.id}">
-                            Lihat Produk Lainnya (${product.prices.length})
+                            Lihat Semua Produk (${product.prices.length})
                         </button>
-                    `
+                    ` 
       : "";
 
     productCard.innerHTML = `
@@ -712,7 +712,7 @@ function renderProducts() {
                                 </div>
                                 <div>
                                     <h3 class="text-lg font-semibold">${product.name}</h3>
-                                    <p class="text-sm text-gray-500">${product.prices.length} produk lainnya</p>
+                                    <p class="text-sm text-gray-500">${product.prices.length} produk</p>
                                 </div>
                             </div>
                             <div class="border rounded-lg overflow-hidden">
