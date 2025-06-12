@@ -3,7 +3,7 @@ let products = [
     id: 1,
     name: "Mobile Legends",
     category: "mobile",
-    iconUrl: "../img/mobile-legends.jpeg",
+    iconUrl: "img/mobile-legends.jpeg",
     prices: [
       { productsName: "86 Diamonds", price: "Rp 20.000" },
       { productsName: "172 Diamonds", price: "Rp 40.000" },
@@ -23,7 +23,7 @@ let products = [
     id: 2,
     name: "Free Fire | Free Fire Max",
     category: "mobile",
-    iconUrl: "../img/free-fire.webp",
+    iconUrl: "img/free-fire.webp",
     prices: [
       { productsName: "100 Diamonds", price: "Rp 15.000" },
       { productsName: "210 Diamonds", price: "Rp 30.000" },
@@ -40,7 +40,7 @@ let products = [
     id: 3,
     name: "PUBG Mobile",
     category: "mobile",
-    iconUrl: "../img/pubgm.jpg",
+    iconUrl: "img/pubgm.jpg",
     prices: [
       { productsName: "60 UC", price: "Rp 15.000" },
       { productsName: "325 UC", price: "Rp 80.000" },
@@ -56,7 +56,7 @@ let products = [
     id: 4,
     name: "Valorant",
     category: "pc",
-    iconUrl: "../img/valorant.png",
+    iconUrl: "img/valorant.png",
     prices: [
       { productsName: "420 Points", price: "Rp 50.000" },
       { productsName: "700 Points", price: "Rp 80.000" },
@@ -72,7 +72,7 @@ let products = [
     id: 5,
     name: "IDR Steam Wallet",
     category: "pc",
-    iconUrl: "../img/steam-wallet.jpeg",
+    iconUrl: "img/steam-wallet.jpeg",
     prices: [
       { productsName: "IDR 60.000", price: "Rp 65.000" },
       { productsName: "IDR 120.000", price: "Rp 130.000" },
@@ -87,7 +87,7 @@ let products = [
     id: 6,
     name: "IDR Google Play",
     category: "voucher",
-    iconUrl: "../img/google-play.webp",
+    iconUrl: "img/google-play.webp",
     prices: [
       { productsName: "IDR 50.000", price: "Rp 55.000" },
       { productsName: "IDR 100.000", price: "Rp 110.000" },
@@ -103,7 +103,7 @@ let products = [
     id: 7,
     name: "Genshin Impact",
     category: "mobile",
-    iconUrl: "../img/Genshin_Impact.webp",
+    iconUrl: "img/Genshin_Impact.webp",
     prices: [
       { productsName: "60 Genesis Crystals", price: "Rp 16.000" },
       { productsName: "300 Genesis Crystals", price: "Rp 80.000" },
@@ -120,7 +120,7 @@ let products = [
     id: 8,
     name: "Call of Duty Mobile",
     category: "mobile",
-    iconUrl: "../img/codm.webp",
+    iconUrl: "img/codm.webp",
     prices: [
       { productsName: "62 CP", price: "Rp 15.000" },
       { productsName: "127 CP", price: "Rp 30.000" },
@@ -136,7 +136,7 @@ let products = [
     id: 9,
     name: "Netflix",
     category: "voucher",
-    iconUrl: "../img/netflix.webp",
+    iconUrl: "img/netflix.webp",
     prices: [
       { productsName: "1 Month", price: "Rp 65.000" },
       { productsName: "3 Months", price: "Rp 180.000" },
@@ -150,7 +150,7 @@ let products = [
     id: 10,
     name: "Canva",
     category: "voucher",
-    iconUrl: "../img/canva.jpeg",
+    iconUrl: "img/canva.jpeg",
     prices: [
       { productsName: "1 Month", price: "Rp 55.000" },
       { productsName: "3 Months", price: "Rp 150.000" },
@@ -164,7 +164,7 @@ let products = [
     id: 11,
     name: "Playstation Gift Card",
     category: "console",
-    iconUrl: "../img/playstation-gc.jpg",
+    iconUrl: "img/playstation-gc.jpg",
     prices: [
       { productsName: "IDR 100.000", price: "Rp 55.000" },
       { productsName: "IDR 100.000", price: "Rp 150.000" },
