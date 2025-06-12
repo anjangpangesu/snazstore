@@ -6,23 +6,23 @@ let products = [
     iconUrl: "img/mobile-legends.jpeg",
     prices: [
       {
-        productsName: "Weekly Diamond Pass (Event Topup +100)",
+        productsName: "Weekly Diamond Pass",
         price: "Rp28.000",
       },
       {
-        productsName: "Weekly Diamond Pass (Event Topup +100) x2",
+        productsName: "Weekly Diamond Pass x2",
         price: "Rp56.000",
       },
       {
-        productsName: "Weekly Diamond Pass (Event Topup +100) x3",
+        productsName: "Weekly Diamond Pass x3",
         price: "Rp84.000",
       },
       {
-        productsName: "Weekly Diamond Pass (Event Topup +100) x4",
+        productsName: "Weekly Diamond Pass x4",
         price: "Rp112.000",
       },
       {
-        productsName: "Weekly Diamond Pass (Event Topup +100) x5",
+        productsName: "Weekly Diamond Pass x5",
         price: "Rp140.000",
       },
       { productsName: "Twilight Pass", price: "Rp150.000" },
@@ -392,8 +392,8 @@ function showProductDetail(productId) {
       "bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-300";
     priceCard.innerHTML = `
                         <div class="flex justify-between items-center mb-2">
-                            <span class="text-amber-600 font-semibold">${price.price}</span>
                             <span class="font-medium">${price.productsName}</span>
+                            <span class="text-amber-600 font-semibold">${price.price}</span>
                         </div>
                         <button class="w-full mt-2 bg-amber-500 hover:bg-amber-600 text-white py-2 px-4 rounded-md transition-colors duration-300"
                                 onclick="openCheckoutModal(${product.id}, ${index})">
