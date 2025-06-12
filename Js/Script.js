@@ -5,16 +5,123 @@ let products = [
     category: "mobile",
     iconUrl: "img/mobile-legends.jpeg",
     prices: [
-      { productsName: "86 Diamonds", price: "Rp 20.000" },
-      { productsName: "172 Diamonds", price: "Rp 40.000" },
-      { productsName: "257 Diamonds", price: "Rp 60.000" },
-      { productsName: "344 Diamonds", price: "Rp 80.000" },
-      { productsName: "429 Diamonds", price: "Rp 100.000" },
-      { productsName: "514 Diamonds", price: "Rp 120.000" },
-      { productsName: "600 Diamonds", price: "Rp 140.000" },
-      { productsName: "706 Diamonds", price: "Rp 160.000" },
-      { productsName: "878 Diamonds", price: "Rp 200.000" },
-      { productsName: "963 Diamonds", price: "Rp 220.000" },
+      {
+        productsName: "Weekly Diamond Pass (Event Topup +100)",
+        price: "Rp28.000",
+      },
+      {
+        productsName: "Weekly Diamond Pass (Event Topup +100) x2",
+        price: "Rp56.000",
+      },
+      {
+        productsName: "Weekly Diamond Pass (Event Topup +100) x3",
+        price: "Rp84.000",
+      },
+      {
+        productsName: "Weekly Diamond Pass (Event Topup +100) x4",
+        price: "Rp112.000",
+      },
+      {
+        productsName: "Weekly Diamond Pass (Event Topup +100) x5",
+        price: "Rp140.000",
+      },
+      { productsName: "Twilight Pass", price: "Rp150.000" },
+      { productsName: "5 Diamond", price: "Rp2.000" },
+      { productsName: "12 Diamond", price: "Rp4.000" },
+      { productsName: "19 Diamond", price: "Rp6.000" },
+      { productsName: "28 Diamond", price: "Rp8.000" },
+      { productsName: "44 Diamond", price: "Rp12.000" },
+      { productsName: "50 Diamond", price: "Rp16.000" },
+      { productsName: "59 Diamond", price: "Rp16.000" },
+      { productsName: "85 Diamond", price: "Rp23.000" },
+      { productsName: "113 Diamond", price: "Rp32.000" },
+      { productsName: "144 Diamond", price: "Rp39.000" },
+      { productsName: "170 Diamond", price: "Rp46.000" },
+      { productsName: "229 Diamond", price: "Rp62.000" },
+      { productsName: "240 Diamond", price: "Rp65.000" },
+      { productsName: "257 Diamond", price: "Rp70.000" },
+      { productsName: "278 Diamond", price: "Rp76.000" },
+      { productsName: "284 Diamond", price: "Rp77.000" },
+      { productsName: "296 Diamond", price: "Rp80.000" },
+      { productsName: "301 Diamond", price: "Rp82.000" },
+      { productsName: "345 Diamond", price: "Rp94.000" },
+      { productsName: "355 Diamond", price: "Rp96.000" },
+      { productsName: "374 Diamond", price: "Rp102.000" },
+      { productsName: "381 Diamond", price: "Rp103.000" },
+      { productsName: "408 Diamond", price: "Rp110.000" },
+      { productsName: "425 Diamond", price: "Rp115.000" },
+      { productsName: "427 Diamond", price: "Rp116.000" },
+      { productsName: "450 Diamond", price: "Rp123.000" },
+      { productsName: "512 Diamond", price: "Rp139.000" },
+      { productsName: "522 Diamond", price: "Rp142.000" },
+      { productsName: "568 Diamond", price: "Rp150.000" },
+      { productsName: "601 Diamond", price: "Rp160.000" },
+      { productsName: "712 Diamond", price: "Rp189.000" },
+      { productsName: "717 Diamond", price: "Rp191.000" },
+      { productsName: "750 Diamond", price: "Rp200.000" },
+      { productsName: "875 Diamond", price: "Rp230.000" },
+      { productsName: "965 Diamond", price: "Rp254.000" },
+      { productsName: "977 Diamond", price: "Rp261.000" },
+      { productsName: "1050 Diamond", price: "Rp280.000" },
+      { productsName: "1134 Diamond", price: "Rp304.000" },
+      { productsName: "1136 Diamond", price: "Rp303.000" },
+      { productsName: "1139 Diamond", price: "Rp305.000" },
+      { productsName: "1159 Diamond", price: "Rp310.000" },
+      { productsName: "1164 Diamond", price: "Rp312.000" },
+      { productsName: "1183 Diamond", price: "Rp317.000" },
+      { productsName: "1220 Diamond", price: "Rp327.000" },
+      { productsName: "1230 Diamond", price: "Rp329.000" },
+      { productsName: "1368 Diamond", price: "Rp367.000" },
+      { productsName: "1412 Diamond", price: "Rp379.000" },
+      { productsName: "1443 Diamond", price: "Rp384.000" },
+      { productsName: "1453 Diamond", price: "Rp390.000" },
+      { productsName: "1507 Diamond", price: "Rp401.000" },
+      { productsName: "1672 Diamond", price: "Rp446.000" },
+      { productsName: "1704 Diamond", price: "Rp454.000" },
+      { productsName: "1750 Diamond", price: "Rp464.000" },
+      { productsName: "2010 Diamond", price: "Rp505.000" },
+      { productsName: "2180 Diamond", price: "Rp551.000" },
+      { productsName: "2199 Diamond", price: "Rp557.000" },
+      { productsName: "2350 Diamond", price: "Rp598.000" },
+      { productsName: "2382 Diamond", price: "Rp607.000" },
+      { productsName: "2536 Diamond", price: "Rp648.000" },
+      { productsName: "2578 Diamond", price: "Rp656.000" },
+      { productsName: "2885 Diamond", price: "Rp737.000" },
+      { productsName: "2904 Diamond", price: "Rp742.000" },
+      { productsName: "3453 Diamond", price: "Rp888.000" },
+      { productsName: "3481 Diamond", price: "Rp896.000" },
+      { productsName: "3693 Diamond", price: "Rp953.000" },
+      { productsName: "4020 Diamond", price: "Rp1.020.000" },
+      { productsName: "4404 Diamond", price: "Rp1.126.000" },
+      { productsName: "4678 Diamond", price: "Rp1.197.000" },
+      { productsName: "4830 Diamond", price: "Rp1.223.000" },
+      { productsName: "5372 Diamond", price: "Rp1.376.000" },
+      { productsName: "5398 Diamond", price: "Rp1.376.000" },
+      { productsName: "5568 Diamond", price: "Rp1.423.000" },
+      { productsName: "5940 Diamond", price: "Rp1.535.000" },
+      { productsName: "6001 Diamond", price: "Rp1.539.000" },
+      { productsName: "6030 Diamond", price: "Rp1.529.000" },
+      { productsName: "6257 Diamond", price: "Rp1.610.000" },
+      { productsName: "6840 Diamond", price: "Rp1.733.000" },
+      { productsName: "7195 Diamond", price: "Rp1.831.000" },
+      { productsName: "7660 Diamond", price: "Rp1.955.000" },
+      { productsName: "7723 Diamond", price: "Rp1.973.000" },
+      { productsName: "8040 Diamond", price: "Rp2.039.000" },
+      { productsName: "8302 Diamond", price: "Rp2.126.000" },
+      { productsName: "8850 Diamond", price: "Rp2.242.000" },
+      { productsName: "9302 Diamond", price: "Rp2.367.000" },
+      { productsName: "9588 Diamond", price: "Rp2.442.000" },
+      { productsName: "10050 Diamond", price: "Rp2.548.000" },
+      { productsName: "12060 Diamond", price: "Rp3.058.000" },
+      { productsName: "12953 Diamond", price: "Rp3.302.000" },
+      { productsName: "13680 Diamond", price: "Rp3.465.000" },
+      { productsName: "14814 Diamond", price: "Rp3.758.000" },
+      { productsName: "16080 Diamond", price: "Rp4.077.000" },
+      { productsName: "18510 Diamond", price: "Rp4.688.000" },
+      { productsName: "20100 Diamond", price: "Rp5.096.000" },
+      { productsName: "20195 Diamond", price: "Rp5.126.000" },
+      { productsName: "21330 Diamond", price: "Rp5.401.000" },
+      { productsName: "28980 Diamond", price: "Rp7.337.000" },
     ],
     needServer: true,
     formType: "game",
@@ -400,17 +507,20 @@ function renderProducts() {
 
   // Add event listeners to "View Details" buttons
   document.querySelectorAll(".view-details-btn").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    const productId = parseInt(btn.dataset.productId);
-    const product = products.find((p) => p.id === productId);
-    
-    if (product) {
-      const slug = product.name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9\-]/g, "");
-      window.location.hash = `#produk#${slug}`;
-      showProductDetail(productId);
-    }
+    btn.addEventListener("click", () => {
+      const productId = parseInt(btn.dataset.productId);
+      const product = products.find((p) => p.id === productId);
+
+      if (product) {
+        const slug = product.name
+          .toLowerCase()
+          .replace(/\s+/g, "-")
+          .replace(/[^a-z0-9\-]/g, "");
+        window.location.hash = `#produk#${slug}`;
+        showProductDetail(productId);
+      }
+    });
   });
-});
 }
 
 // Generate form fields based on product type
