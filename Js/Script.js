@@ -468,7 +468,7 @@ let products = [
   {
     id: 16,
     name: "Canva Pro Designer",
-    category: "voucher",
+    category: "appPremi",
     iconUrl: "img/canva.jpeg",
     prices: [
       { productsName: "1 Bulan", price: "Rp 9.000" },
@@ -477,12 +477,12 @@ let products = [
       { productsName: "1 Tahun", price: "Rp 18.000" },
     ],
     needServer: false,
-    formType: "phone",
+    formType: "apps",
   },
   {
     id: 17,
     name: "Netflix",
-    category: "voucher",
+    category: "appPremi",
     iconUrl: "img/netflix.webp",
     prices: [
       { "productsName": "Sharing - 1 Bulan (1 Profile 1 User)", "price": "Rp35.000" },
@@ -491,19 +491,19 @@ let products = [
       { "productsName": "Private - 1 Bulan", "price": "Rp158.000" },
     ],
     needServer: false,
-    formType: "phone",
+    formType: "apps",
   },
   {
     id: 18,
     name: "Chat GPT",
-    category: "voucher",
+    category: "appPremi",
     iconUrl: "img/gpt.webp",
     prices: [
       { "productsName": "Sharing - 1 Bulan (4 - 5 User)", "price": "Rp48.000" },
       { "productsName": "Private - 1 Bulan", "price": "Rp53.000" },
     ],
     needServer: false,
-    formType: "phone",
+    formType: "apps",
   },
 ];
 
@@ -527,6 +527,11 @@ let categories = [
     id: 4,
     name: "Voucher",
     code: "voucher",
+  },
+  {
+    id: 5,
+    name: "Aplikasi Premium",
+    code: "appPremi",
   },
 ];
 
@@ -764,6 +769,25 @@ function generateFormFields(product) {
                     `;
       break;
 
+    case "apps":
+      // For appPremi - phone number and email
+      formHTML = `
+                            
+                            <div class="mb-4">
+                                <label for="email" class="block text-gray-700 font-medium mb-2">Email</label>
+                                <input type="email" id="email" name="email"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg 
+                                focus:outline-none focus:ring-2 focus:ring-amber-600 focus:border-transparent" required>
+                            </div>
+                            <div class="mb-4">
+                                <label for="phone" class="block text-gray-700 font-medium mb-2">Nomor Handphone</label>
+                                <input type="text" id="phone" name="phone" pattern="\\d{1,25}" inputmode="numeric" maxlength="25"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg 
+                                focus:outline-none focus:ring-2 focus:ring-amber-600 focus:border-transparent" required>
+                            </div>
+                    `;
+      break;
+
     case "hoyogame":
       // Untuk Game Hoyoverse - ID Game, Server, Nickname, dan Nomor HP
       formHTML = `
@@ -889,6 +913,10 @@ function formatWhatsAppMessage(product, price, formData) {
     message += `Nick In Game: ${formData.nickGame}\n`;
   }
 
+  if (product.formType === "apps") {
+    message += `Email: ${formData.email}\n`;
+  }
+
   // Add server if applicable
   if (
     (product.needServer || product.formType === "hoyogame") &&
@@ -919,6 +947,13 @@ function handleCheckoutSubmit(e) {
   ) {
     formData.gameId = document.getElementById("game-id").value;
     formData.nickGame = document.getElementById("nickname").value;
+  }
+
+  // Get email if applicable
+  if (
+    currentProduct.formType === "apps"
+  ) {
+    formData.email = document.getElementById("email").value;
   }
 
   // Get server if applicable
