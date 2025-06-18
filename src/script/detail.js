@@ -315,26 +315,26 @@ function validateAndProcessCheckout() {
 }
 
 function processCheckout(formData) {
-    let message = `Halo Admin Anjang Store, saya ingin order:\n\n`;
-    message += `Produk: ${currentProduct.name} - ${selectedProductVariant.productsName}\n`;
+    let message = `Halo Min Snaz, Saya ingin membeli produk berikut.\n\n`;
+    message += `Nama Produk: ${currentProduct.name} - ${selectedProductVariant.productsName}\n`;
     message += `Harga: ${selectedProductVariant.price}\n`;
 
     if (currentProduct.formType === "game") {
         message += `ID Game: ${formData.gameId}\n`;
-        message += `Nickname: ${formData.nickName}\n`;
+        message += `Nick in Game: ${formData.nickName}\n`;
         if (currentProduct.needServer) {
-            message += `Server ID: ${formData.serverId}\n`;
+            message += `Server: ${formData.serverId}\n`;
         }
     } else if (currentProduct.formType === "vouch&app") {
         message += `Email: ${formData.email}\n`;
     } else if (currentProduct.formType === "hoyogame") {
         message += `ID Game: ${formData.gameId}\n`;
-        message += `Nickname: ${formData.nickName}\n`;
+        message += `Nick in Game: ${formData.nickName}\n`;
         if (currentProduct.needServer) {
             message += `Server: ${formData.server}\n`;
         }
     }
-    message += `Nomor HP: ${formData.phone}\n\n`;
+    message += `Nomor Handphone: ${formData.phone}\n\n`;
     message += `Tolong segara proses yah min, Terima kasih min.`;
 
     const encodedMessage = encodeURIComponent(message);
