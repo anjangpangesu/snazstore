@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("menu-toggle").addEventListener("click", toggleMobileMenu);
 
     // Fetch products data
-    fetch('./src/data/products.json')
+    fetch('../src/data/products.json')
         .then(response => response.json())
         .then(data => {
             products = data;
