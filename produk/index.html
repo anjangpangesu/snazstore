@@ -2,14 +2,14 @@
 <html lang="id">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Snaz Store - Produk</title>
-    <link rel="icon" href="../img/webicon.png" type="image/png">
+    <link rel="icon" href="../img/webicon.png" type="image/png" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="../src/style/style.css">
+        rel="stylesheet" />
+    <link rel="stylesheet" href="../src/style/style.css" />
 </head>
 
 <body>
@@ -17,7 +17,7 @@
         <div class="bg-white shadow-md fixed top-0 left-0 right-0 z-50">
             <div class="container mx-auto px-4 py-4 flex justify-between items-center">
                 <a href="/" class="flex items-center space-x-2">
-                    <img src="../img/snaz logo.png" alt="Snaz Store Logo" class="h-10 w-25">
+                    <img src="../img/snaz logo.png" alt="Snaz Store Logo" class="h-10 w-25" />
                 </a>
                 <nav class="hidden md:flex space-x-8">
                     <a href="/"
@@ -49,7 +49,9 @@
                     <div class="flex flex-col md:flex-row">
                         <div class="md:w-64 flex-shrink-0 mb-6 md:mb-0">
                             <div class="bg-white rounded-xl shadow-md p-4 md:sticky md:top-24">
-                                <h3 class="text-lg font-semibold text-gray-800 mb-4 px-2">Kategori</h3>
+                                <h3 class="text-lg font-semibold text-gray-800 mb-4 px-2">
+                                    Kategori
+                                </h3>
                                 <ul>
                                     <li>
                                         <button
@@ -73,7 +75,7 @@
                                         <button
                                             class="sidebar-category w-full text-left px-4 py-2 rounded-lg mb-1 transition-colors flex items-center"
                                             onclick="window.location.href='/produk/?category=Mobile Games'">
-                                            <img src="../img/Mobile.png" alt="Mobile Games" class="h-5 w-5 mr-2">
+                                            <img src="../img/Mobile.png" alt="Mobile Games" class="h-5 w-5 mr-2" />
                                             Mobile Games
                                         </button>
                                     </li>
@@ -81,7 +83,7 @@
                                         <button
                                             class="sidebar-category w-full text-left px-4 py-2 rounded-lg mb-1 transition-colors flex items-center"
                                             onclick="window.location.href='/produk/?category=PC Games'">
-                                            <img src="../img/PC.png" alt="PC Games" class="h-5 w-5 mr-2">
+                                            <img src="../img/PC.png" alt="PC Games" class="h-5 w-5 mr-2" />
                                             PC Games
                                         </button>
                                     </li>
@@ -89,7 +91,7 @@
                                         <button
                                             class="sidebar-category w-full text-left px-4 py-2 rounded-lg mb-1 transition-colors flex items-center"
                                             onclick="window.location.href='/produk/?category=Console'">
-                                            <img src="../img/Console.png" alt="Console" class="h-5 w-5 mr-2">
+                                            <img src="../img/Console.png" alt="Console" class="h-5 w-5 mr-2" />
                                             Console
                                         </button>
                                     </li>
@@ -97,7 +99,7 @@
                                         <button
                                             class="sidebar-category w-full text-left px-4 py-2 rounded-lg mb-1 transition-colors flex items-center"
                                             onclick="window.location.href='/produk/?category=Voucher'">
-                                            <img src="../img/Voucher.png" alt="Voucher" class="h-5 w-5 mr-2">
+                                            <img src="../img/Voucher.png" alt="Voucher" class="h-5 w-5 mr-2" />
                                             Voucher
                                         </button>
                                     </li>
@@ -105,7 +107,7 @@
                                         <button
                                             class="sidebar-category w-full text-left px-4 py-2 rounded-lg mb-1 transition-colors flex items-center"
                                             onclick="window.location.href='/produk/?category=Aplikasi Premium'">
-                                            <img src="../img/Apps.png" alt="Aplikasi Premium" class="h-5 w-5 mr-2">
+                                            <img src="../img/Apps.png" alt="Aplikasi Premium" class="h-5 w-5 mr-2" />
                                             Aplikasi Premium
                                         </button>
                                     </li>
@@ -115,12 +117,14 @@
 
                         <div class="md:flex-1 md:pl-6">
                             <div class="mb-8">
-                                <h2 class="text-2xl font-bold text-gray-800 mb-6">Katalog Produk</h2>
+                                <h2 class="text-2xl font-bold text-gray-800 mb-6">
+                                    Katalog Produk
+                                </h2>
 
                                 <div class="mb-6">
                                     <div class="relative">
                                         <input type="text" id="search-input" placeholder="Cari produk..."
-                                            class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                                            class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-amber-500" />
                                         <button class="absolute right-3 top-3 text-gray-500" id="search-button">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
                                                 viewBox="0 0 24 24" stroke="currentColor">
@@ -131,8 +135,7 @@
                                     </div>
                                 </div>
 
-                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6" id="products-container">
-                                </div>
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6" id="products-container"></div>
                             </div>
                         </div>
                     </div>
@@ -145,9 +148,11 @@
             <div class="container mx-auto max-w-6xl">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div>
-                        <img src="../img/snaz logo.png" alt="Snaz Store Logo" class="h-10 w-25 mb-4">
-                        <p class="text-gray-300 mb-4">Platform top up game terpercaya dengan proses cepat dan harga
-                            terbaik.</p>
+                        <img src="../img/snaz logo.png" alt="Snaz Store Logo" class="h-10 w-25 mb-4" />
+                        <p class="text-gray-300 mb-4">
+                            Platform top up game, pembelian voucher, dan aplikasi premium
+                            terpercaya dengan proses yang cepat dan harga yang terbaik.
+                        </p>
                         <div class="flex space-x-4">
                             <a href="#" class="text-gray-300 hover:text-white">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor"
@@ -161,16 +166,23 @@
                     <div>
                         <h3 class="text-xl font-semibold mb-4">Kategori Produk</h3>
                         <ul class="space-y-2">
-                            <li><a href="/produk/?category=Mobile Games"
-                                    class="text-gray-300 hover:text-white">Mobile Games</a></li>
-                            <li><a href="/produk/?category=PC Games" class="text-gray-300 hover:text-white">PC
-                                    Games</a></li>
-                            <li><a href="/produk/?category=Console"
-                                    class="text-gray-300 hover:text-white">Console</a></li>
-                            <li><a href="/produk/?category=Voucher"
-                                    class="text-gray-300 hover:text-white">Voucher</a></li>
-                            <li><a href="/produk/?category=Aplikasi Premium"
-                                    class="text-gray-300 hover:text-white">Aplikasi Premium</a></li>
+                            <li>
+                                <a href="/produk/?category=Mobile Games" class="text-gray-300 hover:text-white">Mobile
+                                    Games</a>
+                            </li>
+                            <li>
+                                <a href="/produk/?category=PC Games" class="text-gray-300 hover:text-white">PC Games</a>
+                            </li>
+                            <li>
+                                <a href="/produk/?category=Console" class="text-gray-300 hover:text-white">Console</a>
+                            </li>
+                            <li>
+                                <a href="/produk/?category=Voucher" class="text-gray-300 hover:text-white">Voucher</a>
+                            </li>
+                            <li>
+                                <a href="/produk/?category=Aplikasi Premium"
+                                    class="text-gray-300 hover:text-white">Aplikasi Premium</a>
+                            </li>
                         </ul>
                     </div>
                     <div>

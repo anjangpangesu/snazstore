@@ -2,14 +2,14 @@
 <html lang="id">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Snaz Store - Detail Produk</title>
-    <link rel="icon" href="../img/webicon.png" type="image/png">
+    <link rel="icon" href="../img/webicon.png" type="image/png" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="../src/style/style.css">
+        rel="stylesheet" />
+    <link rel="stylesheet" href="../src/style/style.css" />
 </head>
 
 <body>
@@ -17,7 +17,7 @@
         <div class="bg-white shadow-md fixed top-0 left-0 right-0 z-50">
             <div class="container mx-auto px-4 py-4 flex justify-between items-center">
                 <a href="/" class="flex items-center space-x-2">
-                    <img src="../img/snaz logo.png" alt="Snaz Store Logo" class="h-10 w-25">
+                    <img src="../img/snaz logo.png" alt="Snaz Store Logo" class="h-10 w-25" />
                 </a>
                 <nav class="hidden md:flex space-x-8">
                     <a href="/"
@@ -59,8 +59,9 @@
                     <div class="bg-white rounded-xl shadow-md overflow-hidden">
                         <div class="p-4 bg-white">
                             <div class="flex items-center">
-                                <img id="detail-product-icon" src="" alt="Product Icon"
-                                    class="w-12 h-12 rounded-xl object-cover mr-3">
+                                <div class="w-14 h-14 bg-white rounded-lg flex items-center justify-center mr-4">
+                                    <img id="detail-product-icon" src="" alt="Product Icon" class="rounded-[10%]" />
+                                </div>
                                 <div>
                                     <h2 id="detail-product-name" class="text-xl font-bold text-gray-800"></h2>
                                     <p id="detail-product-description" class="text-gray-600 mt-1 text-sm"></p>
@@ -69,7 +70,9 @@
                         </div>
 
                         <div class="p-6">
-                            <h3 class="text-xl font-semibold text-gray-800 mb-4">Pilihan Produk</h3>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-4">
+                                Pilihan Produk
+                            </h3>
                             <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-4" id="detail-product-list">
                             </div>
                         </div>
@@ -94,14 +97,16 @@
                     <div class="mb-6">
                         <div
                             class="flex items-center p-4 bg-gradient-to-r from-white via-white-50 to-white-100 rounded-lg shadowbg-white rounded-lg shadow-lg">
-                            <div class="mr-4">
-                                <img id="checkout-product-icon" class="w-12 h-12 rounded-full object-cover" src=""
-                                    alt="Product Icon">
+                            <div class="w-14 h-14 bg-white rounded-lg flex items-center justify-center mr-4">
+                                <img id="checkout-product-icon" src="" alt="Product Icon" class="rounded-[10%]" />
                             </div>
                             <div>
-                                <h4 id="checkout-product-name" class="font-semibold text-gray-800">Nama Produk</h4>
-                                <p id="checkout-product-variant" class="text-amber-600 font-medium mt-1">Produk yang
-                                    dibeli</p>
+                                <h4 id="checkout-product-name" class="font-semibold text-gray-800">
+                                    Nama Produk
+                                </h4>
+                                <p id="checkout-product-variant" class="text-amber-600 font-medium mt-1">
+                                    Produk yang dibeli
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -134,10 +139,13 @@
                             </svg>
                         </div>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-800 mb-2">Checkout Berhasil!</h3>
-                    <p class="text-gray-600 mb-6">Terima kasih telah berbelanja di Snaz Store. Anda akan diarahkan ke
-                        WhatsApp
-                        untuk menyelesaikan pesanan.</p>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">
+                        Checkout Berhasil!
+                    </h3>
+                    <p class="text-gray-600 mb-6">
+                        Terima kasih telah berbelanja di Snaz Store. Anda akan diarahkan
+                        ke WhatsApp untuk menyelesaikan pesanan.
+                    </p>
                     <button onclick="closeSuccessModal()"
                         class="w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold py-3 px-4 rounded-lg">
                         Lanjutkan
@@ -150,9 +158,11 @@
             <div class="container mx-auto max-w-6xl">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div>
-                        <img src="../img/snaz logo.png" alt="Snaz Store Logo" class="h-10 w-25 mb-4">
-                        <p class="text-gray-300 mb-4">Platform top up game terpercaya dengan proses cepat dan harga
-                            terbaik.</p>
+                        <img src="../img/snaz logo.png" alt="Snaz Store Logo" class="h-10 w-25 mb-4" />
+                        <p class="text-gray-300 mb-4">
+                            Platform top up game, pembelian voucher, dan aplikasi premium
+                            terpercaya dengan proses yang cepat dan harga yang terbaik.
+                        </p>
                         <div class="flex space-x-4">
                             <a href="#" class="text-gray-300 hover:text-white">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor"
@@ -166,16 +176,23 @@
                     <div>
                         <h3 class="text-xl font-semibold mb-4">Kategori Produk</h3>
                         <ul class="space-y-2">
-                            <li><a href="/produk/?category=Mobile Games" class="text-gray-300 hover:text-white">Mobile
-                                    Games</a></li>
-                            <li><a href="/produk/?category=PC Games" class="text-gray-300 hover:text-white">PC
-                                    Games</a></li>
-                            <li><a href="/produk/?category=Console" class="text-gray-300 hover:text-white">Console</a>
+                            <li>
+                                <a href="/produk/?category=Mobile Games" class="text-gray-300 hover:text-white">Mobile
+                                    Games</a>
                             </li>
-                            <li><a href="/produk/?category=Voucher" class="text-gray-300 hover:text-white">Voucher</a>
+                            <li>
+                                <a href="/produk/?category=PC Games" class="text-gray-300 hover:text-white">PC Games</a>
                             </li>
-                            <li><a href="/produk/?category=Aplikasi Premium"
-                                    class="text-gray-300 hover:text-white">Aplikasi Premium</a></li>
+                            <li>
+                                <a href="/produk/?category=Console" class="text-gray-300 hover:text-white">Console</a>
+                            </li>
+                            <li>
+                                <a href="/produk/?category=Voucher" class="text-gray-300 hover:text-white">Voucher</a>
+                            </li>
+                            <li>
+                                <a href="/produk/?category=Aplikasi Premium"
+                                    class="text-gray-300 hover:text-white">Aplikasi Premium</a>
+                            </li>
                         </ul>
                     </div>
                     <div>

@@ -4,49 +4,59 @@ let selectedProductVariant = null;
 let whatsappUrl = null;
 
 const detailProductName = document.getElementById("detail-product-name");
-const detailProductDescription = document.getElementById("detail-product-description");
+const detailProductDescription = document.getElementById(
+    "detail-product-description"
+);
 const detailProductIcon = document.getElementById("detail-product-icon");
 const detailProductList = document.getElementById("detail-product-list");
 
 const checkoutModal = document.getElementById("checkout-modal");
 const checkoutProductName = document.getElementById("checkout-product-name");
-const checkoutProductVariant = document.getElementById("checkout-product-variant");
+const checkoutProductVariant = document.getElementById(
+    "checkout-product-variant"
+);
 const checkoutProductIcon = document.getElementById("checkout-product-icon");
 const formFieldsContainer = document.getElementById("form-fields");
 const successModal = document.getElementById("success-modal");
 
 document.addEventListener("DOMContentLoaded", function () {
     // Mobile menu toggle
-    document.getElementById("menu-toggle").addEventListener("click", toggleMobileMenu);
+    document
+        .getElementById("menu-toggle")
+        .addEventListener("click", toggleMobileMenu);
 
     // Fetch products data
-    fetch('../src/data/products.json')
-        .then(response => response.json())
-        .then(data => {
+    fetch("../src/data/products.json")
+        .then((response) => response.json())
+        .then((data) => {
             products = data;
             const urlParams = new URLSearchParams(window.location.search);
-            const productId = urlParams.get('productId');
-            const preselectedProductName = urlParams.get('productName');
-            const preselectedProductPrice = urlParams.get('productPrice');
+            const productId = urlParams.get("productId");
+            const preselectedProductName = urlParams.get("productName");
+            const preselectedProductPrice = urlParams.get("productPrice");
 
             if (productId) {
-                const product = products.find(p => p.id === parseInt(productId));
+                const product = products.find((p) => p.id === parseInt(productId));
                 if (product) {
                     renderProductDetail(product);
                     // If a specific variant was passed from produk, open the checkout modal directly
                     if (preselectedProductName && preselectedProductPrice) {
-                        openCheckoutModal(parseInt(productId), decodeURIComponent(preselectedProductName), decodeURIComponent(preselectedProductPrice));
+                        openCheckoutModal(
+                            parseInt(productId),
+                            decodeURIComponent(preselectedProductName),
+                            decodeURIComponent(preselectedProductPrice)
+                        );
                     }
                 } else {
                     // Redirect to products page if product not found
-                    window.location.href = '/produk/';
+                    window.location.href = "/produk/";
                 }
             } else {
                 // Redirect to products page if no ID is provided
-                window.location.href = '/produk/';
+                window.location.href = "/produk/";
             }
         })
-        .catch(error => console.error('Error fetching products:', error));
+        .catch((error) => console.error("Error fetching products:", error));
 });
 
 function toggleMobileMenu() {
@@ -66,11 +76,16 @@ function renderProductDetail(product) {
         listItem.className = "bg-white p-4 rounded-lg border border-gray-200";
         listItem.innerHTML = `
                         <div class="flex justify-between items-center mb-3">
-                            <h4 class="font-medium text-gray-800">${item.productsName}</h4>
-                            <p class="text-amber-600 font-semibold">${item.price}</p>
+                            <h4 class="font-medium text-gray-800">${item.productsName
+            }</h4>
+                            <p class="text-amber-600 font-semibold">${item.price
+            }</p>
                         </div>
                         <button class="w-full bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg text-sm transition-colors" 
-                                onclick="openCheckoutModal(${product.id}, '${encodeURIComponent(item.productsName)}', '${encodeURIComponent(item.price)}')">
+                                onclick="openCheckoutModal(${product.id
+            }, '${encodeURIComponent(
+                item.productsName
+            )}', '${encodeURIComponent(item.price)}')">
                             Beli Sekarang
                         </button>
                     `;
@@ -209,8 +224,12 @@ function validateAndProcessCheckout() {
     let isValid = true;
     let formData = {};
 
-    document.querySelectorAll(".error-message").forEach((el) => el.classList.add("hidden"));
-    document.querySelectorAll("input, select").forEach((el) => el.classList.remove("error"));
+    document
+        .querySelectorAll(".error-message")
+        .forEach((el) => el.classList.add("hidden"));
+    document
+        .querySelectorAll("input, select")
+        .forEach((el) => el.classList.remove("error"));
 
     if (currentProduct.formType === "game") {
         const gameId = document.getElementById("game-id").value;

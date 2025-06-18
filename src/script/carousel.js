@@ -1,5 +1,5 @@
 let currentSlide = 0;
-const carouselTrack = document.getElementById('carousel-track');
+const carouselTrack = document.getElementById("carousel-track");
 const slides = carouselTrack.children;
 
 function showSlide(index) {

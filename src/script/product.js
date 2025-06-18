@@ -1,5 +1,5 @@
 let products = [];
-let currentCategory = 'all';
+let currentCategory = "all";
 
 const productsContainer = document.getElementById("products-container");
 const searchInput = document.getElementById("search-input");
@@ -8,22 +8,24 @@ const sidebarCategories = document.querySelectorAll(".sidebar-category");
 
 document.addEventListener("DOMContentLoaded", function () {
     // Mobile menu toggle
-    document.getElementById("menu-toggle").addEventListener("click", toggleMobileMenu);
+    document
+        .getElementById("menu-toggle")
+        .addEventListener("click", toggleMobileMenu);
 
     // Fetch products data
-    fetch('../src/data/products.json')
-        .then(response => response.json())
-        .then(data => {
+    fetch("../src/data/products.json")
+        .then((response) => response.json())
+        .then((data) => {
             products = data;
             const urlParams = new URLSearchParams(window.location.search);
-            const categoryFromUrl = urlParams.get('category');
+            const categoryFromUrl = urlParams.get("category");
             if (categoryFromUrl) {
                 filterByCategory(categoryFromUrl);
             } else {
-                filterByCategory('all'); // Default to all
+                filterByCategory("all"); // Default to all
             }
         })
-        .catch(error => console.error('Error fetching products:', error));
+        .catch((error) => console.error("Error fetching products:", error));
 
     // Add event listener for search input (real-time search)
     searchInput.addEventListener("input", searchProducts);
