@@ -334,7 +334,7 @@ function processCheckout(formData) {
             message += `Server: ${formData.server}\n`;
         }
     }
-    message += `Nomor HP: ${formData.phone}\n`;
+    message += `Nomor HP: ${formData.phone}\n\n`;
     message += `Tolong segara proses yah min, Terima kasih min.`;
 
     const encodedMessage = encodeURIComponent(message);
