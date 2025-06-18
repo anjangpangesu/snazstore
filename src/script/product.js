@@ -58,7 +58,7 @@ function renderProducts(productsToRender) {
         productCard.className =
             "game-card bg-white rounded-xl shadow-md overflow-hidden transition-transform duration-300";
 
-        const showAllProducts = product.listProduk.length <= 5;
+        const showAllProducts = product.listProduk.length <= 1;
         const previewProducts = showAllProducts
             ? product.listProduk
             : product.listProduk.slice(0, 5);
@@ -78,10 +78,9 @@ function renderProducts(productsToRender) {
 
         let viewDetailsButton = "";
         if (!showAllProducts) {
-            const remainingCount = product.listProduk.length - 5;
             viewDetailsButton = `
                             <div class="see-more-button bg-amber-500 hover:bg-amber-600 text-white font-medium py-2 px-4 text-center cursor-pointer transition-colors" onclick="showProductDetail(${product.id})">
-                                Lihat ${remainingCount} Produk Lainnya
+                                Lihat Semua Produk
                             </div>
                         `;
         }
