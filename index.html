@@ -16,13 +16,13 @@
     <div class="min-h-screen flex flex-col">
         <div class="bg-white shadow-md fixed top-0 left-0 right-0 z-50">
             <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-                <a href="index.html" class="flex items-center space-x-2">
+                <a href="/" class="flex items-center space-x-2">
                     <img src="img/snaz logo.png" alt="Snaz Store Logo" class="h-10 w-25">
                 </a>
                 <nav class="hidden md:flex space-x-8">
-                    <a href="index.html"
+                    <a href="/"
                         class="nav-link active text-gray-800 hover:text-amber-600 transition-colors font-medium">Beranda</a>
-                    <a href="produk.html"
+                    <a href="/produk/"
                         class="nav-link text-gray-800 hover:text-amber-600 transition-colors font-medium">Produk</a>
                 </nav>
                 <button class="md:hidden focus:outline-none" id="menu-toggle">
@@ -34,9 +34,9 @@
                 </button>
             </div>
             <div class="md:hidden hidden bg-white w-full py-4 px-4 shadow-inner" id="mobile-menu">
-                <a href="index.html" class="block py-2 text-gray-800 hover:text-amber-600 font-medium"
+                <a href="/" class="block py-2 text-gray-800 hover:text-amber-600 font-medium"
                     onclick="toggleMobileMenu()">Beranda</a>
-                <a href="produk.html" class="block py-2 text-gray-800 hover:text-amber-600 font-medium"
+                <a href="/produk/" class="block py-2 text-gray-800 hover:text-amber-600 font-medium"
                     onclick="toggleMobileMenu()">Produk</a>
             </div>
         </div>
@@ -59,7 +59,7 @@
                                 </p>
                                 <button
                                     class="bg-white text-amber-600 font-semibold px-6 py-3 rounded-lg hover:bg-gray-50 hover:shadow-lg active:scale-95 focus:outline-none focus:ring-2 focus:ring-amber-300 transition-all duration-200 shadow-md"
-                                    onclick="window.location.href='produk.html'">
+                                    onclick="window.location.href='/produk/'">
                                     Lihat Produk
                                 </button>
                             </div>
@@ -191,7 +191,7 @@
                         </p>
                         <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
                             <div class="category-card bg-white rounded-xl p-6 text-center shadow-md transition-transform duration-300 cursor-pointer"
-                                onclick="window.location.href='produk.html?category=Mobile Games'">
+                                onclick="window.location.href='/produk/?category=Mobile Games'">
                                 <div class="flex justify-center mb-3">
                                     <img src="img/Mobile.png" alt="Mobile Games" class="w-12 h-12">
                                 </div>
@@ -199,7 +199,7 @@
                                 <p class="text-sm text-gray-500">MLBB, Free Fire, PUBGM, dan lainnya</p>
                             </div>
                             <div class="category-card bg-white rounded-xl p-6 text-center shadow-md transition-transform duration-300 cursor-pointer"
-                                onclick="window.location.href='produk.html?category=PC Games'">
+                                onclick="window.location.href='/produk/?category=PC Games'">
                                 <div class="flex justify-center mb-3">
                                     <img src="img/PC.png" alt="PC Games" class="w-12 h-12">
                                 </div>
@@ -207,7 +207,7 @@
                                 <p class="text-sm text-gray-500">Valorant, Steam Wallet, Roblox, dan lainnya</p>
                             </div>
                             <div class="category-card bg-white rounded-xl p-6 text-center shadow-md transition-transform duration-300 cursor-pointer"
-                                onclick="window.location.href='produk.html?category=Console'">
+                                onclick="window.location.href='/produk/?category=Console'">
                                 <div class="flex justify-center mb-3">
                                     <img src="img/Console.png" alt="Console" class="w-12 h-12">
                                 </div>
@@ -215,7 +215,7 @@
                                 <p class="text-sm text-gray-500">PlayStation Store</p>
                             </div>
                             <div class="category-card bg-white rounded-xl p-6 text-center shadow-md transition-transform duration-300 cursor-pointer"
-                                onclick="window.location.href='produk.html?category=Voucher'">
+                                onclick="window.location.href='/produk/?category=Voucher'">
                                 <div class="flex justify-center mb-3">
                                     <img src="img/Voucher.png" alt="Voucher" class="w-12 h-12">
                                 </div>
@@ -223,7 +223,7 @@
                                 <p class="text-sm text-gray-500">Google Play</p>
                             </div>
                             <div class="category-card bg-white rounded-xl p-6 text-center shadow-md transition-transform duration-300 cursor-pointer"
-                                onclick="window.location.href='produk.html?category=Aplikasi Premium'">
+                                onclick="window.location.href='/produk/?category=Aplikasi Premium'">
                                 <div class="flex justify-center mb-3">
                                     <img src="img/Apps.png" alt="Aplikasi Premium" class="w-12 h-12">
                                 </div>
@@ -258,15 +258,15 @@
                     <div>
                         <h3 class="text-xl font-semibold mb-4">Kategori Produk</h3>
                         <ul class="space-y-2">
-                            <li><a href="produk.html?category=Mobile Games"
-                                    class="text-gray-300 hover:text-white">Mobile Games</a></li>
-                            <li><a href="produk.html?category=PC Games" class="text-gray-300 hover:text-white">PC
+                            <li><a href="/produk/?category=Mobile Games" class="text-gray-300 hover:text-white">Mobile
                                     Games</a></li>
-                            <li><a href="produk.html?category=Console"
-                                    class="text-gray-300 hover:text-white">Console</a></li>
-                            <li><a href="produk.html?category=Voucher"
-                                    class="text-gray-300 hover:text-white">Voucher</a></li>
-                            <li><a href="produk.html?category=Aplikasi Premium"
+                            <li><a href="/produk/?category=PC Games" class="text-gray-300 hover:text-white">PC
+                                    Games</a></li>
+                            <li><a href="/produk/?category=Console" class="text-gray-300 hover:text-white">Console</a>
+                            </li>
+                            <li><a href="/produk/?category=Voucher" class="text-gray-300 hover:text-white">Voucher</a>
+                            </li>
+                            <li><a href="/produk/?category=Aplikasi Premium"
                                     class="text-gray-300 hover:text-white">Aplikasi Premium</a></li>
                         </ul>
                     </div>

@@ -167,5 +167,5 @@ function searchProducts() {
 }
 
 function showProductDetail(productId) {
-    window.location.href = `detail.html?productId=${productId}`;
+    window.location.href = `/detail/?productId=${productId}`;
 }

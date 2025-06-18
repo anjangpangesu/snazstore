@@ -33,17 +33,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 const product = products.find(p => p.id === parseInt(productId));
                 if (product) {
                     renderProductDetail(product);
-                    // If a specific variant was passed from produk.html, open the checkout modal directly
+                    // If a specific variant was passed from produk, open the checkout modal directly
                     if (preselectedProductName && preselectedProductPrice) {
                         openCheckoutModal(parseInt(productId), decodeURIComponent(preselectedProductName), decodeURIComponent(preselectedProductPrice));
                     }
                 } else {
                     // Redirect to products page if product not found
-                    window.location.href = 'produk.html';
+                    window.location.href = '/produk/';
                 }
             } else {
                 // Redirect to products page if no ID is provided
-                window.location.href = 'produk.html';
+                window.location.href = '/produk/';
             }
         })
         .catch(error => console.error('Error fetching products:', error));
