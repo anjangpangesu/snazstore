@@ -66,10 +66,13 @@ function renderProducts(productsToRender) {
         let productListHTML = "";
         previewProducts.forEach((item, index) => {
             productListHTML += `
-                            <div class="flex justify-between items-center w-full border-b border-gray-200 px-4 py-2">
-                                <span>${item.productsName}</span>
-                                <span class="font-semibold text-amber-600">${item.price}</span>
-                            </div>
+                            <button class="price-btn w-full border-b border-gray-200 hover:bg-amber-100 transition-colors duration-200" 
+                                        data-product-id="${product.id}" 
+                                        data-product-name="${encodeURIComponent(item.productsName)}" 
+                                        data-product-price="${encodeURIComponent(item.price)}">
+                                    <span>${item.productsName}</span>
+                                    <span class="font-semibold text-amber-600">${item.price}</span>
+                                </button>
                         `;
         });
 
@@ -101,6 +104,16 @@ function renderProducts(productsToRender) {
                             </div>
                         `;
         productsContainer.appendChild(productCard);
+        // Add event listeners to price buttons
+        const priceButtons = productCard.querySelectorAll(".price-btn");
+        priceButtons.forEach((button) => {
+            button.addEventListener("click", function () {
+                const productId = parseInt(this.getAttribute("data-product-id"));
+                const productName = decodeURIComponent(this.getAttribute("data-product-name"));
+                const productPrice = decodeURIComponent(this.getAttribute("data-product-price"));
+                window.location.href = `/detail/?productId=${productId}&productName=${encodeURIComponent(productName)}&productPrice=${encodeURIComponent(productPrice)}`;
+            });
+        });
     });
 }
 
