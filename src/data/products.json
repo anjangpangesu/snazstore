@@ -485,14 +485,14 @@
     "listProduk": [
       {
         "productsName": "Sharing - 1 Bulan (1 Profile 1 User)",
-        "price": "Rp35.000"
+        "price": "Rp48.000"
       },
       {
         "productsName": "Sharing - 1 Bulan (1 Profile 2 User)",
-        "price": "Rp22.000"
+        "price": "Rp42.000"
       },
-      { "productsName": "Semi Private - 1 Bulan", "price": "Rp39.000" },
-      { "productsName": "Private - 1 Bulan", "price": "Rp158.000" }
+      { "productsName": "Semi Private - 1 Bulan", "price": "Rp55.000" },
+      { "productsName": "Private - 1 Bulan", "price": "Rp265.000" }
     ],
     "needServer": false,
     "formType": "vouch&app"
