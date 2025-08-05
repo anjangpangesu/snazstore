@@ -387,8 +387,6 @@
       { "productsName": "Gift Card Rp. 100.000", "price": "Rp 100.000" },
       { "productsName": "Gift Card Rp. 225.000", "price": "Rp 225.000" },
       { "productsName": "Gift Card Rp. 300.000", "price": "Rp 300.000" },
-      { "productsName": "Gift Card Rp. 400.000", "price": "Rp 394.000" },
-      { "productsName": "Gift Card Rp. 600.000", "price": "Rp 598.000" },
       { "productsName": "Gift Card Rp. 1.000.000", "price": "Rp 1.000.000" },
       { "productsName": "Gift Card Rp. 1.500.000", "price": "Rp 1.500.000" }
     ],
@@ -406,10 +404,10 @@
       { "productsName": "IDR 45.000", "price": "Rp47.000" },
       { "productsName": "IDR 60.000", "price": "Rp63.000" },
       { "productsName": "IDR 90.000", "price": "Rp94.000" },
-      { "productsName": "IDR 120.000", "price": "Rp123.000" },
-      { "productsName": "IDR 250.000", "price": "Rp270.000" },
+      { "productsName": "IDR 120.000", "price": "Rp124.000" },
+      { "productsName": "IDR 250.000", "price": "Rp272.000" },
       { "productsName": "IDR 400.000", "price": "Rp440.000" },
-      { "productsName": "IDR 600.000", "price": "Rp648.000" }
+      { "productsName": "IDR 600.000", "price": "Rp654.000" }
     ],
     "needServer": false,
     "formType": "game"
@@ -421,6 +419,8 @@
     "iconUrl": "../img/roblox.webp",
     "description": "Beli Robux untuk pengalaman gaming di Roblox.",
     "listProduk": [
+      { "productsName": "Gift Card Rp. 50.000", "price": "Rp55.000" },
+      { "productsName": "Gift Card Rp. 65.000", "price": "Rp70.000" },
       { "productsName": "Gift Card Rp. 100.000", "price": "Rp100.000" },
       { "productsName": "Gift Card Rp. 300.000", "price": "Rp300.000" },
       { "productsName": "Gift Card Rp. 500.000", "price": "Rp500.000" }
