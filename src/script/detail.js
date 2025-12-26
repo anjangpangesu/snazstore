@@ -78,10 +78,10 @@ function renderProductDetail(product) {
                         <div class="flex justify-between items-center mb-3">
                             <h4 class="font-medium text-gray-800">${item.productsName
             }</h4>
-                            <p class="text-amber-600 font-semibold">${item.price
+                            <p class="text-[#FD5B0E] font-semibold">${item.price
             }</p>
                         </div>
-                        <button class="w-full bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg text-sm transition-colors" 
+                        <button class="w-full bg-[#FB923C] hover:bg-[#FD5B0E] text-white px-4 py-2 rounded-lg text-sm transition-colors" 
                                 onclick="openCheckoutModal(${product.id
             }, '${encodeURIComponent(
                 item.productsName

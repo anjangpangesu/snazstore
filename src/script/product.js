@@ -70,7 +70,7 @@ function renderProducts(productsToRender) {
             productListHTML += `
                             <div class="flex justify-between items-center w-full border-b border-gray-200 px-4 py-2">
                                 <span>${item.productsName}</span>
-                                <span class="font-semibold text-amber-600">${item.price}</span>
+                                <span class="font-semibold text-[#FD5B0E]">${item.price}</span>
                             </div>
                         `;
         });
@@ -78,7 +78,7 @@ function renderProducts(productsToRender) {
         let viewDetailsButton = "";
         if (!showAllProducts) {
             viewDetailsButton = `
-                            <div class="see-more-button bg-amber-500 hover:bg-amber-600 text-white font-medium py-2 px-4 text-center cursor-pointer transition-colors" onclick="showProductDetail(${product.id})">
+                            <div class="see-more-button bg-[#FB923C] hover:bg-[#FD5B0E] text-white font-medium py-2 px-4 text-center cursor-pointer transition-colors" onclick="showProductDetail(${product.id})">
                                 Lihat Semua Produk
                             </div>
                         `;
@@ -108,14 +108,14 @@ function renderProducts(productsToRender) {
 function filterByCategory(category) {
     currentCategory = category;
     sidebarCategories.forEach((item) => {
-        item.classList.remove("active", "bg-amber-100", "text-amber-700");
+        item.classList.remove("active", "bg-orange-100", "text-orange-700");
         item.classList.add("text-gray-700", "hover:bg-gray-100");
 
         if (
             (category === "all" && item.textContent.trim() === "Semua Kategori") ||
             item.textContent.trim() === category
         ) {
-            item.classList.add("active", "bg-amber-100", "text-amber-700");
+            item.classList.add("active", "bg-orange-100", "text-orange-700");
         }
     });
     applyFilters();

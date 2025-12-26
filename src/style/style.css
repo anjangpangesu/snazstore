@@ -26,8 +26,8 @@ body {
   height: 2px;
   bottom: -2px;
   left: 0;
-  background-color: #d97706;
-  /* amber-600 */
+  background-color: #FD5B0E;
+  /* orange-600 */
   transition: width 0.3s ease;
 }
 
@@ -38,8 +38,8 @@ body {
 
 .checkout-form input:focus,
 .checkout-form select:focus {
-  border-color: #d97706;
-  /* amber-600 */
+  border-color: #FD5B0E;
+  /* orange-600 */
   box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.2);
 }
 
@@ -60,14 +60,14 @@ body {
 }
 
 .sidebar-category.active {
-  background-color: #d97706;
-  /* amber-600 */
+  background-color: #FD5B0E;
+  /* orange-600 */
   color: white;
 }
 
 .sidebar-category:hover:not(.active) {
   background-color: #fef3c7;
-  /* amber-100 */
+  /* orange-100 */
 }
 
 @media (min-width: 768px) {
