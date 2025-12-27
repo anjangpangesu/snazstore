@@ -580,16 +580,14 @@
     "iconUrl": "../img/netflix.webp",
     "description": "Langganan Netflix Premium untuk streaming film dan serial.",
     "listProduk": [
-      {
-        "productsName": "Sharing - 1 Bulan (1 Profile 1 User)",
-        "price": "Rp48.000"
-      },
-      {
-        "productsName": "Sharing - 1 Bulan (1 Profile 2 User)",
-        "price": "Rp42.000"
-      },
-      { "productsName": "Semi Private - 1 Bulan", "price": "Rp55.000" },
-      { "productsName": "Private - 1 Bulan", "price": "Rp265.000" }
+      { "productsName": "Netflix 1 Perangkat - 1 Bulan", "price": "Rp50.000" },
+      { "productsName": "Netflix 1 Perangkat - 2 Bulan", "price": "Rp98.000" },
+      { "productsName": "Netflix 1 Perangkat - 3 Bulan", "price": "Rp147.000" },
+      { "productsName": "Netflix 1 Perangkat - 6 Bulan", "price": "Rp294.000" },
+      { "productsName": "Netflix 2 Perangkat - 1 Bulan", "price": "Rp98.000" },
+      { "productsName": "Netflix 2 Perangkat - 2 Bulan", "price": "Rp196.000" },
+      { "productsName": "Netflix 2 Perangkat - 3 Bulan", "price": "Rp294.000" },
+      { "productsName": "Netflix 2 Perangkat - 6 Bulan", "price": "Rp588.000" }
     ],
     "needServer": false,
     "formType": "vouch&app"
@@ -603,6 +601,36 @@
     "listProduk": [
       { "productsName": "Sharing - 1 Bulan (4 - 5 User)", "price": "Rp48.000" },
       { "productsName": "Private - 1 Bulan", "price": "Rp53.000" }
+    ],
+    "needServer": false,
+    "formType": "vouch&app"
+  },
+  {
+    "id": 19,
+    "name": "Crunchyroll",
+    "category": "Aplikasi Premium",
+    "iconUrl": "../img/crunchyroll.png",
+    "description": "Langganan Crunchyroll untuk streaming film dan serial.",
+    "listProduk": [
+      { "productsName": "Crunchyroll - 1 Bulan", "price": "Rp17.000" },
+      { "productsName": "Crunchyroll - 3 Bulan", "price": "Rp48.000" },
+      { "productsName": "Crunchyroll - 6 Bulan", "price": "Rp95.000" },
+      { "productsName": "Crunchyroll - 12 Bulan", "price": "Rp158.000" }
+    ],
+    "needServer": false,
+    "formType": "vouch&app"
+  },
+  {
+    "id": 20,
+    "name": "Zoom Meeting Pro",
+    "category": "Aplikasi Premium",
+    "iconUrl": "../img/zoom.webp",
+    "description": "Langganan Zoom Meeting Pro untuk akses prioritas dan fitur tambahan.",
+    "listProduk": [
+      { "productsName": "Zoom Pro - 1 Bulan", "price": "Rp60.000" },
+      { "productsName": "Zoom Pro - 2 Bulan", "price": "Rp120.000" },
+      { "productsName": "Zoom Pro - 3 Bulan", "price": "Rp180.000" },
+      { "productsName": "Zoom Pro - 6 Bulan", "price": "Rp359.000" }
     ],
     "needServer": false,
     "formType": "vouch&app"
