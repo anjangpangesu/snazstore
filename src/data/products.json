@@ -161,7 +161,6 @@
       { "productsName": "First Recharge 300 Diamonds", "price": "Rp39.000" },
       { "productsName": "First Recharge 500 Diamonds", "price": "Rp65.000" },
       { "productsName": "First Recharge 1000 Diamonds", "price": "Rp131.000" },
-
       { "productsName": "5 Diamond", "price": "Rp2.000" },
       { "productsName": "12 Diamond", "price": "Rp4.000" },
       { "productsName": "19 Diamond", "price": "Rp5.000" },
@@ -206,11 +205,9 @@
       { "productsName": "Level Up Pass - Level 20", "price": "Rp9.000" },
       { "productsName": "Level Up Pass - Level 25", "price": "Rp9.000" },
       { "productsName": "Level Up Pass - Level 30", "price": "Rp14.000" },
-
       { "productsName": "Membership Mingguan", "price": "Rp29.000" },
       { "productsName": "Membership Bulanan", "price": "Rp86.000" },
       { "productsName": "BP Card", "price": "Rp43.000" },
-
       { "productsName": "5 Diamond", "price": "Rp1.000" },
       { "productsName": "10 Diamond", "price": "Rp2.000" },
       { "productsName": "12 Diamond", "price": "Rp2.000" },
