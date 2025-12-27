@@ -7,23 +7,23 @@
     "description": "Top up Diamond Mobile Legends termurah dan terpercaya.",
     "listProduk": [
       {
-        "productsName": "Weekly Diamond Pass (Event Topup +100)",
+        "productsName": "Weekly Diamond Pass x1",
         "price": "Rp28.000"
       },
       {
-        "productsName": "Weekly Diamond Pass (Event Topup +100) x2",
+        "productsName": "Weekly Diamond Pass x2",
         "price": "Rp58.000"
       },
       {
-        "productsName": "Weekly Diamond Pass (Event Topup +100) x3",
+        "productsName": "Weekly Diamond Pass x3",
         "price": "Rp87.000"
       },
       {
-        "productsName": "Weekly Diamond Pass (Event Topup +100) x4",
+        "productsName": "Weekly Diamond Pass x4",
         "price": "Rp116.000"
       },
       {
-        "productsName": "Weekly Diamond Pass (Event Topup +100) x5",
+        "productsName": "Weekly Diamond Pass x5",
         "price": "Rp145.000"
       },
       { "productsName": "Twilight Pass", "price": "Rp151.000" },
