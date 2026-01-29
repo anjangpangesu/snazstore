@@ -3,7 +3,7 @@ const defaultConfig = {
   site_name: "GameVault",
   hero_title: "Instant Game Top Up",
   admin_whatsapp: "6281213699618",
-  // URL ASLI (GANTI JIKA PERLU)
+  // URL ASLI
   gas_url:
     "https://script.google.com/macros/s/AKfycbwiwCUuCLFSRxiOlOT_PMPiQxAV7CwuBdIw8FQkhShjmx9z0GNicIZX6xVZefSBw_1yRQ/exec",
 };
@@ -598,13 +598,13 @@ function showCheckoutModal() {
         
         <div class="border-t border-gray-200 dark:border-gray-700 my-2 pt-2"></div>
         
-        <div class="flex justify-between">
-            <span class="text-sm text-gray-500 dark:text-gray-400">Email</span>
-            <span class="font-medium text-gray-900 dark:text-white text-right break-all max-w-[60%]">${formData.email}</span>
+        <div class="mb-3">
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Email</p>
+            <p class="font-medium text-gray-900 dark:text-white break-all">${formData.email}</p>
         </div>
-        <div class="flex justify-between">
-            <span class="text-sm text-gray-500 dark:text-gray-400">WhatsApp</span>
-            <span class="font-medium text-gray-900 dark:text-white">${formData.whatsapp}</span>
+        <div>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">WhatsApp</p>
+            <p class="font-medium text-gray-900 dark:text-white">${formData.whatsapp}</p>
         </div>
       </div>
     `;
@@ -693,6 +693,7 @@ async function confirmOrder() {
   btn.innerHTML = originalText;
 }
 
+// Filter & UI Helpers
 function filterGames(category) {
   currentFilter = category;
   updateFilterButtons(".filter-btn", category);
@@ -923,9 +924,42 @@ async function checkOrderStatus() {
     const data = await response.json();
 
     if (data.found) {
-      let statusColor = "text-yellow-500";
-      if (data.status === "Diproses") statusColor = "text-blue-500";
-      if (data.status === "Selesai") statusColor = "text-green-500";
+      // LOGIC WARNA STATUS UPDATE
+      let statusColor = "text-gray-500"; // Default
+
+      if (data.status === "Menunggu Pembayaran") {
+        statusColor = "text-red-500";
+      } else if (data.status === "Pesanan Diproses") {
+        statusColor = "text-yellow-500";
+      } else if (data.status === "Pesanan Selesai") {
+        statusColor = "text-green-500";
+      } else if (data.status === "Pesanan Dibatalkan") {
+        statusColor = "text-gray-500"; // Abu-abu untuk batal
+      }
+
+      // Logic Tampilan Akun
+      let additionalInfoHTML = "";
+      if (
+        data.gameId &&
+        data.gameId !== "-" &&
+        String(data.gameId).trim() !== ""
+      ) {
+        let nickDisplay =
+          data.nickname && data.nickname !== "-" ? ` - (${data.nickname})` : "";
+        additionalInfoHTML = `
+                    <div class="flex justify-between mb-2">
+                        <span class="text-sm text-gray-500">Account</span>
+                        <span class="font-medium dark:text-white text-right">${data.gameId}${nickDisplay}</span>
+                    </div>
+                `;
+      } else {
+        additionalInfoHTML = `
+                    <div class="flex justify-between mb-2">
+                        <span class="text-sm text-gray-500">Account</span>
+                        <span class="font-medium dark:text-white text-right">${data.email}</span>
+                    </div>
+                `;
+      }
 
       resultDiv.innerHTML = `
                 <div class="bg-gray-100 dark:bg-gray-800 rounded-xl p-4 mt-4">
@@ -937,9 +971,10 @@ async function checkOrderStatus() {
                         <span class="text-sm text-gray-500">Product</span>
                         <span class="font-medium dark:text-white">${data.product} - ${data.nominal}</span>
                     </div>
-                    <div class="flex justify-between mb-2">
+                    ${additionalInfoHTML}
+                    <div class="flex justify-between mb-2 items-center">
                         <span class="text-sm text-gray-500">Status</span>
-                        <span class="font-bold ${statusColor}">${data.status}</span>
+                        <span class="font-bold ${statusColor} text-lg">${data.status}</span>
                     </div>
                 </div>
             `;
