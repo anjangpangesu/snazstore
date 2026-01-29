@@ -3,8 +3,9 @@ const defaultConfig = {
   site_name: "GameVault",
   hero_title: "Instant Game Top Up",
   admin_whatsapp: "6281213699618",
-  // PENTING: PASTIKAN INI URL APPS SCRIPT LU YANG BENAR
-  gas_url: "https://script.google.com/macros/s/AKfycbwiwCUuCLFSRxiOlOT_PMPiQxAV7CwuBdIw8FQkhShjmx9z0GNicIZX6xVZefSBw_1yRQ/exec",
+  // URL ASLI (GANTI JIKA PERLU)
+  gas_url:
+    "https://script.google.com/macros/s/AKfycbwiwCUuCLFSRxiOlOT_PMPiQxAV7CwuBdIw8FQkhShjmx9z0GNicIZX6xVZefSBw_1yRQ/exec",
 };
 
 let config = { ...defaultConfig };
@@ -24,9 +25,6 @@ const sliders = {
 document.addEventListener("DOMContentLoaded", async () => {
   await loadProducts();
 
-  // --- PAGE LOGIC & ACTIVE STATE ---
-
-  // 1. Halaman HOME
   if (document.getElementById("popular-games")) {
     setActiveNav("Home");
     renderPopularGames();
@@ -36,7 +34,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     animateCounters();
   }
 
-  // 2. Halaman TOP UP
   if (document.getElementById("all-games-topup")) {
     setActiveNav("Top Up");
     const urlParams = new URLSearchParams(window.location.search);
@@ -51,12 +48,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     renderFlashSale();
   }
 
-  // 3. Halaman CONTACT
   if (document.getElementById("contact-form")) {
     setActiveNav("Contact");
   }
 
-  // 4. Halaman PRODUCT DETAIL
   if (document.getElementById("product-hero")) {
     setActiveNav("Top Up");
     const urlParams = new URLSearchParams(window.location.search);
@@ -83,30 +78,22 @@ function setActiveNav(name) {
   });
 }
 
-// FETCH PRODUCTS FROM GOOGLE SHEETS
+// FETCH PRODUCTS
 async function loadProducts() {
   try {
-    // Cek apakah URL masih default/kosong
-    if (
-      config.gas_url === "PASTE_URL_APPS_SCRIPT_WEB_APP_DISINI" ||
-      !config.gas_url
-    ) {
-      console.warn("GAS URL belum di-set. Menggunakan fallback lokal.");
-      // Fallback ke JSON lokal kalau user lupa set URL
+    const response = await fetch(`${config.gas_url}?action=getProducts`);
+    if (!response.ok) throw new Error("Network response was not ok");
+    products = await response.json();
+  } catch (error) {
+    console.error("Error loading products:", error);
+    try {
       let path = "asset/json/product.json";
       if (window.location.pathname.includes("/page/")) {
         path = "../../asset/json/product.json";
       }
       const response = await fetch(path);
       products = await response.json();
-    } else {
-      // Fetch dari Google Apps Script
-      const response = await fetch(`${config.gas_url}?action=getProducts`);
-      if (!response.ok) throw new Error("Network response was not ok");
-      products = await response.json();
-    }
-  } catch (error) {
-    console.error("Error loading products:", error);
+    } catch (e) {}
   }
 }
 
@@ -149,6 +136,7 @@ function updateSlider(sliderId) {
   });
 }
 
+// Game Cards
 function createGameCard(product, size = "small") {
   const isSmall = size === "small";
   const imageClass = isSmall
@@ -160,7 +148,6 @@ function createGameCard(product, size = "small") {
     ? `../product/product.html?id=${product.id}`
     : `page/product/product.html?id=${product.id}`;
 
-  // FIX RATING: Paksa ubah ke float, kalau error jadiin 0
   let rating = parseFloat(product.rating);
   if (isNaN(rating)) rating = 0;
 
@@ -231,7 +218,6 @@ function renderAllGames(page) {
   }
 }
 
-// === FIX BUG FLASH SALE DISINI ===
 function renderFlashSale() {
   const container = document.getElementById("flash-sale");
   if (!container) return;
@@ -244,15 +230,13 @@ function renderFlashSale() {
         ? `../product/product.html?id=${p.id}`
         : `page/product/product.html?id=${p.id}`;
 
-      // FIX: Cek apakah nominals ada isinya sebelum ambil harga
       let basePrice = 0;
       if (p.nominals && p.nominals.length > 0) {
-        basePrice = p.nominals[0].price; // Ambil dari nominal pertama
+        basePrice = p.nominals[0].price;
       } else if (p.min_price) {
-        basePrice = p.min_price; // Backup ambil dari min_price di sheet product
+        basePrice = p.min_price;
       }
 
-      // Hitung harga diskon
       const finalPrice = (basePrice * (100 - p.discount)) / 100;
 
       return `
@@ -288,7 +272,6 @@ function renderProductDetail() {
 
   const ratingContainer = document.getElementById("product-rating");
 
-  // FIX RATING: Paksa ubah ke float dan validasi
   let rating = parseFloat(currentProduct.rating);
   if (isNaN(rating)) rating = 0;
 
@@ -318,7 +301,6 @@ function renderNominals() {
   const container = document.getElementById("nominal-grid");
   const groupedNominals = {};
 
-  // Safety Check: Pastikan nominals ada
   const nominalList = currentProduct.nominals || [];
 
   if (nominalList.length === 0) {
@@ -400,7 +382,6 @@ function renderOrderForm() {
       </div>
     `;
   } else {
-    // UPDATED: Logic server input (Dropdown khusus Genshin, Textbox buat yang lain)
     let serverInputHTML = "";
     if (currentProduct.id === "genshin-impact") {
       serverInputHTML = `
@@ -486,12 +467,66 @@ function updateCheckoutButton() {
   }
 }
 
-function generateOrderId() {
+// --- HELPER UNTUK KONVERSI ANGKA KE ROMAWI ---
+function toRoman(num) {
+  if (num < 1) return "";
+  const lookup = {
+    M: 1000,
+    CM: 900,
+    D: 500,
+    CD: 400,
+    C: 100,
+    XC: 90,
+    L: 50,
+    XL: 40,
+    X: 10,
+    IX: 9,
+    V: 5,
+    IV: 4,
+    I: 1,
+  };
+  let roman = "";
+  for (let i in lookup) {
+    while (num >= lookup[i]) {
+      roman += i;
+      num -= lookup[i];
+    }
+  }
+  return roman;
+}
+
+// --- NEW GENERATE ORDER ID FUNCTION (ASYNC) ---
+async function generateOrderId() {
   const now = new Date();
-  const day = String(now.getDate()).padStart(2, "0");
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const random = Math.floor(1000 + Math.random() * 9000);
-  return `ord-${day}${month}-${random}`;
+  const yearFull = now.getFullYear();
+  const yearShort = yearFull % 100; // 2026 -> 26
+  const month = now.getMonth() + 1;
+  const date = now.getDate();
+
+  // Format: YYYYMMDD
+  const yyyymmdd = `${yearFull}${String(month).padStart(2, "0")}${String(date).padStart(2, "0")}`;
+
+  // Format: Romawi
+  const yyRoman = toRoman(yearShort);
+  const mmRoman = toRoman(month);
+
+  // Format: 5 Digit Sequence (Default 00001 kalau fetch gagal)
+  let sequence = "00001";
+  try {
+    const response = await fetch(`${config.gas_url}?action=getOrderCount`);
+    const data = await response.json();
+    // Nomor berikutnya = Jumlah saat ini + 1
+    const nextNum = data.count + 1;
+    sequence = String(nextNum).padStart(5, "0");
+  } catch (e) {
+    console.error(
+      "Failed to fetch order count for sequence. Using fallback '00001'",
+      e,
+    );
+  }
+
+  // Gabungkan semua: ISS/20260129/XXVI/I/00001
+  return `ISS/${yyyymmdd}/${yyRoman}/${mmRoman}/${sequence}`;
 }
 
 function getFormData() {
@@ -539,7 +574,6 @@ function showCheckoutModal() {
 
   let accountInfo = "";
   if (isPremium) {
-    // UPDATED: Menambahkan WhatsApp ke order summary Premium
     accountInfo = `
       <div class="bg-gray-100 dark:bg-gray-800 rounded-xl p-4">
         <div class="mb-3">
@@ -553,7 +587,6 @@ function showCheckoutModal() {
       </div>
     `;
   } else {
-    // UPDATED: Menambahkan Email & WhatsApp ke order summary Game
     accountInfo = `
       <div class="bg-gray-100 dark:bg-gray-800 rounded-xl p-4 space-y-3">
         <div class="flex justify-between">
@@ -600,7 +633,7 @@ function recheckOrder() {
   closeModal("checkout");
 }
 
-// CONFIRM ORDER - POST KE GOOGLE SHEET & EMAIL
+// CONFIRM ORDER - UPDATED UNTUK HANDLE ASYNC GENERATE ID
 async function confirmOrder() {
   const btn = document.querySelector(
     '#checkout-modal button[onclick="confirmOrder()"]',
@@ -609,12 +642,15 @@ async function confirmOrder() {
   btn.disabled = true;
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
 
-  const orderId = generateOrderId();
   const formData = getFormData();
   const price =
     currentProduct.discount > 0
       ? (selectedNominal.price * (100 - currentProduct.discount)) / 100
       : selectedNominal.price;
+  const isPremium = currentProduct.category === "premium";
+
+  // GENERATE ID (MENUNGGU RESPONSE BACKEND)
+  const orderId = await generateOrderId();
 
   const orderData = {
     action: "createOrder",
@@ -629,109 +665,34 @@ async function confirmOrder() {
     whatsapp: formData.whatsapp,
   };
 
-  try {
-    // 1. Kirim Data ke Google Sheet (Database + Email)
-    if (config.gas_url !== "PASTE_URL_APPS_SCRIPT_WEB_APP_DISINI") {
-      await fetch(config.gas_url, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(orderData),
-      });
-    }
+  fetch(config.gas_url, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(orderData),
+  }).catch((err) => console.error("Order submit failed:", err));
 
-    // 2. Generate WA Link
-    let orderText = `*NEW ORDER*%0A%0AOrder ID: ${orderId}%0AProduct: ${currentProduct.name}%0ANominal: ${selectedNominal.name}%0APrice: IDR ${formatPrice(price)}%0A%0A*Account Info*%0A`;
-    if (currentProduct.category === "premium") {
-      orderText += `Email: ${formData.email}%0AWhatsApp: ${formData.whatsapp}`;
-    } else {
-      orderText += `Game ID: ${formData.gameId}%0A`;
-      if (formData.server) orderText += `Server: ${formData.server}%0A`;
-      if (formData.nickname) orderText += `Nickname: ${formData.nickname}%0A`;
-      orderText += `Email: ${formData.email}%0AWhatsApp: ${formData.whatsapp}`;
-    }
-
-    window.open(
-      `https://wa.me/${config.admin_whatsapp}?text=${orderText}`,
-      "_blank",
-    );
-
-    closeModal("checkout");
-    showToast("Order created! Check your email for receipt.", "success");
-  } catch (error) {
-    console.error("Order failed:", error);
-    showToast("Failed to create order. Try again.", "error");
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = originalText;
+  let orderText = `*NEW ORDER*%0A%0AOrder ID: ${orderId}%0AProduct: ${currentProduct.name}%0ANominal: ${selectedNominal.name}%0APrice: IDR ${formatPrice(price)}%0A%0A*Account Info*%0A`;
+  if (isPremium) {
+    orderText += `Email: ${formData.email}%0AWhatsApp: ${formData.whatsapp}`;
+  } else {
+    orderText += `Game ID: ${formData.gameId}%0A`;
+    if (formData.server) orderText += `Server: ${formData.server}%0A`;
+    if (formData.nickname) orderText += `Nickname: ${formData.nickname}%0A`;
+    orderText += `Email: ${formData.email}%0AWhatsApp: ${formData.whatsapp}`;
   }
+
+  window.open(
+    `https://wa.me/${config.admin_whatsapp}?text=${orderText}`,
+    "_blank",
+  );
+  closeModal("checkout");
+  showToast("Order created! Redirecting to WhatsApp...", "success");
+
+  btn.disabled = false;
+  btn.innerHTML = originalText;
 }
 
-// --- TRACKING FEATURE ---
-function setupTrackingListener() {
-  const trackBtn = document.getElementById("btn-track-order");
-  if (trackBtn) {
-    trackBtn.addEventListener("click", () => openModal("tracking"));
-  }
-}
-
-async function checkOrderStatus() {
-  const input = document.getElementById("tracking-order-id");
-  const resultDiv = document.getElementById("tracking-result");
-  const orderId = input.value.trim();
-
-  if (!orderId) {
-    showToast("Please enter Order ID", "error");
-    return;
-  }
-
-  resultDiv.innerHTML =
-    '<div class="text-center py-4"><i class="fas fa-spinner fa-spin text-primary text-2xl"></i></div>';
-
-  try {
-    if (config.gas_url === "PASTE_URL_APPS_SCRIPT_WEB_APP_DISINI") {
-      resultDiv.innerHTML =
-        '<div class="text-center text-red-500">Database not connected.</div>';
-      return;
-    }
-
-    const response = await fetch(
-      `${config.gas_url}?action=trackOrder&orderId=${orderId}`,
-    );
-    const data = await response.json();
-
-    if (data.found) {
-      let statusColor = "text-yellow-500";
-      if (data.status === "Diproses") statusColor = "text-blue-500";
-      if (data.status === "Selesai") statusColor = "text-green-500";
-
-      resultDiv.innerHTML = `
-                <div class="bg-gray-100 dark:bg-gray-800 rounded-xl p-4 mt-4">
-                    <div class="flex justify-between mb-2">
-                        <span class="text-sm text-gray-500">Order ID</span>
-                        <span class="font-medium dark:text-white">${data.orderId}</span>
-                    </div>
-                    <div class="flex justify-between mb-2">
-                        <span class="text-sm text-gray-500">Product</span>
-                        <span class="font-medium dark:text-white">${data.product} - ${data.nominal}</span>
-                    </div>
-                    <div class="flex justify-between mb-2">
-                        <span class="text-sm text-gray-500">Status</span>
-                        <span class="font-bold ${statusColor}">${data.status}</span>
-                    </div>
-                </div>
-            `;
-    } else {
-      resultDiv.innerHTML =
-        '<div class="text-center text-gray-500 py-4">Order ID not found.</div>';
-    }
-  } catch (error) {
-    resultDiv.innerHTML =
-      '<div class="text-center text-red-500 py-4">Error tracking order.</div>';
-  }
-}
-
-// Filter & UI Helpers
 function filterGames(category) {
   currentFilter = category;
   updateFilterButtons(".filter-btn", category);
@@ -751,6 +712,7 @@ function updateFilterButtons(selector, active) {
     const isActive =
       btnText === active.toLowerCase() ||
       (active === "all" && btnText === "all");
+
     if (isActive) {
       btn.classList.add("active", "bg-primary", "text-white");
       btn.classList.remove(
@@ -819,6 +781,7 @@ function showToast(message, type = "success") {
   toast.classList.remove("hidden");
   setTimeout(() => toast.classList.add("hidden"), 3000);
 }
+
 function animateCounters() {
   const counters = document.querySelectorAll(".counter");
   if (counters.length === 0) return;
@@ -849,6 +812,7 @@ function animateCounters() {
   );
   counters.forEach((counter) => observer.observe(counter));
 }
+
 function navigateToProduct(productId) {
   const isInnerPage = window.location.pathname.includes("/page/");
   const path = isInnerPage
@@ -856,6 +820,7 @@ function navigateToProduct(productId) {
     : `page/product/product.html?id=${productId}`;
   window.location.href = path;
 }
+
 function setupEventListeners() {
   const orderForm = document.getElementById("order-form");
   if (orderForm)
@@ -863,6 +828,7 @@ function setupEventListeners() {
       e.preventDefault();
       showCheckoutModal();
     });
+
   const contactForm = document.getElementById("contact-form");
   if (contactForm)
     contactForm.addEventListener("submit", (e) => {
@@ -878,6 +844,7 @@ function setupEventListeners() {
       );
       showToast("Redirecting to WhatsApp...", "success");
     });
+
   const searchInput = document.getElementById("search-input");
   const searchResults = document.getElementById("search-results");
   if (searchInput && searchResults) {
@@ -926,5 +893,62 @@ function setupEventListeners() {
         searchInput.blur();
       }
     });
+  }
+}
+
+function setupTrackingListener() {
+  const trackBtn = document.getElementById("btn-track-order");
+  if (trackBtn) {
+    trackBtn.addEventListener("click", () => openModal("tracking"));
+  }
+}
+
+async function checkOrderStatus() {
+  const input = document.getElementById("tracking-order-id");
+  const resultDiv = document.getElementById("tracking-result");
+  const orderId = input.value.trim();
+
+  if (!orderId) {
+    showToast("Please enter Order ID", "error");
+    return;
+  }
+
+  resultDiv.innerHTML =
+    '<div class="text-center py-4"><i class="fas fa-spinner fa-spin text-primary text-2xl"></i></div>';
+
+  try {
+    const response = await fetch(
+      `${config.gas_url}?action=trackOrder&orderId=${orderId}`,
+    );
+    const data = await response.json();
+
+    if (data.found) {
+      let statusColor = "text-yellow-500";
+      if (data.status === "Diproses") statusColor = "text-blue-500";
+      if (data.status === "Selesai") statusColor = "text-green-500";
+
+      resultDiv.innerHTML = `
+                <div class="bg-gray-100 dark:bg-gray-800 rounded-xl p-4 mt-4">
+                    <div class="flex justify-between mb-2">
+                        <span class="text-sm text-gray-500">Order ID</span>
+                        <span class="font-medium dark:text-white">${data.orderId}</span>
+                    </div>
+                    <div class="flex justify-between mb-2">
+                        <span class="text-sm text-gray-500">Product</span>
+                        <span class="font-medium dark:text-white">${data.product} - ${data.nominal}</span>
+                    </div>
+                    <div class="flex justify-between mb-2">
+                        <span class="text-sm text-gray-500">Status</span>
+                        <span class="font-bold ${statusColor}">${data.status}</span>
+                    </div>
+                </div>
+            `;
+    } else {
+      resultDiv.innerHTML =
+        '<div class="text-center text-gray-500 py-4">Order ID not found.</div>';
+    }
+  } catch (error) {
+    resultDiv.innerHTML =
+      '<div class="text-center text-red-500 py-4">Error tracking order.</div>';
   }
 }
