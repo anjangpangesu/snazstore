@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      if (
+        localStorage.getItem("darkMode") === "true" ||
+        (!("darkMode" in localStorage) &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches)
+      ) {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    </script>
+    <title>GameVault - Top Up</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;family=Roboto:wght@300;400;500;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            fontFamily: {
+              montserrat: ["Montserrat", "sans-serif"],
+              roboto: ["Roboto", "sans-serif"],
+            },
+            colors: {
+              primary: "#DC2626",
+              secondary: "#2563EB",
+              dark: "#0F172A",
+              darker: "#020617",
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="stylesheet" href="../../src/css/styles.css" />
+  </head>
+  <body
+    class="h-full bg-gray-50 dark:bg-darker text-gray-900 dark:text-white transition-colors duration-300"
+  >
+    <div id="app" class="min-h-full w-full">
+      <nav
+        id="navbar"
+        class="fixed top-0 left-0 right-0 z-50 bg-white/95 dark:bg-dark/95 shadow-lg backdrop-blur-sm"
+      >
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex items-center justify-between h-16">
+            <a
+              href="../../index.html"
+              class="flex items-center gap-2 cursor-pointer"
+            >
+              <div
+                class="w-10 h-10 hero-gradient rounded-lg flex items-center justify-center"
+              >
+                <i class="fas fa-gamepad text-white text-xl"></i>
+              </div>
+              <span
+                id="logo-text"
+                class="font-heading font-bold text-xl text-primary"
+                >GameVault</span
+              >
+            </a>
+            <div class="hidden md:flex items-center gap-8">
+              <a
+                href="../../index.html"
+                class="nav-link font-medium hover:text-primary transition-colors"
+                >Home</a
+              >
+              <a
+                href="topup.html"
+                class="nav-link font-medium hover:text-primary transition-colors text-primary"
+                >Top Up</a
+              >
+              <button
+                id="btn-track-order"
+                class="nav-link font-medium hover:text-primary transition-colors bg-transparent border-0 cursor-pointer"
+              >
+                Lacak Pesanan
+              </button>
+              <a
+                href="../contact/contact.html"
+                class="nav-link font-medium hover:text-primary transition-colors"
+                >Contact</a
+              >
+            </div>
+            <div class="flex items-center gap-4">
+              <div class="relative hidden sm:block">
+                <input
+                  type="text"
+                  id="search-input"
+                  placeholder="Search games..."
+                  class="w-48 lg:w-64 px-4 py-2 pl-10 rounded-full bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-sm"
+                />
+                <i
+                  class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                ></i>
+                <div
+                  id="search-results"
+                  class="hidden absolute top-full left-0 right-0 mt-2 bg-white dark:bg-dark rounded-xl shadow-2xl border dark:border-gray-700 max-h-96 overflow-y-auto z-50"
+                ></div>
+              </div>
+              <button
+                onclick="toggleDarkMode()"
+                class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+              >
+                <i class="fas fa-moon dark:hidden text-gray-600"></i>
+                <i class="fas fa-sun hidden dark:block text-yellow-400"></i>
+              </button>
+              <button
+                onclick="toggleMobileMenu()"
+                class="md:hidden w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center"
+              >
+                <i class="fas fa-bars"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div
+          id="mobile-menu"
+          class="hidden md:hidden bg-white dark:bg-dark border-t dark:border-gray-800"
+        >
+          <div class="px-4 py-4 space-y-3">
+            <a
+              href="../../index.html"
+              class="block py-2 font-medium hover:text-primary"
+              >Home</a
+            >
+            <a
+              href="topup.html"
+              class="block py-2 font-medium hover:text-primary"
+              >Top Up</a
+            >
+            <button
+              onclick="
+                openModal('tracking');
+                toggleMobileMenu();
+              "
+              class="block w-full text-left py-2 font-medium hover:text-primary bg-transparent border-0"
+            >
+              Lacak Pesanan
+            </button>
+            <a
+              href="../contact/contact.html"
+              class="block py-2 font-medium hover:text-primary"
+              >Contact</a
+            >
+            <div class="relative pt-2">
+              <input
+                type="text"
+                placeholder="Search games..."
+                class="w-full px-4 py-2 pl-10 rounded-full bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-sm"
+              />
+              <i
+                class="fas fa-search absolute left-3 top-1/2 text-gray-400"
+              ></i>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <div id="page-topup" class="page active pt-16">
+        <section class="relative h-64 md:h-80 overflow-hidden">
+          <div id="topup-slider" class="relative h-full">
+            <div
+              class="slider-track flex h-full transition-transform duration-500"
+            >
+              <div class="slider-slide min-w-full h-full relative">
+                <img
+                  src="https://images.unsplash.com/photo-1493711662062-fa541f7f3d24?w=1920&amp;q=80"
+                  alt="Gaming Setup"
+                  class="w-full h-full object-cover"
+                />
+                <div
+                  class="absolute inset-0 bg-gradient-to-r from-primary/80 to-transparent flex items-center"
+                >
+                  <div class="px-8 md:px-16 text-white">
+                    <h2
+                      class="font-heading font-bold text-2xl md:text-4xl mb-2"
+                    >
+                      Top Up Your Favorite Games
+                    </h2>
+                    <p class="text-lg opacity-90">
+                      Fast and secure transactions
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="slider-slide min-w-full h-full relative">
+                <img
+                  src="https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=1920&amp;q=80"
+                  alt="Gaming"
+                  class="w-full h-full object-cover"
+                />
+                <div
+                  class="absolute inset-0 bg-gradient-to-r from-secondary/80 to-transparent flex items-center"
+                >
+                  <div class="px-8 md:px-16 text-white">
+                    <h2
+                      class="font-heading font-bold text-2xl md:text-4xl mb-2"
+                    >
+                      Weekly Flash Sale
+                    </h2>
+                    <p class="text-lg opacity-90">
+                      Save up to 30% on selected items
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="slider-slide min-w-full h-full relative">
+                <img
+                  src="https://images.unsplash.com/photo-1552820728-8b83bb6b2b94?w=1920&amp;q=80"
+                  alt="Esports"
+                  class="w-full h-full object-cover"
+                />
+                <div
+                  class="absolute inset-0 bg-gradient-to-r from-dark/80 to-transparent flex items-center"
+                >
+                  <div class="px-8 md:px-16 text-white">
+                    <h2
+                      class="font-heading font-bold text-2xl md:text-4xl mb-2"
+                    >
+                      Premium Apps Available
+                    </h2>
+                    <p class="text-lg opacity-90">
+                      Netflix, Spotify, YouTube Premium &amp; more
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+              <button
+                onclick="goToSlide('topup', 0)"
+                class="slider-dot w-2 h-2 rounded-full bg-white/50 hover:bg-white transition-colors active"
+              ></button>
+              <button
+                onclick="goToSlide('topup', 1)"
+                class="slider-dot w-2 h-2 rounded-full bg-white/50 hover:bg-white transition-colors"
+              ></button>
+              <button
+                onclick="goToSlide('topup', 2)"
+                class="slider-dot w-2 h-2 rounded-full bg-white/50 hover:bg-white transition-colors"
+              ></button>
+            </div>
+          </div>
+        </section>
+
+        <section class="py-12 px-4 bg-white dark:bg-dark">
+          <div class="max-w-7xl mx-auto">
+            <div class="flex items-center gap-3 mb-8">
+              <i class="fas fa-fire text-primary text-2xl"></i>
+              <h2 class="font-heading font-bold text-2xl">
+                Flash <span class="text-primary">Sale</span>
+              </h2>
+              <div
+                class="ml-auto px-4 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium"
+              >
+                <i class="fas fa-clock mr-1"></i> Limited Time
+              </div>
+            </div>
+            <div
+              id="flash-sale"
+              class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+            ></div>
+          </div>
+        </section>
+
+        <section class="py-12 px-4 bg-gray-100 dark:bg-darker">
+          <div class="max-w-7xl mx-auto">
+            <h2
+              class="font-heading font-bold text-2xl md:text-3xl text-center mb-8"
+            >
+              All <span class="text-primary">Products</span>
+            </h2>
+            <div class="flex flex-wrap justify-center gap-3 mb-10">
+              <button
+                onclick="filterGamesTopup('all')"
+                class="filter-btn-topup active px-6 py-2 rounded-full bg-primary text-white font-medium transition-colors"
+              >
+                All
+              </button>
+              <button
+                onclick="filterGamesTopup('mobile')"
+                class="filter-btn-topup px-6 py-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-primary hover:text-white font-medium transition-colors"
+              >
+                Mobile
+              </button>
+              <button
+                onclick="filterGamesTopup('pc')"
+                class="filter-btn-topup px-6 py-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-primary hover:text-white font-medium transition-colors"
+              >
+                PC
+              </button>
+              <button
+                onclick="filterGamesTopup('premium')"
+                class="filter-btn-topup px-6 py-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-primary hover:text-white font-medium transition-colors"
+              >
+                Premium
+              </button>
+            </div>
+            <div
+              id="all-games-topup"
+              class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"
+            ></div>
+            <div id="load-more-container" class="text-center mt-10">
+              <button
+                id="load-more-btn"
+                onclick="loadMoreGames()"
+                class="px-8 py-3 bg-primary hover:bg-red-700 text-white rounded-full font-semibold transition-colors"
+              >
+                Load More <i class="fas fa-plus ml-2"></i>
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <footer class="bg-dark text-white py-16 px-4">
+        <div class="max-w-7xl mx-auto">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+            <div>
+              <div class="flex items-center gap-2 mb-4">
+                <div
+                  class="w-10 h-10 hero-gradient rounded-lg flex items-center justify-center"
+                >
+                  <i class="fas fa-gamepad text-white text-xl"></i>
+                </div>
+                <span class="font-heading font-bold text-xl">GameVault</span>
+              </div>
+              <p class="text-gray-400 mb-6">
+                Your trusted partner for instant game top up. Fast, secure, and
+                reliable service 24/7.
+              </p>
+              <div class="flex gap-3">
+                <a
+                  href="#"
+                  class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-primary transition-colors"
+                >
+                  <i class="fab fa-instagram"></i>
+                </a>
+                <a
+                  href="#"
+                  class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-secondary transition-colors"
+                >
+                  <i class="fab fa-facebook"></i>
+                </a>
+                <a
+                  href="#"
+                  class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-gray-600 transition-colors"
+                >
+                  <i class="fab fa-tiktok"></i>
+                </a>
+              </div>
+            </div>
+            <div>
+              <h3 class="font-heading font-semibold text-lg mb-4">
+                Quick Links
+              </h3>
+              <ul class="space-y-3">
+                <li>
+                  <a
+                    href="../../index.html"
+                    class="text-gray-400 hover:text-white transition-colors"
+                    >Home</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="topup.html"
+                    class="text-gray-400 hover:text-white transition-colors"
+                    >Top Up</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="../contact/contact.html"
+                    class="text-gray-400 hover:text-white transition-colors"
+                    >Contact</a
+                  >
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-heading font-semibold text-lg mb-4">
+                Categories
+              </h3>
+              <ul class="space-y-3">
+                <li>
+                  <a
+                    href="topup.html?category=mobile"
+                    class="text-gray-400 hover:text-white transition-colors"
+                    >Mobile Games</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="topup.html?category=pc"
+                    class="text-gray-400 hover:text-white transition-colors"
+                    >PC Games</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="topup.html?category=premium"
+                    class="text-gray-400 hover:text-white transition-colors"
+                    >Premium Apps</a
+                  >
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-heading font-semibold text-lg mb-4">
+                Contact Us
+              </h3>
+              <ul class="space-y-3">
+                <li class="flex items-center gap-3">
+                  <i class="fas fa-envelope text-primary"></i>
+                  <a
+                    href="mailto:anjangstore23@gmail.com"
+                    class="text-gray-400 hover:text-white transition-colors hover:underline"
+                    >anjangstore23@gmail.com</a
+                  >
+                </li>
+                <li class="flex items-center gap-3">
+                  <i class="fab fa-whatsapp text-green-500"></i>
+                  <a
+                    href="https://wa.me/6281213699618"
+                    target="_blank"
+                    class="text-gray-400 hover:text-white transition-colors hover:underline"
+                    >+62 812 1369 9618</a
+                  >
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div
+            class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-500"
+          >
+            <p>© 2025 GameVault. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
+
+      <div
+        id="tracking-modal"
+        class="modal fixed inset-0 z-50 items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+      >
+        <div
+          class="bg-white dark:bg-dark rounded-2xl shadow-2xl w-full max-w-md"
+        >
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-6">
+              <h3
+                class="font-heading font-bold text-xl text-gray-900 dark:text-white"
+              >
+                Lacak Pesanan
+              </h3>
+              <button
+                onclick="closeModal('tracking')"
+                class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+              >
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+            <div class="space-y-4">
+              <div>
+                <label
+                  class="block text-sm font-medium mb-2 text-gray-900 dark:text-white"
+                  >Order ID</label
+                >
+                <input
+                  type="text"
+                  id="tracking-order-id"
+                  class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-gray-900 dark:text-white"
+                  placeholder="ORD-XXXX-XXXX"
+                />
+              </div>
+              <button
+                onclick="checkOrderStatus()"
+                class="w-full py-4 bg-primary hover:bg-red-700 text-white rounded-xl font-semibold transition-colors"
+              >
+                Check Status
+              </button>
+              <div id="tracking-result"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="../../src/js/main.js"></script>
+  </body>
+</html>
