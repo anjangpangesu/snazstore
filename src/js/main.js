@@ -3,7 +3,7 @@ const defaultConfig = {
   site_name: "GameVault",
   hero_title: "Instant Game Top Up",
   admin_whatsapp: "6281213699618",
-  // GANTI URL INI DENGAN URL DEPLOYMENT APPS SCRIPT LU
+  // PENTING: PASTIKAN INI URL APPS SCRIPT LU YANG BENAR
   gas_url: "https://script.google.com/macros/s/AKfycbwiwCUuCLFSRxiOlOT_PMPiQxAV7CwuBdIw8FQkhShjmx9z0GNicIZX6xVZefSBw_1yRQ/exec",
 };
 
@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   setupEventListeners();
-  setupTrackingListener(); // Setup listener buat lacak pesanan
+  setupTrackingListener();
 });
 
 // --- HELPER FUNCTIONS ---
@@ -86,9 +86,13 @@ function setActiveNav(name) {
 // FETCH PRODUCTS FROM GOOGLE SHEETS
 async function loadProducts() {
   try {
-    // Jika GAS URL belum diisi, pakai fallback json lokal (biar ga error pas awal setup)
-    if (config.gas_url === "PASTE_URL_APPS_SCRIPT_WEB_APP_DISINI") {
+    // Cek apakah URL masih default/kosong
+    if (
+      config.gas_url === "PASTE_URL_APPS_SCRIPT_WEB_APP_DISINI" ||
+      !config.gas_url
+    ) {
       console.warn("GAS URL belum di-set. Menggunakan fallback lokal.");
+      // Fallback ke JSON lokal kalau user lupa set URL
       let path = "asset/json/product.json";
       if (window.location.pathname.includes("/page/")) {
         path = "../../asset/json/product.json";
@@ -98,15 +102,15 @@ async function loadProducts() {
     } else {
       // Fetch dari Google Apps Script
       const response = await fetch(`${config.gas_url}?action=getProducts`);
+      if (!response.ok) throw new Error("Network response was not ok");
       products = await response.json();
     }
   } catch (error) {
     console.error("Error loading products:", error);
-    // Fallback error handling could go here
   }
 }
 
-// Slider Functions (Tetap sama)
+// Slider Functions
 function startSlider(sliderId) {
   if (!document.getElementById(`${sliderId}-slider`)) return;
   const slider = sliders[sliderId];
@@ -156,6 +160,10 @@ function createGameCard(product, size = "small") {
     ? `../product/product.html?id=${product.id}`
     : `page/product/product.html?id=${product.id}`;
 
+  // FIX RATING: Paksa ubah ke float, kalau error jadiin 0
+  let rating = parseFloat(product.rating);
+  if (isNaN(rating)) rating = 0;
+
   if (isSmall) {
     return `
       <a href="${productPath}" class="block card-hover bg-white dark:bg-dark rounded-xl overflow-hidden cursor-pointer shadow-sm">
@@ -182,7 +190,7 @@ function createGameCard(product, size = "small") {
           <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">${product.developer}</p>
           <div class="flex items-center gap-1 mt-3 text-yellow-400 text-sm">
             <i class="fas fa-star"></i>
-            <span class="text-gray-600 dark:text-gray-400">${product.rating}</span>
+            <span class="text-gray-600 dark:text-gray-400">${rating}</span>
           </div>
         </div>
       </a>
@@ -190,7 +198,6 @@ function createGameCard(product, size = "small") {
   }
 }
 
-// Render Functions (Standard)
 function renderPopularGames() {
   const container = document.getElementById("popular-games");
   if (!container) return;
@@ -224,6 +231,7 @@ function renderAllGames(page) {
   }
 }
 
+// === FIX BUG FLASH SALE DISINI ===
 function renderFlashSale() {
   const container = document.getElementById("flash-sale");
   if (!container) return;
@@ -235,6 +243,18 @@ function renderFlashSale() {
       const productPath = isInnerPage
         ? `../product/product.html?id=${p.id}`
         : `page/product/product.html?id=${p.id}`;
+
+      // FIX: Cek apakah nominals ada isinya sebelum ambil harga
+      let basePrice = 0;
+      if (p.nominals && p.nominals.length > 0) {
+        basePrice = p.nominals[0].price; // Ambil dari nominal pertama
+      } else if (p.min_price) {
+        basePrice = p.min_price; // Backup ambil dari min_price di sheet product
+      }
+
+      // Hitung harga diskon
+      const finalPrice = (basePrice * (100 - p.discount)) / 100;
+
       return `
     <a href="${productPath}" class="block card-hover bg-gradient-to-br from-primary/5 to-secondary/5 dark:from-primary/10 dark:to-secondary/10 rounded-2xl overflow-hidden cursor-pointer border border-primary/20">
       <div class="flex gap-4 p-4">
@@ -243,7 +263,7 @@ function renderFlashSale() {
           <span class="inline-block px-2 py-1 bg-primary text-white text-xs font-bold rounded-lg mb-2">-${p.discount}%</span>
           <h3 class="font-heading font-semibold text-gray-900 dark:text-white">${p.name}</h3>
           <p class="text-sm text-gray-500 dark:text-gray-400">${p.category}</p>
-          <p class="text-sm text-primary font-medium mt-2">Starting from IDR ${formatPrice((p.nominals[0].price * (100 - p.discount)) / 100)}</p>
+          <p class="text-sm text-primary font-medium mt-2">Starting from IDR ${formatPrice(finalPrice)}</p>
         </div>
       </div>
     </a>
@@ -267,7 +287,11 @@ function renderProductDetail() {
     currentProduct.description;
 
   const ratingContainer = document.getElementById("product-rating");
-  const rating = currentProduct.rating;
+
+  // FIX RATING: Paksa ubah ke float dan validasi
+  let rating = parseFloat(currentProduct.rating);
+  if (isNaN(rating)) rating = 0;
+
   const percentage = (rating / 5) * 100;
 
   ratingContainer.innerHTML = `
@@ -280,7 +304,7 @@ function renderProductDetail() {
           <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
         </div>
       </div>
-      <span class="text-gray-600 dark:text-gray-400 ml-2">${currentProduct.rating}/5</span>
+      <span class="text-gray-600 dark:text-gray-400 ml-2">${rating}/5</span>
     </div>
   `;
 
@@ -293,7 +317,17 @@ function renderProductDetail() {
 function renderNominals() {
   const container = document.getElementById("nominal-grid");
   const groupedNominals = {};
-  currentProduct.nominals.forEach((n) => {
+
+  // Safety Check: Pastikan nominals ada
+  const nominalList = currentProduct.nominals || [];
+
+  if (nominalList.length === 0) {
+    container.innerHTML =
+      '<div class="col-span-full text-center text-gray-500 py-8">No nominals available yet.</div>';
+    return;
+  }
+
+  nominalList.forEach((n) => {
     if (!groupedNominals[n.category]) groupedNominals[n.category] = [];
     groupedNominals[n.category].push(n);
   });
@@ -307,7 +341,7 @@ function renderNominals() {
       <div class="col-span-full mb-6">
         <div class="flex items-center gap-3 mb-4">
           <div class="w-10 h-10 flex items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/10 rounded-lg overflow-hidden">
-            <img src="${categoryIcon}" alt="${category}" class="w-full h-full object-cover" loading="lazy">
+            <img src="${categoryIcon}" alt="${category}" class="w-full h-full object-cover" loading="lazy" onerror="this.src='https://via.placeholder.com/40'">
           </div>
           <h3 class="font-heading font-semibold text-lg text-gray-900 dark:text-white">${category}</h3>
           <div class="flex-1 h-px bg-gray-200 dark:bg-gray-700 ml-2"></div>
@@ -323,7 +357,7 @@ function renderNominals() {
               <div onclick="selectNominal('${n.id}')" data-nominal-id="${n.id}" class="nominal-card card-hover bg-white dark:bg-dark rounded-xl p-4 cursor-pointer border-2 border-transparent hover:border-primary/50 transition-all">
                 <div class="flex items-center gap-3 mb-3">
                   <div class="w-12 h-12 flex items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/10 rounded-lg flex-shrink-0 overflow-hidden">
-                    <img src="${n.icon}" alt="${n.name}" class="w-full h-full object-cover">
+                    <img src="${n.icon}" alt="${n.name}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/40'">
                   </div>
                   <div class="flex-1 min-w-0">
                     <h4 class="font-semibold text-sm truncate text-gray-900 dark:text-white">${n.name}</h4>
@@ -366,7 +400,7 @@ function renderOrderForm() {
       </div>
     `;
   } else {
-    // Dropdown Server Logic
+    // UPDATED: Logic server input (Dropdown khusus Genshin, Textbox buat yang lain)
     let serverInputHTML = "";
     if (currentProduct.id === "genshin-impact") {
       serverInputHTML = `
@@ -505,6 +539,7 @@ function showCheckoutModal() {
 
   let accountInfo = "";
   if (isPremium) {
+    // UPDATED: Menambahkan WhatsApp ke order summary Premium
     accountInfo = `
       <div class="bg-gray-100 dark:bg-gray-800 rounded-xl p-4">
         <div class="mb-3">
@@ -518,6 +553,7 @@ function showCheckoutModal() {
       </div>
     `;
   } else {
+    // UPDATED: Menambahkan Email & WhatsApp ke order summary Game
     accountInfo = `
       <div class="bg-gray-100 dark:bg-gray-800 rounded-xl p-4 space-y-3">
         <div class="flex justify-between">
@@ -529,13 +565,13 @@ function showCheckoutModal() {
         
         <div class="border-t border-gray-200 dark:border-gray-700 my-2 pt-2"></div>
         
-        <div class="mb-3">
-            <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Email</p>
-            <p class="font-medium text-gray-900 dark:text-white break-all">${formData.email}</p>
+        <div class="flex justify-between">
+            <span class="text-sm text-gray-500 dark:text-gray-400">Email</span>
+            <span class="font-medium text-gray-900 dark:text-white text-right break-all max-w-[60%]">${formData.email}</span>
         </div>
-        <div>
-            <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">WhatsApp</p>
-            <p class="font-medium text-gray-900 dark:text-white">${formData.whatsapp}</p>
+        <div class="flex justify-between">
+            <span class="text-sm text-gray-500 dark:text-gray-400">WhatsApp</span>
+            <span class="font-medium text-gray-900 dark:text-white">${formData.whatsapp}</span>
         </div>
       </div>
     `;
@@ -598,13 +634,13 @@ async function confirmOrder() {
     if (config.gas_url !== "PASTE_URL_APPS_SCRIPT_WEB_APP_DISINI") {
       await fetch(config.gas_url, {
         method: "POST",
-        mode: "no-cors", // Penting buat GAS
+        mode: "no-cors",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(orderData),
       });
     }
 
-    // 2. Generate WA Link (User-initiated chat for confirmation)
+    // 2. Generate WA Link
     let orderText = `*NEW ORDER*%0A%0AOrder ID: ${orderId}%0AProduct: ${currentProduct.name}%0ANominal: ${selectedNominal.name}%0APrice: IDR ${formatPrice(price)}%0A%0A*Account Info*%0A`;
     if (currentProduct.category === "premium") {
       orderText += `Email: ${formData.email}%0AWhatsApp: ${formData.whatsapp}`;
@@ -615,7 +651,6 @@ async function confirmOrder() {
       orderText += `Email: ${formData.email}%0AWhatsApp: ${formData.whatsapp}`;
     }
 
-    // Buka WA (Client Side Redirect)
     window.open(
       `https://wa.me/${config.admin_whatsapp}?text=${orderText}`,
       "_blank",
@@ -696,7 +731,7 @@ async function checkOrderStatus() {
   }
 }
 
-// Filter & UI Helpers (Standard)
+// Filter & UI Helpers
 function filterGames(category) {
   currentFilter = category;
   updateFilterButtons(".filter-btn", category);
