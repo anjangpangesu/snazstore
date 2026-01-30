@@ -30,6 +30,15 @@ html {
 .dark body {
   background-color: #020617;
 }
+body.lang-loading #app {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease-in-out;
+}
+body.lang-loaded #app {
+  opacity: 1;
+  visibility: visible;
+}
 @keyframes fadeIn {
   from {
     opacity: 0;
