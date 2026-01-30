@@ -80,31 +80,54 @@
               <a
                 href="../../index.html"
                 class="nav-link font-medium hover:text-primary transition-colors"
-                >Home</a
+                data-i18n="nav_home"
+                >Beranda</a
               >
               <a
                 href="topup.html"
                 class="nav-link font-medium hover:text-primary transition-colors text-primary"
+                data-i18n="nav_topup"
                 >Top Up</a
               >
               <button
                 id="btn-track-order"
                 class="nav-link font-medium hover:text-primary transition-colors bg-transparent border-0 cursor-pointer"
+                data-i18n="nav_track"
               >
                 Lacak Pesanan
               </button>
               <a
                 href="../contact/contact.html"
                 class="nav-link font-medium hover:text-primary transition-colors"
-                >Contact</a
+                data-i18n="nav_contact"
+                >Kontak</a
               >
             </div>
             <div class="flex items-center gap-4">
+              <div class="flex items-center gap-2 text-sm font-medium">
+                <button
+                  onclick="changeLanguage('id')"
+                  id="lang-id"
+                  class="hover:text-primary transition-colors"
+                >
+                  ID
+                </button>
+                <span class="text-gray-400">|</span>
+                <button
+                  onclick="changeLanguage('en')"
+                  id="lang-en"
+                  class="hover:text-primary transition-colors"
+                >
+                  EN
+                </button>
+              </div>
+
               <div class="relative hidden sm:block">
                 <input
                   type="text"
                   id="search-input"
-                  placeholder="Search games..."
+                  data-i18n="search_placeholder"
+                  placeholder="Cari game..."
                   class="w-48 lg:w-64 px-4 py-2 pl-10 rounded-full bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-sm"
                 />
                 <i
@@ -139,11 +162,13 @@
             <a
               href="../../index.html"
               class="block py-2 font-medium hover:text-primary"
-              >Home</a
+              data-i18n="nav_home"
+              >Beranda</a
             >
             <a
               href="topup.html"
               class="block py-2 font-medium hover:text-primary"
+              data-i18n="nav_topup"
               >Top Up</a
             >
             <button
@@ -152,18 +177,21 @@
                 toggleMobileMenu();
               "
               class="block w-full text-left py-2 font-medium hover:text-primary bg-transparent border-0"
+              data-i18n="nav_track"
             >
               Lacak Pesanan
             </button>
             <a
               href="../contact/contact.html"
               class="block py-2 font-medium hover:text-primary"
-              >Contact</a
+              data-i18n="nav_contact"
+              >Kontak</a
             >
             <div class="relative pt-2">
               <input
                 type="text"
-                placeholder="Search games..."
+                data-i18n="search_placeholder"
+                placeholder="Cari game..."
                 class="w-full px-4 py-2 pl-10 rounded-full bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-sm"
               />
               <i
@@ -192,11 +220,12 @@
                   <div class="px-8 md:px-16 text-white">
                     <h2
                       class="font-heading font-bold text-2xl md:text-4xl mb-2"
+                      data-i18n="hero_title"
                     >
-                      Top Up Your Favorite Games
+                      Top Up Game Instan
                     </h2>
-                    <p class="text-lg opacity-90">
-                      Fast and secure transactions
+                    <p class="text-lg opacity-90" data-i18n="hero_subtitle">
+                      Cepat, Aman & Terpercaya
                     </p>
                   </div>
                 </div>
@@ -213,11 +242,15 @@
                   <div class="px-8 md:px-16 text-white">
                     <h2
                       class="font-heading font-bold text-2xl md:text-4xl mb-2"
+                      data-i18n="hero_flash_title"
                     >
-                      Weekly Flash Sale
+                      Flash Sale Mingguan
                     </h2>
-                    <p class="text-lg opacity-90">
-                      Save up to 30% on selected items
+                    <p
+                      class="text-lg opacity-90"
+                      data-i18n="hero_flash_subtitle"
+                    >
+                      Diskon hingga 30% untuk item pilihan
                     </p>
                   </div>
                 </div>
@@ -271,7 +304,7 @@
               <div
                 class="ml-auto px-4 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium"
               >
-                <i class="fas fa-clock mr-1"></i> Limited Time
+                <i class="fas fa-clock mr-1"></i> <span data-i18n="limited_time">Limited Time</span>
               </div>
             </div>
             <div
@@ -285,8 +318,9 @@
           <div class="max-w-7xl mx-auto">
             <h2
               class="font-heading font-bold text-2xl md:text-3xl text-center mb-8"
+              data-i18n="sec_all_games"
             >
-              All <span class="text-primary">Products</span>
+              Semua Game
             </h2>
             <div class="flex flex-wrap justify-center gap-3 mb-10">
               <button
@@ -323,8 +357,9 @@
                 id="load-more-btn"
                 onclick="loadMoreGames()"
                 class="px-8 py-3 bg-primary hover:bg-red-700 text-white rounded-full font-semibold transition-colors"
+                data-i18n="btn_load_more"
               >
-                Load More <i class="fas fa-plus ml-2"></i>
+                Muat Lebih Banyak <i class="fas fa-plus ml-2"></i>
               </button>
             </div>
           </div>
@@ -343,9 +378,8 @@
                 </div>
                 <span class="font-heading font-bold text-xl">GameVault</span>
               </div>
-              <p class="text-gray-400 mb-6">
-                Your trusted partner for instant game top up. Fast, secure, and
-                reliable service 24/7.
+              <p class="text-gray-400 mb-6" data-i18n="footer_desc">
+                Partner top up game terpercaya. Cepat, aman, dan handal 24/7.
               </p>
               <div class="flex gap-3">
                 <a
@@ -369,21 +403,26 @@
               </div>
             </div>
             <div>
-              <h3 class="font-heading font-semibold text-lg mb-4">
-                Quick Links
+              <h3
+                class="font-heading font-semibold text-lg mb-4"
+                data-i18n="quick_links"
+              >
+                Link Cepat
               </h3>
               <ul class="space-y-3">
                 <li>
                   <a
                     href="../../index.html"
                     class="text-gray-400 hover:text-white transition-colors"
-                    >Home</a
+                    data-i18n="nav_home"
+                    >Beranda</a
                   >
                 </li>
                 <li>
                   <a
                     href="topup.html"
                     class="text-gray-400 hover:text-white transition-colors"
+                    data-i18n="nav_topup"
                     >Top Up</a
                   >
                 </li>
@@ -391,14 +430,18 @@
                   <a
                     href="../contact/contact.html"
                     class="text-gray-400 hover:text-white transition-colors"
-                    >Contact</a
+                    data-i18n="nav_contact"
+                    >Kontak</a
                   >
                 </li>
               </ul>
             </div>
             <div>
-              <h3 class="font-heading font-semibold text-lg mb-4">
-                Categories
+              <h3
+                class="font-heading font-semibold text-lg mb-4"
+                data-i18n="categories"
+              >
+                Kategori
               </h3>
               <ul class="space-y-3">
                 <li>
@@ -425,8 +468,11 @@
               </ul>
             </div>
             <div>
-              <h3 class="font-heading font-semibold text-lg mb-4">
-                Contact Us
+              <h3
+                class="font-heading font-semibold text-lg mb-4"
+                data-i18n="contact_us"
+              >
+                Hubungi Kami
               </h3>
               <ul class="space-y-3">
                 <li class="flex items-center gap-3">
@@ -452,7 +498,10 @@
           <div
             class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-500"
           >
-            <p>© 2025 GameVault. All rights reserved.</p>
+            <p>
+              © 2025 GameVault.
+              <span data-i18n="rights">Hak Cipta Dilindungi.</span>
+            </p>
           </div>
         </div>
       </footer>
@@ -468,6 +517,7 @@
             <div class="flex items-center justify-between mb-6">
               <h3
                 class="font-heading font-bold text-xl text-gray-900 dark:text-white"
+                data-i18n="modal_track_title"
               >
                 Lacak Pesanan
               </h3>
@@ -482,20 +532,23 @@
               <div>
                 <label
                   class="block text-sm font-medium mb-2 text-gray-900 dark:text-white"
-                  >Order ID</label
+                  data-i18n="label_order_id"
+                  >ID Pesanan</label
                 >
                 <input
                   type="text"
                   id="tracking-order-id"
                   class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-gray-900 dark:text-white"
-                  placeholder="Input order id anda..."
+                  data-i18n="placeholder_order_id"
+                  placeholder="Masukan order id anda"
                 />
               </div>
               <button
                 onclick="checkOrderStatus()"
                 class="w-full py-4 bg-primary hover:bg-red-700 text-white rounded-xl font-semibold transition-colors"
+                data-i18n="btn_check_status"
               >
-                Check Status
+                Cek Status
               </button>
               <div id="tracking-result"></div>
             </div>

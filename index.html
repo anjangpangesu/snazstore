@@ -77,31 +77,54 @@
               <a
                 href="index.html"
                 class="nav-link font-medium hover:text-primary transition-colors"
-                >Home</a
+                data-i18n="nav_home"
+                >Beranda</a
               >
               <a
                 href="page/topup/topup.html"
                 class="nav-link font-medium hover:text-primary transition-colors"
+                data-i18n="nav_topup"
                 >Top Up</a
               >
               <button
                 id="btn-track-order"
                 class="nav-link font-medium hover:text-primary transition-colors bg-transparent border-0 cursor-pointer"
+                data-i18n="nav_track"
               >
                 Lacak Pesanan
               </button>
               <a
                 href="page/contact/contact.html"
                 class="nav-link font-medium hover:text-primary transition-colors"
-                >Contact</a
+                data-i18n="nav_contact"
+                >Kontak</a
               >
             </div>
             <div class="flex items-center gap-4">
+              <div class="flex items-center gap-2 text-sm font-medium">
+                <button
+                  onclick="changeLanguage('id')"
+                  id="lang-id"
+                  class="hover:text-primary transition-colors"
+                >
+                  ID
+                </button>
+                <span class="text-gray-400">|</span>
+                <button
+                  onclick="changeLanguage('en')"
+                  id="lang-en"
+                  class="hover:text-primary transition-colors"
+                >
+                  EN
+                </button>
+              </div>
+
               <div class="relative hidden sm:block">
                 <input
                   type="text"
                   id="search-input"
-                  placeholder="Search games..."
+                  data-i18n="search_placeholder"
+                  placeholder="Cari game..."
                   class="w-48 lg:w-64 px-4 py-2 pl-10 rounded-full bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-sm"
                 />
                 <i
@@ -136,11 +159,13 @@
             <a
               href="index.html"
               class="block py-2 font-medium hover:text-primary"
-              >Home</a
+              data-i18n="nav_home"
+              >Beranda</a
             >
             <a
               href="page/topup/topup.html"
               class="block py-2 font-medium hover:text-primary"
+              data-i18n="nav_topup"
               >Top Up</a
             >
             <button
@@ -149,18 +174,21 @@
                 toggleMobileMenu();
               "
               class="block w-full text-left py-2 font-medium hover:text-primary bg-transparent border-0"
+              data-i18n="nav_track"
             >
               Lacak Pesanan
             </button>
             <a
               href="page/contact/contact.html"
               class="block py-2 font-medium hover:text-primary"
-              >Contact</a
+              data-i18n="nav_contact"
+              >Kontak</a
             >
             <div class="relative pt-2">
               <input
                 type="text"
-                placeholder="Search games..."
+                data-i18n="search_placeholder"
+                placeholder="Cari game..."
                 class="w-full px-4 py-2 pl-10 rounded-full bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-sm"
               />
               <i
@@ -193,16 +221,21 @@
                     <h1
                       id="hero-title-1"
                       class="font-heading font-bold text-3xl md:text-5xl mb-4"
+                      data-i18n="hero_title"
                     >
-                      Instant Game Top Up
+                      Top Up Game Instan
                     </h1>
-                    <p class="text-lg md:text-xl mb-6 opacity-90">
-                      Fast, Secure &amp; Reliable Gaming Credits
+                    <p
+                      class="text-lg md:text-xl mb-6 opacity-90"
+                      data-i18n="hero_subtitle"
+                    >
+                      Cepat, Aman & Terpercaya
                     </p>
                     <a
                       href="page/topup/topup.html"
                       class="inline-block px-8 py-3 bg-primary hover:bg-red-700 rounded-full font-semibold transition-colors"
-                      >Top Up Now</a
+                      data-i18n="btn_topup_now"
+                      >Top Up Sekarang</a
                     >
                   </div>
                 </div>
@@ -222,16 +255,21 @@
                   <div class="text-center text-white px-4">
                     <h1
                       class="font-heading font-bold text-3xl md:text-5xl mb-4"
+                      data-i18n="hero_flash_title"
                     >
-                      Flash Sale Every Week
+                      Flash Sale Mingguan
                     </h1>
-                    <p class="text-lg md:text-xl mb-6 opacity-90">
-                      Up to 30% discount on selected games
+                    <p
+                      class="text-lg md:text-xl mb-6 opacity-90"
+                      data-i18n="hero_flash_subtitle"
+                    >
+                      Diskon hingga 30% untuk item pilihan
                     </p>
                     <a
                       href="page/topup/topup.html"
                       class="inline-block px-8 py-3 bg-secondary hover:bg-blue-700 rounded-full font-semibold transition-colors"
-                      >View Deals</a
+                      data-i18n="btn_view_deals"
+                      >Lihat Promo</a
                     >
                   </div>
                 </div>
@@ -251,16 +289,21 @@
                   <div class="text-center text-white px-4">
                     <h1
                       class="font-heading font-bold text-3xl md:text-5xl mb-4"
+                      data-i18n="hero_support_title"
                     >
-                      24/7 Customer Support
+                      Layanan 24/7
                     </h1>
-                    <p class="text-lg md:text-xl mb-6 opacity-90">
-                      We're here to help anytime you need
+                    <p
+                      class="text-lg md:text-xl mb-6 opacity-90"
+                      data-i18n="hero_support_subtitle"
+                    >
+                      Kami siap membantu kapanpun kamu butuh
                     </p>
                     <a
                       href="page/contact/contact.html"
                       class="inline-block px-8 py-3 bg-primary hover:bg-red-700 rounded-full font-semibold transition-colors"
-                      >Contact Us</a
+                      data-i18n="btn_contact_us"
+                      >Hubungi Kami</a
                     >
                   </div>
                 </div>
@@ -311,11 +354,17 @@
                 >
                   <i class="fas fa-bolt text-white text-2xl"></i>
                 </div>
-                <h3 class="font-heading font-semibold text-xl mb-3">
-                  Fast Process
+                <h3
+                  class="font-heading font-semibold text-xl mb-3"
+                  data-i18n="feat_fast_title"
+                >
+                  Proses Cepat
                 </h3>
-                <p class="text-gray-600 dark:text-gray-400">
-                  Instant delivery within 1-5 minutes after payment confirmation
+                <p
+                  class="text-gray-600 dark:text-gray-400"
+                  data-i18n="feat_fast_desc"
+                >
+                  Pengiriman instan dalam 1-5 menit setelah pembayaran
                 </p>
               </div>
               <div
@@ -326,11 +375,17 @@
                 >
                   <i class="fas fa-shield-halved text-white text-2xl"></i>
                 </div>
-                <h3 class="font-heading font-semibold text-xl mb-3">
-                  100% Trusted
+                <h3
+                  class="font-heading font-semibold text-xl mb-3"
+                  data-i18n="feat_trusted_title"
+                >
+                  100% Terpercaya
                 </h3>
-                <p class="text-gray-600 dark:text-gray-400">
-                  Official partner with secure payment and verified transactions
+                <p
+                  class="text-gray-600 dark:text-gray-400"
+                  data-i18n="feat_trusted_desc"
+                >
+                  Partner resmi dengan pembayaran aman
                 </p>
               </div>
               <div
@@ -341,11 +396,17 @@
                 >
                   <i class="fas fa-rotate-left text-white text-2xl"></i>
                 </div>
-                <h3 class="font-heading font-semibold text-xl mb-3">
-                  Money Back Guarantee
+                <h3
+                  class="font-heading font-semibold text-xl mb-3"
+                  data-i18n="feat_guarantee_title"
+                >
+                  Garansi Uang Kembali
                 </h3>
-                <p class="text-gray-600 dark:text-gray-400">
-                  Full refund if the order fails or doesn't match
+                <p
+                  class="text-gray-600 dark:text-gray-400"
+                  data-i18n="feat_guarantee_desc"
+                >
+                  Refund penuh jika pesanan gagal
                 </p>
               </div>
             </div>
@@ -355,14 +416,18 @@
         <section class="py-16 px-4 bg-gray-100 dark:bg-darker">
           <div class="max-w-7xl mx-auto">
             <div class="flex items-center justify-between mb-12">
-              <h2 class="font-heading font-bold text-2xl md:text-3xl">
-                Popular <span class="text-primary">Games</span>
+              <h2
+                class="font-heading font-bold text-2xl md:text-3xl"
+                data-i18n="sec_popular"
+              >
+                Game Populer
               </h2>
               <a
                 href="page/topup/topup.html"
                 class="text-primary hover:text-red-700 font-medium flex items-center gap-2"
+                data-i18n="btn_view_all"
               >
-                View All <i class="fas fa-arrow-right"></i>
+                Lihat Semua <i class="fas fa-arrow-right"></i>
               </a>
             </div>
             <div
@@ -381,19 +446,25 @@
                 <div class="text-4xl md:text-5xl font-heading font-bold mb-2">
                   <span class="counter" data-target="150">0</span>+
                 </div>
-                <p class="text-lg opacity-90">Total Games</p>
+                <p class="text-lg opacity-90" data-i18n="stats_games">
+                  Total Game
+                </p>
               </div>
               <div>
                 <div class="text-4xl md:text-5xl font-heading font-bold mb-2">
                   <span class="counter" data-target="500">0</span>+
                 </div>
-                <p class="text-lg opacity-90">Voucher Products</p>
+                <p class="text-lg opacity-90" data-i18n="stats_products">
+                  Produk Voucher
+                </p>
               </div>
               <div>
                 <div class="text-4xl md:text-5xl font-heading font-bold mb-2">
                   <span class="counter" data-target="10000">0</span>+
                 </div>
-                <p class="text-lg opacity-90">Transactions</p>
+                <p class="text-lg opacity-90" data-i18n="stats_trans">
+                  Transaksi
+                </p>
               </div>
             </div>
           </div>
@@ -403,8 +474,9 @@
           <div class="max-w-7xl mx-auto">
             <h2
               class="font-heading font-bold text-2xl md:text-3xl text-center mb-8"
+              data-i18n="sec_all_games"
             >
-              All <span class="text-primary">Games</span>
+              Semua Game
             </h2>
             <div class="flex flex-wrap justify-center gap-3 mb-10">
               <button
@@ -440,8 +512,9 @@
               <a
                 href="page/topup/topup.html"
                 class="inline-block px-8 py-3 bg-primary hover:bg-red-700 text-white rounded-full font-semibold transition-colors"
+                data-i18n="btn_show_more"
               >
-                Show More <i class="fas fa-arrow-right ml-2"></i>
+                Tampilkan Lebih Banyak <i class="fas fa-arrow-right ml-2"></i>
               </a>
             </div>
           </div>
@@ -451,8 +524,9 @@
           <div class="max-w-3xl mx-auto">
             <h2
               class="font-heading font-bold text-2xl md:text-3xl text-center mb-12"
+              data-i18n="sec_faq"
             >
-              Frequently Asked <span class="text-primary">Questions</span>
+              Pertanyaan Umum
             </h2>
             <div class="space-y-4">
               <div
@@ -462,15 +536,15 @@
                   onclick="toggleFaq(this)"
                   class="w-full px-6 py-4 flex items-center justify-between text-left font-medium"
                 >
-                  <span>How long does the top up process take?</span>
+                  <span data-i18n="faq_1_q">Berapa lama proses top up?</span>
                   <i class="fas fa-chevron-down transition-transform"></i>
                 </button>
                 <div
                   class="faq-content hidden px-6 pb-4 text-gray-600 dark:text-gray-400"
+                  data-i18n="faq_1_a"
                 >
-                  The top up process usually takes 1-5 minutes after payment
-                  confirmation. For some games during peak hours, it may take up
-                  to 15 minutes.
+                  Proses biasanya memakan waktu 1-5 menit setelah konfirmasi
+                  pembayaran.
                 </div>
               </div>
               <div
@@ -480,14 +554,17 @@
                   onclick="toggleFaq(this)"
                   class="w-full px-6 py-4 flex items-center justify-between text-left font-medium"
                 >
-                  <span>What payment methods are available?</span>
+                  <span data-i18n="faq_2_q"
+                    >Metode pembayaran apa saja yang tersedia?</span
+                  >
                   <i class="fas fa-chevron-down transition-transform"></i>
                 </button>
                 <div
                   class="faq-content hidden px-6 pb-4 text-gray-600 dark:text-gray-400"
+                  data-i18n="faq_2_a"
                 >
-                  We accept various payment methods including bank transfer,
-                  e-wallets (OVO, GoPay, Dana), and convenience store payments.
+                  Kami menerima transfer bank, e-wallet (DANA, OVO, GoPay), dan
+                  QRIS.
                 </div>
               </div>
             </div>
@@ -507,9 +584,8 @@
                 </div>
                 <span class="font-heading font-bold text-xl">GameVault</span>
               </div>
-              <p class="text-gray-400 mb-6">
-                Your trusted partner for instant game top up. Fast, secure, and
-                reliable service 24/7.
+              <p class="text-gray-400 mb-6" data-i18n="footer_desc">
+                Partner top up game terpercaya. Cepat, aman, dan handal 24/7.
               </p>
               <div class="flex gap-3">
                 <a
@@ -533,21 +609,26 @@
               </div>
             </div>
             <div>
-              <h3 class="font-heading font-semibold text-lg mb-4">
-                Quick Links
+              <h3
+                class="font-heading font-semibold text-lg mb-4"
+                data-i18n="quick_links"
+              >
+                Link Cepat
               </h3>
               <ul class="space-y-3">
                 <li>
                   <a
                     href="index.html"
                     class="text-gray-400 hover:text-white transition-colors"
-                    >Home</a
+                    data-i18n="nav_home"
+                    >Beranda</a
                   >
                 </li>
                 <li>
                   <a
                     href="page/topup/topup.html"
                     class="text-gray-400 hover:text-white transition-colors"
+                    data-i18n="nav_topup"
                     >Top Up</a
                   >
                 </li>
@@ -555,14 +636,18 @@
                   <a
                     href="page/contact/contact.html"
                     class="text-gray-400 hover:text-white transition-colors"
-                    >Contact</a
+                    data-i18n="nav_contact"
+                    >Kontak</a
                   >
                 </li>
               </ul>
             </div>
             <div>
-              <h3 class="font-heading font-semibold text-lg mb-4">
-                Categories
+              <h3
+                class="font-heading font-semibold text-lg mb-4"
+                data-i18n="categories"
+              >
+                Kategori
               </h3>
               <ul class="space-y-3">
                 <li>
@@ -589,8 +674,11 @@
               </ul>
             </div>
             <div>
-              <h3 class="font-heading font-semibold text-lg mb-4">
-                Contact Us
+              <h3
+                class="font-heading font-semibold text-lg mb-4"
+                data-i18n="contact_us"
+              >
+                Hubungi Kami
               </h3>
               <ul class="space-y-3">
                 <li class="flex items-center gap-3">
@@ -616,7 +704,10 @@
           <div
             class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-500"
           >
-            <p>© 2025 GameVault. All rights reserved.</p>
+            <p>
+              © 2025 GameVault.
+              <span data-i18n="rights">Hak Cipta Dilindungi.</span>
+            </p>
           </div>
         </div>
       </footer>
@@ -632,6 +723,7 @@
             <div class="flex items-center justify-between mb-6">
               <h3
                 class="font-heading font-bold text-xl text-gray-900 dark:text-white"
+                data-i18n="modal_track_title"
               >
                 Lacak Pesanan
               </h3>
@@ -646,20 +738,23 @@
               <div>
                 <label
                   class="block text-sm font-medium mb-2 text-gray-900 dark:text-white"
-                  >Order ID</label
+                  data-i18n="label_order_id"
+                  >ID Pesanan</label
                 >
                 <input
                   type="text"
                   id="tracking-order-id"
                   class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-gray-900 dark:text-white"
-                  placeholder="Input order id anda..."
+                  data-i18n="placeholder_order_id"
+                  placeholder="Masukan order id anda"
                 />
               </div>
               <button
                 onclick="checkOrderStatus()"
                 class="w-full py-4 bg-primary hover:bg-red-700 text-white rounded-xl font-semibold transition-colors"
+                data-i18n="btn_check_status"
               >
-                Check Status
+                Cek Status
               </button>
               <div id="tracking-result"></div>
             </div>

@@ -4,8 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script>
-      if (localStorage.getItem("darkMode") === "true" || 
-          (!("darkMode" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+      if (
+        localStorage.getItem("darkMode") === "true" ||
+        (!("darkMode" in localStorage) &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches)
+      ) {
         document.documentElement.classList.add("dark");
       } else {
         document.documentElement.classList.remove("dark");
@@ -73,31 +76,54 @@
               <a
                 href="../../index.html"
                 class="nav-link font-medium hover:text-primary transition-colors"
-                >Home</a
+                data-i18n="nav_home"
+                >Beranda</a
               >
               <a
                 href="../topup/topup.html"
                 class="nav-link font-medium hover:text-primary transition-colors"
+                data-i18n="nav_topup"
                 >Top Up</a
               >
               <button
                 id="btn-track-order"
                 class="nav-link font-medium hover:text-primary transition-colors bg-transparent border-0 cursor-pointer"
+                data-i18n="nav_track"
               >
                 Lacak Pesanan
               </button>
               <a
                 href="../contact/contact.html"
                 class="nav-link font-medium hover:text-primary transition-colors"
-                >Contact</a
+                data-i18n="nav_contact"
+                >Kontak</a
               >
             </div>
             <div class="flex items-center gap-4">
+              <div class="flex items-center gap-2 text-sm font-medium">
+                <button
+                  onclick="changeLanguage('id')"
+                  id="lang-id"
+                  class="hover:text-primary transition-colors"
+                >
+                  ID
+                </button>
+                <span class="text-gray-400">|</span>
+                <button
+                  onclick="changeLanguage('en')"
+                  id="lang-en"
+                  class="hover:text-primary transition-colors"
+                >
+                  EN
+                </button>
+              </div>
+
               <div class="relative hidden sm:block">
                 <input
                   type="text"
                   id="search-input"
-                  placeholder="Search games..."
+                  data-i18n="search_placeholder"
+                  placeholder="Cari game..."
                   class="w-48 lg:w-64 px-4 py-2 pl-10 rounded-full bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-sm"
                 />
                 <i
@@ -133,22 +159,36 @@
             <a
               href="../../index.html"
               class="block py-2 font-medium hover:text-primary"
-              >Home</a
+              data-i18n="nav_home"
+              >Beranda</a
             >
             <a
               href="../topup/topup.html"
               class="block py-2 font-medium hover:text-primary"
+              data-i18n="nav_topup"
               >Top Up</a
             >
+            <button
+              onclick="
+                openModal('tracking');
+                toggleMobileMenu();
+              "
+              class="block w-full text-left py-2 font-medium hover:text-primary bg-transparent border-0"
+              data-i18n="nav_track"
+            >
+              Lacak Pesanan
+            </button>
             <a
               href="../contact/contact.html"
               class="block py-2 font-medium hover:text-primary"
-              >Contact</a
+              data-i18n="nav_contact"
+              >Kontak</a
             >
             <div class="relative pt-2">
               <input
                 type="text"
-                placeholder="Search games..."
+                data-i18n="search_placeholder"
+                placeholder="Cari game..."
                 class="w-full px-4 py-2 pl-10 rounded-full bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-sm"
               />
               <i
@@ -169,7 +209,9 @@
               class="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-primary transition-colors"
             >
               <i class="fas fa-arrow-left"></i>
-              <span class="font-medium">Back to Top Up</span>
+              <span class="font-medium" data-i18n="back_to_topup"
+                >Kembali ke Top Up</span
+              >
             </a>
           </div>
         </div>
@@ -234,7 +276,8 @@
             <h2
               class="font-heading font-bold text-xl mb-6 text-gray-900 dark:text-white"
             >
-              <i class="fas fa-coins text-primary mr-2"></i>Select Nominal
+              <i class="fas fa-coins text-primary mr-2"></i
+              ><span data-i18n="label_nominal">Pilih Nominal</span>
             </h2>
             <div id="nominal-grid" class="space-y-2"></div>
           </div>
@@ -245,7 +288,8 @@
             <h2
               class="font-heading font-bold text-xl mb-6 text-gray-900 dark:text-white"
             >
-              <i class="fas fa-user text-primary mr-2"></i>Account Information
+              <i class="fas fa-user text-primary mr-2"></i
+              ><span data-i18n="label_account">Informasi Akun</span>
             </h2>
             <form id="order-form" class="space-y-4">
               <div id="form-fields"></div>
@@ -254,8 +298,9 @@
                 id="checkout-btn"
                 disabled
                 class="w-full py-4 bg-gray-300 dark:bg-gray-700 text-gray-500 rounded-xl font-semibold transition-colors cursor-not-allowed"
+                data-i18n="btn_checkout_default"
               >
-                Select a nominal first
+                Pilih nominal dulu
               </button>
             </form>
           </div>
@@ -273,8 +318,9 @@
             <div class="flex items-center justify-between mb-6">
               <h3
                 class="font-heading font-bold text-xl text-gray-900 dark:text-white"
+                data-i18n="modal_summary"
               >
-                Order Summary
+                Ringkasan Pesanan
               </h3>
               <button
                 onclick="closeModal('checkout')"
@@ -289,14 +335,66 @@
                 onclick="recheckOrder()"
                 class="w-full py-3 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-xl font-medium transition-colors flex items-center justify-center gap-2 text-gray-900 dark:text-white"
               >
-                <i class="fas fa-edit"></i> Recheck Data
+                <i class="fas fa-edit"></i>
+                <span data-i18n="btn_recheck">Cek Ulang</span>
               </button>
               <button
                 onclick="confirmOrder()"
                 class="w-full py-4 bg-primary hover:bg-red-700 text-white rounded-xl font-semibold transition-colors flex items-center justify-center gap-2"
               >
-                <i class="fab fa-whatsapp text-xl"></i> Order Now
+                <i class="fab fa-whatsapp text-xl"></i>
+                <span data-i18n="btn_confirm">Pesan Sekarang</span>
               </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        id="tracking-modal"
+        class="modal fixed inset-0 z-50 items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+      >
+        <div
+          class="bg-white dark:bg-dark rounded-2xl shadow-2xl w-full max-w-md"
+        >
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-6">
+              <h3
+                class="font-heading font-bold text-xl text-gray-900 dark:text-white"
+                data-i18n="modal_track_title"
+              >
+                Lacak Pesanan
+              </h3>
+              <button
+                onclick="closeModal('tracking')"
+                class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+              >
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+            <div class="space-y-4">
+              <div>
+                <label
+                  class="block text-sm font-medium mb-2 text-gray-900 dark:text-white"
+                  data-i18n="label_order_id"
+                  >ID Pesanan</label
+                >
+                <input
+                  type="text"
+                  id="tracking-order-id"
+                  class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-gray-900 dark:text-white"
+                  data-i18n="placeholder_order_id"
+                  placeholder="Masukan order id anda"
+                />
+              </div>
+              <button
+                onclick="checkOrderStatus()"
+                class="w-full py-4 bg-primary hover:bg-red-700 text-white rounded-xl font-semibold transition-colors"
+                data-i18n="btn_check_status"
+              >
+                Cek Status
+              </button>
+              <div id="tracking-result"></div>
             </div>
           </div>
         </div>
@@ -323,9 +421,8 @@
                 </div>
                 <span class="font-heading font-bold text-xl">GameVault</span>
               </div>
-              <p class="text-gray-400 mb-6">
-                Your trusted partner for instant game top up. Fast, secure, and
-                reliable service 24/7.
+              <p class="text-gray-400 mb-6" data-i18n="footer_desc">
+                Partner top up game terpercaya. Cepat, aman, dan handal 24/7.
               </p>
               <div class="flex gap-3">
                 <a
@@ -349,21 +446,26 @@
               </div>
             </div>
             <div>
-              <h3 class="font-heading font-semibold text-lg mb-4">
-                Quick Links
+              <h3
+                class="font-heading font-semibold text-lg mb-4"
+                data-i18n="quick_links"
+              >
+                Link Cepat
               </h3>
               <ul class="space-y-3">
                 <li>
                   <a
                     href="../../index.html"
                     class="text-gray-400 hover:text-white transition-colors"
-                    >Home</a
+                    data-i18n="nav_home"
+                    >Beranda</a
                   >
                 </li>
                 <li>
                   <a
                     href="../topup/topup.html"
                     class="text-gray-400 hover:text-white transition-colors"
+                    data-i18n="nav_topup"
                     >Top Up</a
                   >
                 </li>
@@ -371,14 +473,18 @@
                   <a
                     href="../contact/contact.html"
                     class="text-gray-400 hover:text-white transition-colors"
-                    >Contact</a
+                    data-i18n="nav_contact"
+                    >Kontak</a
                   >
                 </li>
               </ul>
             </div>
             <div>
-              <h3 class="font-heading font-semibold text-lg mb-4">
-                Categories
+              <h3
+                class="font-heading font-semibold text-lg mb-4"
+                data-i18n="categories"
+              >
+                Kategori
               </h3>
               <ul class="space-y-3">
                 <li>
@@ -405,8 +511,11 @@
               </ul>
             </div>
             <div>
-              <h3 class="font-heading font-semibold text-lg mb-4">
-                Contact Us
+              <h3
+                class="font-heading font-semibold text-lg mb-4"
+                data-i18n="contact_us"
+              >
+                Hubungi Kami
               </h3>
               <ul class="space-y-3">
                 <li class="flex items-center gap-3">
@@ -432,55 +541,13 @@
           <div
             class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-500"
           >
-            <p>© 2025 GameVault. All rights reserved.</p>
+            <p>
+              © 2025 GameVault.
+              <span data-i18n="rights">Hak Cipta Dilindungi.</span>
+            </p>
           </div>
         </div>
       </footer>
-      <div
-        id="tracking-modal"
-        class="modal fixed inset-0 z-50 items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-      >
-        <div
-          class="bg-white dark:bg-dark rounded-2xl shadow-2xl w-full max-w-md"
-        >
-          <div class="p-6">
-            <div class="flex items-center justify-between mb-6">
-              <h3
-                class="font-heading font-bold text-xl text-gray-900 dark:text-white"
-              >
-                Lacak Pesanan
-              </h3>
-              <button
-                onclick="closeModal('tracking')"
-                class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-              >
-                <i class="fas fa-times"></i>
-              </button>
-            </div>
-            <div class="space-y-4">
-              <div>
-                <label
-                  class="block text-sm font-medium mb-2 text-gray-900 dark:text-white"
-                  >Order ID</label
-                >
-                <input
-                  type="text"
-                  id="tracking-order-id"
-                  class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-gray-900 dark:text-white"
-                  placeholder="Input order id anda..."
-                />
-              </div>
-              <button
-                onclick="checkOrderStatus()"
-                class="w-full py-4 bg-primary hover:bg-red-700 text-white rounded-xl font-semibold transition-colors"
-              >
-                Check Status
-              </button>
-              <div id="tracking-result"></div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
     <script src="../../src/js/main.js"></script>
   </body>

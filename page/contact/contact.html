@@ -4,8 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script>
-      if (localStorage.getItem("darkMode") === "true" || 
-          (!("darkMode" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+      if (
+        localStorage.getItem("darkMode") === "true" ||
+        (!("darkMode" in localStorage) &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches)
+      ) {
         document.documentElement.classList.add("dark");
       } else {
         document.documentElement.classList.remove("dark");
@@ -78,32 +81,55 @@
               <a
                 href="../../index.html"
                 class="nav-link font-medium hover:text-primary transition-colors"
-                >Home</a
+                data-i18n="nav_home"
+                >Beranda</a
               >
               <a
                 href="../topup/topup.html"
                 class="nav-link font-medium hover:text-primary transition-colors"
+                data-i18n="nav_topup"
                 >Top Up</a
               >
               <button
                 id="btn-track-order"
                 class="nav-link font-medium hover:text-primary transition-colors bg-transparent border-0 cursor-pointer"
+                data-i18n="nav_track"
               >
                 Lacak Pesanan
               </button>
               <a
                 href="contact.html"
                 class="nav-link font-medium hover:text-primary transition-colors text-primary"
-                >Contact</a
+                data-i18n="nav_contact"
+                >Kontak</a
               >
             </div>
 
             <div class="flex items-center gap-4">
+              <div class="flex items-center gap-2 text-sm font-medium">
+                <button
+                  onclick="changeLanguage('id')"
+                  id="lang-id"
+                  class="hover:text-primary transition-colors"
+                >
+                  ID
+                </button>
+                <span class="text-gray-400">|</span>
+                <button
+                  onclick="changeLanguage('en')"
+                  id="lang-en"
+                  class="hover:text-primary transition-colors"
+                >
+                  EN
+                </button>
+              </div>
+
               <div class="relative hidden sm:block">
                 <input
                   type="text"
                   id="search-input"
-                  placeholder="Search games..."
+                  data-i18n="search_placeholder"
+                  placeholder="Cari game..."
                   class="w-48 lg:w-64 px-4 py-2 pl-10 rounded-full bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-sm"
                 />
                 <i
@@ -140,22 +166,36 @@
             <a
               href="../../index.html"
               class="block py-2 font-medium hover:text-primary"
-              >Home</a
+              data-i18n="nav_home"
+              >Beranda</a
             >
             <a
               href="../topup/topup.html"
               class="block py-2 font-medium hover:text-primary"
+              data-i18n="nav_topup"
               >Top Up</a
             >
+            <button
+              onclick="
+                openModal('tracking');
+                toggleMobileMenu();
+              "
+              class="block w-full text-left py-2 font-medium hover:text-primary bg-transparent border-0"
+              data-i18n="nav_track"
+            >
+              Lacak Pesanan
+            </button>
             <a
               href="contact.html"
               class="block py-2 font-medium hover:text-primary"
-              >Contact</a
+              data-i18n="nav_contact"
+              >Kontak</a
             >
             <div class="relative pt-2">
               <input
                 type="text"
-                placeholder="Search games..."
+                data-i18n="search_placeholder"
+                placeholder="Cari game..."
                 class="w-full px-4 py-2 pl-10 rounded-full bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-sm"
               />
               <i
@@ -182,81 +222,104 @@
           <div class="absolute inset-0 hero-gradient opacity-80"></div>
           <div class="absolute inset-0 flex items-center justify-center">
             <div class="text-center text-white px-4">
-              <h1 class="font-heading font-bold text-3xl md:text-5xl mb-4">
-                Contact Us
+              <h1
+                class="font-heading font-bold text-3xl md:text-5xl mb-4"
+                data-i18n="contact_title"
+              >
+                Hubungi Kami
               </h1>
-              <p class="text-lg opacity-90">We're here to help you 24/7</p>
+              <p class="text-lg opacity-90" data-i18n="contact_subtitle">
+                Kami siap membantu 24/7
+              </p>
             </div>
           </div>
         </section>
-        <!-- Contact Form -->
         <section class="py-16 px-4 bg-white dark:bg-dark">
           <div class="max-w-5xl mx-auto">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-              <!-- Form -->
               <div>
-                <h2 class="font-heading font-bold text-2xl mb-6">
-                  Send us a message
+                <h2
+                  class="font-heading font-bold text-2xl mb-6"
+                  data-i18n="form_title"
+                >
+                  Kirim Pesan
                 </h2>
                 <form id="contact-form" class="space-y-4">
                   <div>
-                    <label class="block text-sm font-medium mb-2"
-                      >Full Name</label
+                    <label
+                      class="block text-sm font-medium mb-2"
+                      data-i18n="label_fullname"
+                      >Nama Lengkap</label
                     >
                     <input
                       type="text"
                       id="contact-name"
                       required
                       class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none"
-                      placeholder="Enter your name"
+                      data-i18n="placeholder_fullname"
+                      placeholder=""
                     />
                   </div>
                   <div>
-                    <label class="block text-sm font-medium mb-2">Email</label>
+                    <label
+                      class="block text-sm font-medium mb-2"
+                      data-i18n="label_email"
+                      >Email</label
+                    >
                     <input
                       type="email"
                       id="contact-email"
                       required
                       class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none"
-                      placeholder="Enter your email"
+                      data-i18n="placeholder_email"
+                      placeholder=""
                     />
                   </div>
                   <div>
-                    <label class="block text-sm font-medium mb-2"
-                      >WhatsApp Number</label
+                    <label
+                      class="block text-sm font-medium mb-2"
+                      data-i18n="label_whatsapp"
+                      >Nomor WhatsApp</label
                     >
                     <input
                       type="tel"
                       id="contact-phone"
                       required
                       class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none"
-                      placeholder="6281213699618"
+                      data-i18n="placeholder_whatsapp"
+                      placeholder=""
                     />
                   </div>
                   <div>
-                    <label class="block text-sm font-medium mb-2"
-                      >Message</label
+                    <label
+                      class="block text-sm font-medium mb-2"
+                      data-i18n="label_message"
+                      >Pesan</label
                     >
                     <textarea
                       id="contact-message"
                       rows="4"
                       required
                       class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none resize-none"
-                      placeholder="How can we help you?"
+                      data-i18n="placeholder_message"
+                      placeholder=""
                     ></textarea>
                   </div>
                   <button
                     type="submit"
                     class="w-full py-4 bg-primary hover:bg-red-700 text-white rounded-xl font-semibold transition-colors flex items-center justify-center gap-2"
                   >
-                    <i class="fab fa-whatsapp text-xl"></i> Send via WhatsApp
+                    <i class="fab fa-whatsapp text-xl"></i>
+                    <span data-i18n="btn_send_wa">Kirim via WhatsApp</span>
                   </button>
                 </form>
               </div>
-              <!-- Contact Info -->
               <div>
-                <h2 class="font-heading font-bold text-2xl mb-6">
-                  Get in touch
+                <h2
+                  class="font-heading font-bold text-2xl mb-6"
+                  data-i18n="info_title"
+                >
+                  Info Kontak
                 </h2>
                 <div class="space-y-6">
                   <div class="flex items-start gap-4">
@@ -268,7 +331,7 @@
                     <div>
                       <h3 class="font-semibold mb-1">WhatsApp</h3>
                       <a
-                        href="https://wa.me/6281213699618?text=Halo%20GameVault,%20saya%20ingin%20bertanya%20tentang%20layanan%20top%20up%20game.%20Mohon%20bantuannya.%20Terima%20kasih!"
+                        href="https://wa.me/6281213699618"
                         target="_blank"
                         rel="noopener noreferrer"
                         class="text-primary hover:text-red-700 transition-colors hover:underline"
@@ -285,7 +348,7 @@
                     <div>
                       <h3 class="font-semibold mb-1">Email</h3>
                       <a
-                        href="mailto:anjangstore23@gmail.com?subject=Pertanyaan%20Layanan%20GameVault&amp;body=Halo%20GameVault,%0A%0ASaya%20ingin%20bertanya%20tentang%20layanan%20top%20up%20game.%0A%0A[Tuliskan%20pertanyaan%20Anda%20di%20sini]%0A%0ATerima%20kasih!"
+                        href="mailto:anjangstore23@gmail.com"
                         class="text-secondary hover:text-blue-700 transition-colors hover:underline"
                         >anjangstore23@gmail.com</a
                       >
@@ -298,16 +361,22 @@
                       <i class="fas fa-clock text-green-500 text-xl"></i>
                     </div>
                     <div>
-                      <h3 class="font-semibold mb-1">Operating Hours</h3>
-                      <p class="text-gray-600 dark:text-gray-400">
-                        24/7 Customer Support
+                      <h3 class="font-semibold mb-1" data-i18n="op_hours">
+                        Jam Operasional
+                      </h3>
+                      <p
+                        class="text-gray-600 dark:text-gray-400"
+                        data-i18n="op_desc"
+                      >
+                        Layanan Pelanggan 24/7
                       </p>
                     </div>
                   </div>
                 </div>
-                <!-- Social Links -->
                 <div class="mt-10">
-                  <h3 class="font-semibold mb-4">Follow us</h3>
+                  <h3 class="font-semibold mb-4" data-i18n="follow_us">
+                    Ikuti Kami
+                  </h3>
                   <div class="flex gap-4">
                     <a
                       href="#"
@@ -362,9 +431,8 @@
                 </div>
                 <span class="font-heading font-bold text-xl">GameVault</span>
               </div>
-              <p class="text-gray-400 mb-6">
-                Your trusted partner for instant game top up. Fast, secure, and
-                reliable service 24/7.
+              <p class="text-gray-400 mb-6" data-i18n="footer_desc">
+                Partner top up game terpercaya. Cepat, aman, dan handal 24/7.
               </p>
               <div class="flex gap-3">
                 <a
@@ -388,21 +456,26 @@
               </div>
             </div>
             <div>
-              <h3 class="font-heading font-semibold text-lg mb-4">
-                Quick Links
+              <h3
+                class="font-heading font-semibold text-lg mb-4"
+                data-i18n="quick_links"
+              >
+                Link Cepat
               </h3>
               <ul class="space-y-3">
                 <li>
                   <a
                     href="../../index.html"
                     class="text-gray-400 hover:text-white transition-colors"
-                    >Home</a
+                    data-i18n="nav_home"
+                    >Beranda</a
                   >
                 </li>
                 <li>
                   <a
                     href="../topup/topup.html"
                     class="text-gray-400 hover:text-white transition-colors"
+                    data-i18n="nav_topup"
                     >Top Up</a
                   >
                 </li>
@@ -410,14 +483,18 @@
                   <a
                     href="contact.html"
                     class="text-gray-400 hover:text-white transition-colors"
-                    >Contact</a
+                    data-i18n="nav_contact"
+                    >Kontak</a
                   >
                 </li>
               </ul>
             </div>
             <div>
-              <h3 class="font-heading font-semibold text-lg mb-4">
-                Categories
+              <h3
+                class="font-heading font-semibold text-lg mb-4"
+                data-i18n="categories"
+              >
+                Kategori
               </h3>
               <ul class="space-y-3">
                 <li>
@@ -444,8 +521,11 @@
               </ul>
             </div>
             <div>
-              <h3 class="font-heading font-semibold text-lg mb-4">
-                Contact Us
+              <h3
+                class="font-heading font-semibold text-lg mb-4"
+                data-i18n="contact_us"
+              >
+                Hubungi Kami
               </h3>
               <ul class="space-y-3">
                 <li class="flex items-center gap-3">
@@ -471,10 +551,14 @@
           <div
             class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-500"
           >
-            <p>© 2025 GameVault. All rights reserved.</p>
+            <p>
+              © 2025 GameVault.
+              <span data-i18n="rights">Hak Cipta Dilindungi.</span>
+            </p>
           </div>
         </div>
       </footer>
+
       <div
         id="tracking-modal"
         class="modal fixed inset-0 z-50 items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
@@ -486,6 +570,7 @@
             <div class="flex items-center justify-between mb-6">
               <h3
                 class="font-heading font-bold text-xl text-gray-900 dark:text-white"
+                data-i18n="modal_track_title"
               >
                 Lacak Pesanan
               </h3>
@@ -500,20 +585,23 @@
               <div>
                 <label
                   class="block text-sm font-medium mb-2 text-gray-900 dark:text-white"
-                  >Order ID</label
+                  data-i18n="label_order_id"
+                  >ID Pesanan</label
                 >
                 <input
                   type="text"
                   id="tracking-order-id"
                   class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-gray-900 dark:text-white"
-                  placeholder="Input order id anda..."
+                  data-i18n="placeholder_order_id"
+                  placeholder="Masukan order id anda"
                 />
               </div>
               <button
                 onclick="checkOrderStatus()"
                 class="w-full py-4 bg-primary hover:bg-red-700 text-white rounded-xl font-semibold transition-colors"
+                data-i18n="btn_check_status"
               >
-                Check Status
+                Cek Status
               </button>
               <div id="tracking-result"></div>
             </div>
