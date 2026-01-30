@@ -89,7 +89,7 @@ const translations = {
     status_success: "Pesanan Selesai",
     status_canceled: "Pesanan Dibatalkan",
     footer_desc:
-      "Partner top up game terpercaya. Cepat, aman, dan handal 24/7.",
+      "Partner top up game & aplikasi premium terpercaya. Cepat, aman, dan 100% legal",
     quick_links: "Link Cepat",
     categories: "Kategori",
     contact_us: "Hubungi Kami",
@@ -171,7 +171,7 @@ const translations = {
     status_success: "Completed",
     status_canceled: "Canceled",
     footer_desc:
-      "Your trusted partner for instant game top up. Fast, secure, and reliable 24/7.",
+      "Trusted premium game & app top-up partner. Fast, secure, and 100% legal.",
     quick_links: "Quick Links",
     categories: "Categories",
     contact_us: "Contact Us",

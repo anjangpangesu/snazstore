@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="../../asset/img/icon-logo.png" />
     <script>
       if (
         localStorage.getItem("darkMode") === "true" ||
@@ -65,15 +66,21 @@
               href="../../index.html"
               class="flex items-center gap-2 cursor-pointer"
             >
-              <div
-                class="w-10 h-10 hero-gradient rounded-lg flex items-center justify-center"
-              >
-                <i class="fas fa-gamepad text-white text-xl"></i>
-              </div>
+              <img
+                src="../../asset/img/icon-logo.png"
+                alt="SnazStore Logo"
+                class="w-10 h-10 object-contain rounded-lg"
+                onerror="
+                  this.onerror = null;
+                  this.src = 'https://via.placeholder.com/40?text=S';
+                  this.className =
+                    'w-10 h-10 hero-gradient rounded-lg flex items-center justify-center text-white font-bold';
+                "
+              />
               <span
                 id="logo-text"
                 class="font-heading font-bold text-xl text-primary"
-                >GameVault</span
+                >SnazStore</span
               >
             </a>
             <div class="hidden md:flex items-center gap-8">
