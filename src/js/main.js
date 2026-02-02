@@ -4,7 +4,7 @@
 const defaultConfig = {
   site_name: "GameVault",
   hero_title: "Instant Game Top Up",
-  admin_whatsapp: "6281213699618",
+  admin_whatsapp: "6287775314721",
   gas_url:
     "https://script.google.com/macros/s/AKfycbwiwCUuCLFSRxiOlOT_PMPiQxAV7CwuBdIw8FQkhShjmx9z0GNicIZX6xVZefSBw_1yRQ/exec",
 };
