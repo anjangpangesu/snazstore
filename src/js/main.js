@@ -2,7 +2,7 @@
 // 1. CONFIGURATION & STATE
 // =========================================
 const defaultConfig = {
-  site_name: "GameVault",
+  site_name: "SnazStore",
   hero_title: "Instant Game Top Up",
   admin_whatsapp: "6287775314721",
   gas_url:
@@ -28,13 +28,16 @@ const sliders = {
 // =========================================
 const translations = {
   id: {
+    sect_why_choose:
+      "Mengapa Memilih <span class='text-primary'>SnazStore</span>?",
     limited_time: "Waktu Terbatas",
     starting_from: "Mulai dari IDR",
+    flash_sale_price: "IDR",
     nav_home: "Beranda",
-    nav_topup: "Top Up",
+    nav_topup: "Top Up & Apps",
     nav_track: "Lacak Pesanan",
     nav_contact: "Kontak",
-    search_placeholder: "Cari game...",
+    search_placeholder: "Cari game atau aplikasi...",
     hero_title: "Top Up Game Instan",
     hero_subtitle: "Cepat, Aman & Terpercaya",
     btn_topup_now: "Top Up Sekarang",
@@ -47,31 +50,48 @@ const translations = {
     feat_fast_title: "Proses Cepat",
     feat_fast_desc: "Pengiriman instan dalam 1-5 menit setelah pembayaran",
     feat_trusted_title: "100% Terpercaya",
-    feat_trusted_desc: "Partner resmi dengan pembayaran aman",
+    feat_trusted_desc: "Partner resmi SnazStore, aman dan 100% legal",
     feat_guarantee_title: "Garansi Uang Kembali",
-    feat_guarantee_desc: "Refund penuh jika pesanan gagal",
+    feat_guarantee_desc: "Refund penuh jika pesanan gagal dalam 24 jam",
     sec_popular: "Game Populer",
     btn_view_all: "Lihat Semua",
     stats_games: "Total Game",
     stats_products: "Produk Voucher",
     stats_trans: "Transaksi",
-    sec_all_games: "Semua Game",
+    sec_all_games: "Semua Layanan",
     btn_show_more: "Tampilkan Lebih Banyak",
     btn_load_more: "Muat Lebih Banyak",
     sec_faq: "Pertanyaan Umum",
+    // FAQ Home (Tetap Statis)
+    faq_1_q: "Berapa lama proses top up?",
+    faq_1_a:
+      "Proses hanya memakan waktu 1-5 menit saja setelah konfirmasi pembayaran.",
+    faq_2_q: "Metode pembayaran apa saja yang tersedia?",
+    faq_2_a:
+      "Kami menerima pembayaran via QRIS, E-Wallet (GoPay, ShopeePay), dan Bank Jago.",
+    faq_3_q: "Proses sudah 5 menit, tapi belum masuk?",
+    faq_3_a:
+      "Tenang saja, jika pesanan belum diterima, mohon tunggu 1x24 jam atau hubungi CS kami.",
+    faq_4_q: "Langganan berakhir sebelum waktunya?",
+    faq_4_a: "Silakan hubungi customer service kami untuk klaim garansi.",
+
     back_to_topup: "Kembali ke Top Up",
     label_nominal: "Pilih Nominal",
     label_account: "Informasi Akun",
+    prod_faq_title: "Cara Top Up & Info Penting",
+
+    // Form Labels
     label_game_id: "ID Game",
     label_server: "Server",
     label_nickname: "Nickname",
     label_email: "Email",
     label_whatsapp: "Nomor WhatsApp",
+    text_select_server: "Pilih Server",
     placeholder_game_id: "Masukkan ID Game",
     placeholder_server: "ID Server",
-    placeholder_nickname: "Masukkan Nickname",
-    placeholder_email: "Masukkan email kamu",
-    placeholder_whatsapp: "Contoh: 08123456789",
+    placeholder_nickname: "Masukkan Nickname (Opsional)",
+    placeholder_email: "Masukkan email aktif",
+    placeholder_whatsapp: "Contoh: 087775314721",
     btn_checkout_default: "Pilih nominal dulu",
     modal_summary: "Ringkasan Pesanan",
     label_total: "Total Harga",
@@ -79,7 +99,7 @@ const translations = {
     btn_confirm: "Pesan Sekarang",
     modal_track_title: "Lacak Pesanan",
     label_order_id: "ID Pesanan",
-    placeholder_order_id: "Masukan order id anda",
+    placeholder_order_id: "Masukkan Order ID (Contoh: ISS/...)",
     label_product: "Produk",
     label_status: "Status",
     label_account_info: "Akun",
@@ -89,7 +109,7 @@ const translations = {
     status_success: "Pesanan Selesai",
     status_canceled: "Pesanan Dibatalkan",
     footer_desc:
-      "Partner top up game & aplikasi premium terpercaya. Cepat, aman, dan 100% legal",
+      "Partner top up game & aplikasi premium terpercaya. Cepat, aman, dan 100% legal.",
     quick_links: "Link Cepat",
     categories: "Kategori",
     contact_us: "Hubungi Kami",
@@ -104,21 +124,21 @@ const translations = {
     btn_send_wa: "Kirim via WhatsApp",
     info_title: "Info Kontak",
     op_hours: "Jam Operasional",
-    op_desc: "Layanan Pelanggan 24/7",
+    op_desc: "Senin - Minggu: 07.00 - 22.00 WIB",
     follow_us: "Ikuti Kami",
-    text_select_server: "Pilih Server",
-    flash_sale_price: "IDR",
   },
   en: {
+    sect_why_choose: "Why Choose <span class='text-primary'>SnazStore</span>?",
     limited_time: "Limited Time",
     starting_from: "Starting from IDR",
+    flash_sale_price: "IDR",
     nav_home: "Home",
-    nav_topup: "Top Up",
+    nav_topup: "Top Up & Apps",
     nav_track: "Track Order",
     nav_contact: "Contact",
-    search_placeholder: "Search games...",
+    search_placeholder: "Search games or apps...",
     hero_title: "Instant Game Top Up",
-    hero_subtitle: "Fast, Secure & Reliable Gaming Credits",
+    hero_subtitle: "Fast, Secure & Reliable",
     btn_topup_now: "Top Up Now",
     hero_flash_title: "Weekly Flash Sale",
     hero_flash_subtitle: "Up to 30% discount on selected items",
@@ -127,33 +147,47 @@ const translations = {
     hero_support_subtitle: "We are here to help anytime you need",
     btn_contact_us: "Contact Us",
     feat_fast_title: "Fast Process",
-    feat_fast_desc: "Instant delivery within 1-5 minutes",
+    feat_fast_desc: "Instant delivery within 1-5 minutes after payment",
     feat_trusted_title: "100% Trusted",
-    feat_trusted_desc: "Official partner with secure payment",
+    feat_trusted_desc: "Official SnazStore partner, secure and 100% legal",
     feat_guarantee_title: "Money Back Guarantee",
-    feat_guarantee_desc: "Full refund if order fails",
+    feat_guarantee_desc: "Full refund if the order fails within 24 hours",
     sec_popular: "Popular Games",
     btn_view_all: "View All",
     stats_games: "Total Games",
     stats_products: "Voucher Products",
     stats_trans: "Transactions",
-    sec_all_games: "All Games",
+    sec_all_games: "All Services",
     btn_show_more: "Show More",
     btn_load_more: "Load More",
     sec_faq: "Frequently Asked Questions",
+    // FAQ Home (Static)
+    faq_1_q: "How long does the top up take?",
+    faq_1_a:
+      "The process usually takes 1-5 minutes after payment confirmation.",
+    faq_2_q: "What payment methods are available?",
+    faq_2_a: "We accept QRIS, E-Wallets (GoPay, ShopeePay), and Bank Jago.",
+    faq_3_q: "It's been 5 minutes, order not received?",
+    faq_3_a: "Don't worry, please wait within 1x24 hours or contact our CS.",
+    faq_4_q: "Subscription ended early?",
+    faq_4_a: "Please contact our customer service for warranty claims.",
+
     back_to_topup: "Back to Top Up",
     label_nominal: "Select Nominal",
     label_account: "Account Information",
+    prod_faq_title: "How to Order & Info",
+
     label_game_id: "Game ID",
     label_server: "Server",
     label_nickname: "Nickname",
     label_email: "Email",
     label_whatsapp: "WhatsApp Number",
+    text_select_server: "Select Server",
     placeholder_game_id: "Enter Game ID",
     placeholder_server: "Server ID",
-    placeholder_nickname: "Enter Nickname",
-    placeholder_email: "Enter your email",
-    placeholder_whatsapp: "Example: 08123456789",
+    placeholder_nickname: "Enter Nickname (Optional)",
+    placeholder_email: "Enter valid email",
+    placeholder_whatsapp: "Example: 087775314721",
     btn_checkout_default: "Select a nominal first",
     modal_summary: "Order Summary",
     label_total: "Total Price",
@@ -161,7 +195,7 @@ const translations = {
     btn_confirm: "Order Now",
     modal_track_title: "Track Order",
     label_order_id: "Order ID",
-    placeholder_order_id: "Enter your order ID",
+    placeholder_order_id: "Enter Order ID (Ex: ISS/...)",
     label_product: "Product",
     label_status: "Status",
     label_account_info: "Account",
@@ -186,10 +220,8 @@ const translations = {
     btn_send_wa: "Send via WhatsApp",
     info_title: "Get in touch",
     op_hours: "Operating Hours",
-    op_desc: "24/7 Customer Support",
+    op_desc: "Mon - Sun: 07.00 - 22.00 WIB",
     follow_us: "Follow us",
-    text_select_server: "Select Server",
-    flash_sale_price: "IDR",
   },
 };
 
@@ -198,11 +230,8 @@ const translations = {
 // =========================================
 document.addEventListener("DOMContentLoaded", async () => {
   setupLanguage();
-
-  // Load data first before rendering
   await loadProducts();
 
-  // Page Specific Rendering
   if (document.getElementById("popular-games")) {
     setActiveNav("Home");
     renderPopularGames();
@@ -261,10 +290,7 @@ async function loadProducts() {
       }
       const response = await fetch(path);
       products = await response.json();
-      console.warn("Loaded from local JSON fallback.");
-    } catch (e) {
-      console.error("Critical: Failed to load products.", e);
-    }
+    } catch (e) {}
   }
 }
 
@@ -272,16 +298,11 @@ function setActiveNav(name) {
   const navLinks = document.querySelectorAll(".nav-link");
   navLinks.forEach((link) => {
     link.classList.remove("text-primary");
-    // Gunakan href untuk mencocokkan URL
     if (link.getAttribute("href") && link.href === window.location.href) {
       link.classList.add("text-primary");
     }
   });
 }
-
-// =========================================
-// 5. LANGUAGE SYSTEM
-// =========================================
 
 function setupLanguage() {
   const btnId = document.getElementById("lang-id");
@@ -298,7 +319,6 @@ function setupLanguage() {
   }
   applyTranslations();
 
-  // Anti-Flash: Reveal content
   setTimeout(() => {
     document.body.classList.remove("lang-loading");
     document.body.classList.add("lang-loaded");
@@ -328,7 +348,7 @@ function applyTranslations() {
           const iconHtml = icon.outerHTML;
           el.innerHTML = iconHtml + " " + translations[currentLang][key];
         } else {
-          el.textContent = translations[currentLang][key];
+          el.innerHTML = translations[currentLang][key];
         }
       }
     }
@@ -336,7 +356,7 @@ function applyTranslations() {
 }
 
 // =========================================
-// 6. SLIDER SYSTEM
+// 5. SLIDER & RENDER FUNCTIONS
 // =========================================
 
 function startSlider(sliderId) {
@@ -376,10 +396,6 @@ function updateSlider(sliderId) {
     dot.classList.toggle("bg-white", i === current);
   });
 }
-
-// =========================================
-// 7. RENDER FUNCTIONS
-// =========================================
 
 function createGameCard(product, size = "small") {
   const isSmall = size === "small";
@@ -469,7 +485,6 @@ function renderFlashSale() {
   products.forEach((product) => {
     if (product.nominals && product.nominals.length > 0) {
       product.nominals.forEach((nominal) => {
-        // Konversi ke float untuk cek angka
         const disc = parseFloat(nominal.discount);
         if (!isNaN(disc) && disc > 0) {
           discountedItems.push({ product: product, nominal: nominal });
@@ -563,8 +578,8 @@ function renderProductDetail() {
 
   renderNominals();
   renderOrderForm();
+  renderProductFAQ();
 
-  // Auto Select Logic
   const urlParams = new URLSearchParams(window.location.search);
   const autoSelectId = urlParams.get("nominal");
   if (autoSelectId) {
@@ -574,6 +589,46 @@ function renderProductDetail() {
   } else {
     selectedNominal = null;
     updateCheckoutButton();
+  }
+}
+
+function renderProductFAQ() {
+  const listContainer = document.getElementById("product-faq-list");
+  if (!listContainer) return;
+  
+  const lang = translations[currentLang];
+
+  let rawData = currentLang === 'id' ? currentProduct.faq_id : currentProduct.faq_en;
+  
+  let htmlContent = "";
+
+  try {
+    if (rawData && String(rawData).trim() !== "") {
+      let cleanJson = String(rawData).trim().replace(/(\r\n|\n|\r)/gm, "");
+      const faqArray = JSON.parse(cleanJson);
+      
+      if (Array.isArray(faqArray)) {
+        htmlContent = faqArray.map(item => `
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 transition-all hover:shadow-md">
+            <h4 class="font-semibold text-gray-900 dark:text-white mb-2 flex items-start gap-2 leading-snug">
+              <i class="fas fa-question-circle text-primary mt-1 text-xs flex-shrink-0"></i>
+              <span>${item.q}</span>
+            </h4>
+            <p class="text-sm text-gray-600 dark:text-gray-400 pl-5 leading-relaxed">${item.a}</p>
+          </div>
+        `).join('<div class="h-3"></div>');
+      }
+    }
+  } catch (e) {
+    console.warn("FAQ JSON Parsing Error:", e);
+  }
+
+  // 3. Render ke dalam List
+  if (htmlContent !== "") {
+    listContainer.innerHTML = htmlContent;
+  } else {
+    // Jika kosong, hilangkan skeleton loading atau tampilkan pesan kosong
+    listContainer.innerHTML = `<div class="text-center text-gray-400 text-sm py-4 italic">Tidak ada info tambahan.</div>`;
   }
 }
 
@@ -705,7 +760,7 @@ function renderOrderForm() {
 }
 
 // =========================================
-// 8. LOGIC & HELPER FUNCTIONS
+// 8. CHECKOUT LOGIC & HELPERS
 // =========================================
 
 function selectNominal(nominalId) {
@@ -805,8 +860,8 @@ function showCheckoutModal() {
         ${formData.server ? `<div class="flex justify-between"><span class="text-sm text-gray-500 dark:text-gray-400">${lang.label_server}</span><span class="font-medium text-gray-900 dark:text-white">${formData.server}</span></div>` : ""}
         ${formData.nickname ? `<div class="flex justify-between"><span class="text-sm text-gray-500 dark:text-gray-400">${lang.label_nickname}</span><span class="font-medium text-gray-900 dark:text-white">${formData.nickname}</span></div>` : ""}
         <div class="border-t border-gray-200 dark:border-gray-700 my-2 pt-2"></div>
-        <div class="mb-3"><p class="text-sm text-gray-500 dark:text-gray-400 mb-1">${lang.label_email}</p><p class="font-medium text-gray-900 dark:text-white break-all">${formData.email}</p></div>
-        <div><p class="text-sm text-gray-500 dark:text-gray-400 mb-1">${lang.label_whatsapp}</p><p class="font-medium text-gray-900 dark:text-white">${formData.whatsapp}</p></div>
+        <div class="flex justify-between"><span class="text-sm text-gray-500 dark:text-gray-400">${lang.label_email}</span><span class="font-medium text-gray-900 dark:text-white text-right break-all max-w-[60%]">${formData.email}</span></div>
+        <div class="flex justify-between"><span class="text-sm text-gray-500 dark:text-gray-400">${lang.label_whatsapp}</span><span class="font-medium text-gray-900 dark:text-white">${formData.whatsapp}</span></div>
       </div>`;
   }
   document.getElementById("checkout-content").innerHTML = `
