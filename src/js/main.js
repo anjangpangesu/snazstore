@@ -34,7 +34,7 @@ const translations = {
     starting_from: "Mulai dari IDR",
     flash_sale_price: "IDR",
     nav_home: "Beranda",
-    nav_topup: "Top Up & Apps",
+    nav_topup: "Top Up",
     nav_track: "Lacak Pesanan",
     nav_contact: "Kontak",
     search_placeholder: "Cari game atau aplikasi...",
@@ -62,7 +62,7 @@ const translations = {
     btn_show_more: "Tampilkan Lebih Banyak",
     btn_load_more: "Muat Lebih Banyak",
     sec_faq: "Pertanyaan Umum",
-    // FAQ Home (Tetap Statis)
+    // FAQ Home
     faq_1_q: "Berapa lama proses top up?",
     faq_1_a:
       "Proses hanya memakan waktu 1-5 menit saja setelah konfirmasi pembayaran.",
@@ -79,6 +79,14 @@ const translations = {
     label_nominal: "Pilih Nominal",
     label_account: "Informasi Akun",
     prod_faq_title: "Cara Top Up & Info Penting",
+    // Default FAQ
+    prod_faq_1_q: "Bagaimana cara melakukan pemesanan?",
+    prod_faq_1_a:
+      "Masukkan Data Akun > Pilih Nominal > Masukkan Kontak > Klik Pesan Sekarang > Lakukan Pembayaran.",
+    prod_faq_2_q: "Apakah layanan ini buka 24 Jam?",
+    prod_faq_2_a: "Ya, sistem kami beroperasi otomatis 24 jam non-stop.",
+    prod_faq_3_q: "Butuh bantuan?",
+    prod_faq_3_a: "Hubungi WhatsApp Admin jika mengalami kendala.",
 
     // Form Labels
     label_game_id: "ID Game",
@@ -133,7 +141,7 @@ const translations = {
     starting_from: "Starting from IDR",
     flash_sale_price: "IDR",
     nav_home: "Home",
-    nav_topup: "Top Up & Apps",
+    nav_topup: "top up",
     nav_track: "Track Order",
     nav_contact: "Contact",
     search_placeholder: "Search games or apps...",
@@ -161,7 +169,6 @@ const translations = {
     btn_show_more: "Show More",
     btn_load_more: "Load More",
     sec_faq: "Frequently Asked Questions",
-    // FAQ Home (Static)
     faq_1_q: "How long does the top up take?",
     faq_1_a:
       "The process usually takes 1-5 minutes after payment confirmation.",
@@ -176,6 +183,13 @@ const translations = {
     label_nominal: "Select Nominal",
     label_account: "Account Information",
     prod_faq_title: "How to Order & Info",
+    prod_faq_1_q: "How to place an order?",
+    prod_faq_1_a:
+      "Enter Account Data > Select Nominal > Enter Contact > Click Order Now > Make Payment.",
+    prod_faq_2_q: "Is this service available 24/7?",
+    prod_faq_2_a: "Yes, our system operates automatically 24 hours non-stop.",
+    prod_faq_3_q: "Need help?",
+    prod_faq_3_a: "Contact our WhatsApp Admin if you face any issues.",
 
     label_game_id: "Game ID",
     label_server: "Server",
@@ -230,10 +244,22 @@ const translations = {
 // =========================================
 document.addEventListener("DOMContentLoaded", async () => {
   setupLanguage();
+
+  // FIX: SET ACTIVE NAV IMMEDIATELY (Untuk Desktop & Mobile)
+  if (document.getElementById("popular-games")) {
+    setActiveNav("nav_home"); // Beranda Aktif
+  } else if (document.getElementById("all-games-topup")) {
+    setActiveNav("nav_topup"); // Top Up Aktif
+  } else if (document.getElementById("contact-form")) {
+    setActiveNav("nav_contact"); // Kontak Aktif
+  } else if (document.getElementById("product-hero")) {
+    // FIX: PRODUCT PAGE -> FORCE "TOP UP" ACTIVE
+    setActiveNav("nav_topup");
+  }
+
   await loadProducts();
 
   if (document.getElementById("popular-games")) {
-    setActiveNav("Home");
     renderPopularGames();
     renderAllGames("home");
     renderFlashSale();
@@ -242,7 +268,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   if (document.getElementById("all-games-topup")) {
-    setActiveNav("Top Up");
     const urlParams = new URLSearchParams(window.location.search);
     const categoryParam = urlParams.get("category");
     if (categoryParam) {
@@ -254,12 +279,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     renderFlashSale();
   }
 
-  if (document.getElementById("contact-form")) {
-    setActiveNav("Contact");
-  }
-
   if (document.getElementById("product-hero")) {
-    setActiveNav("Top Up");
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get("id");
     if (productId) {
@@ -294,14 +314,37 @@ async function loadProducts() {
   }
 }
 
-function setActiveNav(name) {
-  const navLinks = document.querySelectorAll(".nav-link");
+// UPDATE: setActiveNav mendukung Desktop & Mobile
+function setActiveNav(targetKey) {
+  // 1. Ambil link Desktop (.nav-link) & Mobile (#mobile-menu a, #mobile-menu button)
+  const navLinks = document.querySelectorAll(
+    ".nav-link, #mobile-menu a, #mobile-menu button",
+  );
+
+  // 2. Reset semua link
   navLinks.forEach((link) => {
     link.classList.remove("text-primary");
-    if (link.getAttribute("href") && link.href === window.location.href) {
-      link.classList.add("text-primary");
-    }
   });
+
+  // 3. Coba aktifkan berdasarkan Kunci (data-i18n) - PRIORITAS UTAMA
+  let activated = false;
+  if (targetKey) {
+    navLinks.forEach((link) => {
+      if (link.getAttribute("data-i18n") === targetKey) {
+        link.classList.add("text-primary");
+        activated = true;
+      }
+    });
+  }
+
+  // 4. Fallback: Gunakan URL matching jika key tidak ditemukan
+  if (!activated) {
+    navLinks.forEach((link) => {
+      if (link.getAttribute("href") && link.href === window.location.href) {
+        link.classList.add("text-primary");
+      }
+    });
+  }
 }
 
 function setupLanguage() {
@@ -410,6 +453,7 @@ function createGameCard(product, size = "small") {
   let rating = parseFloat(product.rating);
   if (isNaN(rating)) rating = 0;
 
+  // Responsive Text for Game Cards too
   if (isSmall) {
     return `
       <a href="${productPath}" class="block card-hover bg-white dark:bg-dark rounded-xl overflow-hidden cursor-pointer shadow-sm">
@@ -595,20 +639,25 @@ function renderProductDetail() {
 function renderProductFAQ() {
   const listContainer = document.getElementById("product-faq-list");
   if (!listContainer) return;
-  
+
   const lang = translations[currentLang];
 
-  let rawData = currentLang === 'id' ? currentProduct.faq_id : currentProduct.faq_en;
-  
+  let rawData =
+    currentLang === "id" ? currentProduct.faq_id : currentProduct.faq_en;
+
   let htmlContent = "";
 
   try {
     if (rawData && String(rawData).trim() !== "") {
-      let cleanJson = String(rawData).trim().replace(/(\r\n|\n|\r)/gm, "");
+      let cleanJson = String(rawData)
+        .trim()
+        .replace(/(\r\n|\n|\r)/gm, "");
       const faqArray = JSON.parse(cleanJson);
-      
+
       if (Array.isArray(faqArray)) {
-        htmlContent = faqArray.map(item => `
+        htmlContent = faqArray
+          .map(
+            (item) => `
           <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 transition-all hover:shadow-md">
             <h4 class="font-semibold text-gray-900 dark:text-white mb-2 flex items-start gap-2 leading-snug">
               <i class="fas fa-question-circle text-primary mt-1 text-xs flex-shrink-0"></i>
@@ -616,7 +665,9 @@ function renderProductFAQ() {
             </h4>
             <p class="text-sm text-gray-600 dark:text-gray-400 pl-5 leading-relaxed">${item.a}</p>
           </div>
-        `).join('<div class="h-3"></div>');
+        `,
+          )
+          .join('<div class="h-3"></div>');
       }
     }
   } catch (e) {
@@ -632,6 +683,7 @@ function renderProductFAQ() {
   }
 }
 
+// UPDATE: RESPONSIVE NOMINAL CARDS (Hapus Truncate, Sesuaikan Ukuran Font)
 function renderNominals() {
   const container = document.getElementById("nominal-grid");
   const groupedNominals = {};
@@ -670,14 +722,14 @@ function renderNominals() {
                 ? (n.price * (100 - disc)) / 100
                 : n.price;
               return `
-              <div onclick="selectNominal('${n.id}')" data-nominal-id="${n.id}" class="nominal-card card-hover bg-white dark:bg-dark rounded-xl p-4 cursor-pointer border-2 border-transparent hover:border-primary/50 transition-all relative">
+              <div onclick="selectNominal('${n.id}')" data-nominal-id="${n.id}" class="nominal-card card-hover bg-white dark:bg-dark rounded-xl p-3 sm:p-4 cursor-pointer border-2 border-transparent hover:border-primary/50 transition-all relative">
                 ${hasDiscount ? `<span class="absolute top-2 right-2 px-1.5 py-0.5 bg-primary text-white text-[10px] font-bold rounded">- ${disc}%</span>` : ""}
                 <div class="flex items-center gap-3 mb-3">
-                  <div class="w-12 h-12 flex items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/10 rounded-lg flex-shrink-0 overflow-hidden">
+                  <div class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/10 rounded-lg flex-shrink-0 overflow-hidden">
                     <img src="${n.icon}" alt="${n.name}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/40'">
                   </div>
                   <div class="flex-1 min-w-0">
-                    <h4 class="font-semibold text-sm truncate text-gray-900 dark:text-white">${n.name}</h4>
+                    <h4 class="font-semibold text-xs sm:text-sm text-gray-900 dark:text-white leading-snug break-words">${n.name}</h4>
                   </div>
                 </div>
                 ${
