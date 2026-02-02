@@ -62,7 +62,6 @@ const translations = {
     btn_show_more: "Tampilkan Lebih Banyak",
     btn_load_more: "Muat Lebih Banyak",
     sec_faq: "Pertanyaan Umum",
-    // FAQ Home
     faq_1_q: "Berapa lama proses top up?",
     faq_1_a:
       "Proses hanya memakan waktu 1-5 menit saja setelah konfirmasi pembayaran.",
@@ -74,12 +73,10 @@ const translations = {
       "Tenang saja, jika pesanan belum diterima, mohon tunggu 1x24 jam atau hubungi CS kami.",
     faq_4_q: "Langganan berakhir sebelum waktunya?",
     faq_4_a: "Silakan hubungi customer service kami untuk klaim garansi.",
-
     back_to_topup: "Kembali ke Top Up",
     label_nominal: "Pilih Nominal",
     label_account: "Informasi Akun",
     prod_faq_title: "Cara Top Up & Info Penting",
-    // Default FAQ
     prod_faq_1_q: "Bagaimana cara melakukan pemesanan?",
     prod_faq_1_a:
       "Masukkan Data Akun > Pilih Nominal > Masukkan Kontak > Klik Pesan Sekarang > Lakukan Pembayaran.",
@@ -87,8 +84,6 @@ const translations = {
     prod_faq_2_a: "Ya, sistem kami beroperasi otomatis 24 jam non-stop.",
     prod_faq_3_q: "Butuh bantuan?",
     prod_faq_3_a: "Hubungi WhatsApp Admin jika mengalami kendala.",
-
-    // Form Labels
     label_game_id: "ID Game",
     label_server: "Server",
     label_nickname: "Nickname",
@@ -141,7 +136,7 @@ const translations = {
     starting_from: "Starting from IDR",
     flash_sale_price: "IDR",
     nav_home: "Home",
-    nav_topup: "top up",
+    nav_topup: "Top Up",
     nav_track: "Track Order",
     nav_contact: "Contact",
     search_placeholder: "Search games or apps...",
@@ -178,7 +173,6 @@ const translations = {
     faq_3_a: "Don't worry, please wait within 1x24 hours or contact our CS.",
     faq_4_q: "Subscription ended early?",
     faq_4_a: "Please contact our customer service for warranty claims.",
-
     back_to_topup: "Back to Top Up",
     label_nominal: "Select Nominal",
     label_account: "Account Information",
@@ -190,7 +184,6 @@ const translations = {
     prod_faq_2_a: "Yes, our system operates automatically 24 hours non-stop.",
     prod_faq_3_q: "Need help?",
     prod_faq_3_a: "Contact our WhatsApp Admin if you face any issues.",
-
     label_game_id: "Game ID",
     label_server: "Server",
     label_nickname: "Nickname",
@@ -245,15 +238,13 @@ const translations = {
 document.addEventListener("DOMContentLoaded", async () => {
   setupLanguage();
 
-  // FIX: SET ACTIVE NAV IMMEDIATELY (Untuk Desktop & Mobile)
   if (document.getElementById("popular-games")) {
-    setActiveNav("nav_home"); // Beranda Aktif
+    setActiveNav("nav_home");
   } else if (document.getElementById("all-games-topup")) {
-    setActiveNav("nav_topup"); // Top Up Aktif
+    setActiveNav("nav_topup");
   } else if (document.getElementById("contact-form")) {
-    setActiveNav("nav_contact"); // Kontak Aktif
+    setActiveNav("nav_contact");
   } else if (document.getElementById("product-hero")) {
-    // FIX: PRODUCT PAGE -> FORCE "TOP UP" ACTIVE
     setActiveNav("nav_topup");
   }
 
@@ -314,19 +305,15 @@ async function loadProducts() {
   }
 }
 
-// UPDATE: setActiveNav mendukung Desktop & Mobile
 function setActiveNav(targetKey) {
-  // 1. Ambil link Desktop (.nav-link) & Mobile (#mobile-menu a, #mobile-menu button)
   const navLinks = document.querySelectorAll(
     ".nav-link, #mobile-menu a, #mobile-menu button",
   );
 
-  // 2. Reset semua link
   navLinks.forEach((link) => {
     link.classList.remove("text-primary");
   });
 
-  // 3. Coba aktifkan berdasarkan Kunci (data-i18n) - PRIORITAS UTAMA
   let activated = false;
   if (targetKey) {
     navLinks.forEach((link) => {
@@ -337,7 +324,6 @@ function setActiveNav(targetKey) {
     });
   }
 
-  // 4. Fallback: Gunakan URL matching jika key tidak ditemukan
   if (!activated) {
     navLinks.forEach((link) => {
       if (link.getAttribute("href") && link.href === window.location.href) {
@@ -453,7 +439,6 @@ function createGameCard(product, size = "small") {
   let rating = parseFloat(product.rating);
   if (isNaN(rating)) rating = 0;
 
-  // Responsive Text for Game Cards too
   if (isSmall) {
     return `
       <a href="${productPath}" class="block card-hover bg-white dark:bg-dark rounded-xl overflow-hidden cursor-pointer shadow-sm">
@@ -674,16 +659,13 @@ function renderProductFAQ() {
     console.warn("FAQ JSON Parsing Error:", e);
   }
 
-  // 3. Render ke dalam List
   if (htmlContent !== "") {
     listContainer.innerHTML = htmlContent;
   } else {
-    // Jika kosong, hilangkan skeleton loading atau tampilkan pesan kosong
     listContainer.innerHTML = `<div class="text-center text-gray-400 text-sm py-4 italic">Tidak ada info tambahan.</div>`;
   }
 }
 
-// UPDATE: RESPONSIVE NOMINAL CARDS (Hapus Truncate, Sesuaikan Ukuran Font)
 function renderNominals() {
   const container = document.getElementById("nominal-grid");
   const groupedNominals = {};
@@ -1041,6 +1023,65 @@ async function confirmOrder() {
 }
 
 // UI HELPERS
+// NEW: Helper function to setup search logic for a given input & results container
+function setupSearch(inputId, resultsId) {
+  const searchInput = document.getElementById(inputId);
+  const searchResults = document.getElementById(resultsId);
+
+  if (searchInput && searchResults) {
+    searchInput.addEventListener("input", (e) => {
+      const query = e.target.value.toLowerCase().trim();
+      if (query.length > 0) {
+        const filtered = products.filter(
+          (p) =>
+            p.name.toLowerCase().includes(query) ||
+            p.category.toLowerCase().includes(query) ||
+            p.developer.toLowerCase().includes(query),
+        );
+        if (filtered.length > 0) {
+          searchResults.innerHTML = filtered
+            .slice(0, 6)
+            .map(
+              (p) => `
+            <div onclick="navigateToProduct('${p.id}')" class="flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors border-b dark:border-gray-700 last:border-b-0">
+              <img src="${p.image}" alt="${p.name}" class="w-12 h-12 rounded-lg object-cover">
+              <div class="flex-1">
+                <h4 class="font-medium text-sm text-gray-900 dark:text-white">${p.name}</h4>
+                <p class="text-xs text-gray-500 dark:text-gray-400 capitalize">${p.category} • ${p.developer}</p>
+              </div>
+              <i class="fas fa-chevron-right text-gray-400 text-sm"></i>
+            </div>`,
+            )
+            .join("");
+          searchResults.classList.remove("hidden");
+        } else {
+          searchResults.innerHTML =
+            '<div class="p-4 text-center text-gray-500 text-sm">No games found</div>';
+          searchResults.classList.remove("hidden");
+        }
+      } else {
+        searchResults.classList.add("hidden");
+      }
+    });
+
+    document.addEventListener("click", (e) => {
+      if (
+        !searchInput.contains(e.target) &&
+        !searchResults.contains(e.target)
+      ) {
+        searchResults.classList.add("hidden");
+      }
+    });
+
+    searchInput.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        searchResults.classList.add("hidden");
+        searchInput.blur();
+      }
+    });
+  }
+}
+
 function filterGames(category) {
   currentFilter = category;
   updateFilterButtons(".filter-btn", category);
@@ -1191,54 +1232,9 @@ function setupEventListeners() {
       showToast("Redirecting to WhatsApp...", "success");
     });
 
-  const searchInput = document.getElementById("search-input");
-  const searchResults = document.getElementById("search-results");
-  if (searchInput && searchResults) {
-    searchInput.addEventListener("input", (e) => {
-      const query = e.target.value.toLowerCase().trim();
-      if (query.length > 0) {
-        const filtered = products.filter(
-          (p) =>
-            p.name.toLowerCase().includes(query) ||
-            p.category.toLowerCase().includes(query) ||
-            p.developer.toLowerCase().includes(query),
-        );
-        if (filtered.length > 0) {
-          searchResults.innerHTML = filtered
-            .slice(0, 6)
-            .map(
-              (p) => `
-            <div onclick="navigateToProduct('${p.id}')" class="flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors border-b dark:border-gray-700 last:border-b-0">
-              <img src="${p.image}" alt="${p.name}" class="w-12 h-12 rounded-lg object-cover">
-              <div class="flex-1">
-                <h4 class="font-medium text-sm text-gray-900 dark:text-white">${p.name}</h4>
-                <p class="text-xs text-gray-500 dark:text-gray-400 capitalize">${p.category} • ${p.developer}</p>
-              </div>
-              <i class="fas fa-chevron-right text-gray-400 text-sm"></i>
-            </div>`,
-            )
-            .join("");
-          searchResults.classList.remove("hidden");
-        } else {
-          searchResults.innerHTML =
-            '<div class="p-4 text-center text-gray-500 text-sm">No games found</div>';
-          searchResults.classList.remove("hidden");
-        }
-      } else {
-        searchResults.classList.add("hidden");
-      }
-    });
-    document.addEventListener("click", (e) => {
-      if (!searchInput.contains(e.target) && !searchResults.contains(e.target))
-        searchResults.classList.add("hidden");
-    });
-    searchInput.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
-        searchResults.classList.add("hidden");
-        searchInput.blur();
-      }
-    });
-  }
+  // Updated: Register search listeners for BOTH desktop and mobile inputs
+  setupSearch("search-input", "search-results");
+  setupSearch("search-input-mobile", "search-results-mobile");
 }
 
 function setupTrackingListener() {
