@@ -55,9 +55,10 @@ const translations = {
     feat_guarantee_desc: "Refund penuh jika pesanan gagal dalam 24 jam",
     sec_popular: "Game Populer",
     btn_view_all: "Lihat Semua",
-    stats_games: "Total Game",
-    stats_products: "Produk Voucher",
-    stats_trans: "Transaksi",
+    // UPDATE: Label Statistik
+    stats_games: "Total Games",
+    stats_products: "Aplikasi Premium",
+    stats_trans: "Total Transaksi",
     sec_all_games: "Semua Layanan",
     btn_show_more: "Tampilkan Lebih Banyak",
     btn_load_more: "Muat Lebih Banyak",
@@ -157,9 +158,10 @@ const translations = {
     feat_guarantee_desc: "Full refund if the order fails within 24 hours",
     sec_popular: "Popular Games",
     btn_view_all: "View All",
+    // UPDATE: Stats Labels
     stats_games: "Total Games",
-    stats_products: "Voucher Products",
-    stats_trans: "Transactions",
+    stats_products: "Premium Apps",
+    stats_trans: "Total Transactions",
     sec_all_games: "All Services",
     btn_show_more: "Show More",
     btn_load_more: "Load More",
@@ -248,14 +250,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     setActiveNav("nav_topup");
   }
 
+  // LOAD DATA
   await loadProducts();
 
+  // PAGE SPECIFIC RENDERING
   if (document.getElementById("popular-games")) {
     renderPopularGames();
     renderAllGames("home");
     renderFlashSale();
     startSlider("hero");
     animateCounters();
+
+    // NEW: Update Realtime Statistics on Home Page
+    updateRealtimeStats();
   }
 
   if (document.getElementById("all-games-topup")) {
@@ -302,6 +309,44 @@ async function loadProducts() {
       const response = await fetch(path);
       products = await response.json();
     } catch (e) {}
+  }
+}
+
+// NEW: FUNCTION TO UPDATE REALTIME STATS (GAMES, APPS, TRANSACTIONS)
+async function updateRealtimeStats() {
+  // 1. Calculate Games & Premium Apps from loaded products
+  const gamesCount = products.filter(
+    (p) => p.category === "mobile" || p.category === "pc",
+  ).length;
+  const premiumCount = products.filter((p) => p.category === "premium").length;
+
+  // 2. Update Games Count in DOM
+  const gamesEl = document.getElementById("count-games");
+  if (gamesEl) {
+    gamesEl.textContent = gamesCount;
+    gamesEl.setAttribute("data-target", gamesCount);
+  }
+
+  // 3. Update Premium Apps Count in DOM
+  const premiumEl = document.getElementById("count-premium");
+  if (premiumEl) {
+    premiumEl.textContent = premiumCount;
+    premiumEl.setAttribute("data-target", premiumCount);
+  }
+
+  // 4. Fetch & Update Total Transactions from Server
+  const transEl = document.getElementById("count-trans");
+  if (transEl) {
+    try {
+      const res = await fetch(`${config.gas_url}?action=getOrderCount`);
+      const data = await res.json();
+      if (data && data.count !== undefined) {
+        transEl.textContent = data.count;
+        transEl.setAttribute("data-target", data.count);
+      }
+    } catch (e) {
+      console.error("Failed to fetch transaction count:", e);
+    }
   }
 }
 
