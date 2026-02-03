@@ -9,6 +9,9 @@ const defaultConfig = {
     "https://script.google.com/macros/s/AKfycbwiwCUuCLFSRxiOlOT_PMPiQxAV7CwuBdIw8FQkhShjmx9z0GNicIZX6xVZefSBw_1yRQ/exec",
 };
 
+// CONFIG: Nama Kunci Cache
+const CACHE_KEY = "snazstore_products_v1";
+
 let config = { ...defaultConfig };
 let products = [];
 let currentProduct = null;
@@ -55,7 +58,6 @@ const translations = {
     feat_guarantee_desc: "Refund penuh jika pesanan gagal dalam 24 jam",
     sec_popular: "Game Populer",
     btn_view_all: "Lihat Semua",
-    // UPDATE: Label Statistik
     stats_games: "Total Games",
     stats_products: "Aplikasi Premium",
     stats_trans: "Total Transaksi",
@@ -158,7 +160,6 @@ const translations = {
     feat_guarantee_desc: "Full refund if the order fails within 24 hours",
     sec_popular: "Popular Games",
     btn_view_all: "View All",
-    // UPDATE: Stats Labels
     stats_games: "Total Games",
     stats_products: "Premium Apps",
     stats_trans: "Total Transactions",
@@ -250,91 +251,158 @@ document.addEventListener("DOMContentLoaded", async () => {
     setActiveNav("nav_topup");
   }
 
-  // LOAD DATA
-  await loadProducts();
+  // RENDER LOGIC
+  const handleRender = () => {
+    if (document.getElementById("product-hero")) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const productId = urlParams.get("id");
+      if (productId) {
+        currentProduct = products.find((p) => p.id === productId);
+        renderProductDetail();
+      }
+    }
 
-  // PAGE SPECIFIC RENDERING
+    if (document.getElementById("popular-games")) {
+      renderPopularGames();
+      renderAllGames("home");
+      renderFlashSale();
+      updateRealtimeStats();
+    }
+
+    if (document.getElementById("all-games-topup")) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const categoryParam = urlParams.get("category");
+      if (categoryParam) {
+        filterGamesTopup(categoryParam);
+      } else {
+        renderAllGames("topup");
+      }
+      renderFlashSale();
+    }
+  };
+
   if (document.getElementById("popular-games")) {
-    renderPopularGames();
-    renderAllGames("home");
-    renderFlashSale();
     startSlider("hero");
     animateCounters();
-
-    // NEW: Update Realtime Statistics on Home Page
-    updateRealtimeStats();
   }
-
   if (document.getElementById("all-games-topup")) {
-    const urlParams = new URLSearchParams(window.location.search);
-    const categoryParam = urlParams.get("category");
-    if (categoryParam) {
-      filterGamesTopup(categoryParam);
-    } else {
-      renderAllGames("topup");
-    }
     startSlider("topup");
-    renderFlashSale();
   }
 
-  if (document.getElementById("product-hero")) {
-    const urlParams = new URLSearchParams(window.location.search);
-    const productId = urlParams.get("id");
-    if (productId) {
-      currentProduct = products.find((p) => p.id === productId);
-      renderProductDetail();
-    }
-  }
+  // LOAD DATA (With Cache & Skeleton)
+  await loadProductsWithCache(handleRender);
 
   setupEventListeners();
   setupTrackingListener();
 });
 
 // =========================================
-// 4. CORE FUNCTIONS
+// 4. CORE FUNCTIONS (CACHE & SKELETON)
 // =========================================
 
-async function loadProducts() {
+async function loadProductsWithCache(renderCallback) {
+  const cachedData = localStorage.getItem(CACHE_KEY);
+  let hasCache = false;
+
+  // 1. CEK CACHE
+  if (cachedData) {
+    try {
+      products = JSON.parse(cachedData);
+      renderCallback();
+      hasCache = true;
+    } catch (e) {
+      localStorage.removeItem(CACHE_KEY);
+    }
+  }
+
+  // 2. RENDER SKELETON (Jika tidak ada cache)
+  if (!hasCache) {
+    renderSkeletons();
+  }
+
+  // 3. FETCH BACKGROUND & UPDATE
   try {
     const response = await fetch(`${config.gas_url}?action=getProducts`);
-    if (!response.ok) throw new Error("Network response was not ok");
-    products = await response.json();
+    if (!response.ok) throw new Error("Network response not ok");
+    const freshData = await response.json();
+
+    const freshDataStr = JSON.stringify(freshData);
+    if (freshDataStr !== cachedData) {
+      products = freshData;
+      localStorage.setItem(CACHE_KEY, freshDataStr);
+      renderCallback();
+    }
   } catch (error) {
-    console.error("Error loading products:", error);
-    try {
-      let path = "asset/json/product.json";
-      if (window.location.pathname.includes("/page/")) {
-        path = "../../asset/json/product.json";
-      }
-      const response = await fetch(path);
-      products = await response.json();
-    } catch (e) {}
+    console.error("Failed to fetch fresh data:", error);
+    if (!hasCache) {
+      try {
+        let path = "asset/json/product.json";
+        if (window.location.pathname.includes("/page/")) {
+          path = "../../asset/json/product.json";
+        }
+        const fallbackRes = await fetch(path);
+        products = await fallbackRes.json();
+        renderCallback();
+      } catch (e) {}
+    }
   }
 }
 
-// NEW: FUNCTION TO UPDATE REALTIME STATS (GAMES, APPS, TRANSACTIONS)
+function renderSkeletons() {
+  const skeletonCard = `
+    <div class="bg-white dark:bg-dark rounded-xl overflow-hidden shadow-sm animate-pulse border border-gray-100 dark:border-gray-800">
+      <div class="w-full h-32 bg-gray-300 dark:bg-gray-700"></div>
+      <div class="p-3 space-y-2">
+        <div class="h-4 bg-gray-300 dark:bg-gray-700 rounded w-3/4"></div>
+        <div class="h-3 bg-gray-200 dark:bg-gray-800 rounded w-1/2"></div>
+      </div>
+    </div>
+  `;
+
+  const skeletonFlash = `
+    <div class="bg-white dark:bg-dark rounded-2xl p-4 shadow-sm animate-pulse flex gap-4 border border-gray-100 dark:border-gray-800">
+        <div class="w-24 h-24 bg-gray-300 dark:bg-gray-700 rounded-xl flex-shrink-0"></div>
+        <div class="flex-1 space-y-2 py-2">
+            <div class="h-4 bg-gray-300 dark:bg-gray-700 rounded w-1/3"></div>
+            <div class="h-5 bg-gray-300 dark:bg-gray-700 rounded w-3/4"></div>
+            <div class="h-3 bg-gray-200 dark:bg-gray-800 rounded w-1/2 mt-2"></div>
+        </div>
+    </div>
+  `;
+
+  const containers = [
+    { id: "popular-games", count: 3, html: skeletonCard },
+    { id: "all-games-home", count: 10, html: skeletonCard },
+    { id: "all-games-topup", count: 15, html: skeletonCard },
+    { id: "flash-sale", count: 3, html: skeletonFlash },
+  ];
+
+  containers.forEach((target) => {
+    const el = document.getElementById(target.id);
+    if (el) {
+      el.innerHTML = Array(target.count).fill(target.html).join("");
+    }
+  });
+}
+
 async function updateRealtimeStats() {
-  // 1. Calculate Games & Premium Apps from loaded products
   const gamesCount = products.filter(
     (p) => p.category === "mobile" || p.category === "pc",
   ).length;
   const premiumCount = products.filter((p) => p.category === "premium").length;
 
-  // 2. Update Games Count in DOM
   const gamesEl = document.getElementById("count-games");
   if (gamesEl) {
     gamesEl.textContent = gamesCount;
     gamesEl.setAttribute("data-target", gamesCount);
   }
 
-  // 3. Update Premium Apps Count in DOM
   const premiumEl = document.getElementById("count-premium");
   if (premiumEl) {
     premiumEl.textContent = premiumCount;
     premiumEl.setAttribute("data-target", premiumCount);
   }
 
-  // 4. Fetch & Update Total Transactions from Server
   const transEl = document.getElementById("count-trans");
   if (transEl) {
     try {
@@ -939,8 +1007,8 @@ function showCheckoutModal() {
         ${formData.server ? `<div class="flex justify-between"><span class="text-sm text-gray-500 dark:text-gray-400">${lang.label_server}</span><span class="font-medium text-gray-900 dark:text-white">${formData.server}</span></div>` : ""}
         ${formData.nickname ? `<div class="flex justify-between"><span class="text-sm text-gray-500 dark:text-gray-400">${lang.label_nickname}</span><span class="font-medium text-gray-900 dark:text-white">${formData.nickname}</span></div>` : ""}
         <div class="border-t border-gray-200 dark:border-gray-700 my-2 pt-2"></div>
-        <div class="flex justify-between"><span class="text-sm text-gray-500 dark:text-gray-400">${lang.label_email}</span><span class="font-medium text-gray-900 dark:text-white text-right break-all max-w-[60%]">${formData.email}</span></div>
-        <div class="flex justify-between"><span class="text-sm text-gray-500 dark:text-gray-400">${lang.label_whatsapp}</span><span class="font-medium text-gray-900 dark:text-white">${formData.whatsapp}</span></div>
+        <div class="mb-3"><p class="text-sm text-gray-500 dark:text-gray-400 mb-1">${lang.label_email}</p><p class="font-medium text-gray-900 dark:text-white break-all">${formData.email}</p></div>
+        <div><p class="text-sm text-gray-500 dark:text-gray-400 mb-1">${lang.label_whatsapp}</p><p class="font-medium text-gray-900 dark:text-white">${formData.whatsapp}</p></div>
       </div>`;
   }
   document.getElementById("checkout-content").innerHTML = `
@@ -1061,6 +1129,19 @@ async function confirmOrder() {
     `https://wa.me/${config.admin_whatsapp}?text=${orderText}`,
     "_blank",
   );
+
+  // UPDATE: RESET FORM & STATE AFTER ORDER
+  const orderForm = document.getElementById("order-form");
+  if (orderForm) orderForm.reset();
+
+  selectedNominal = null;
+  updateCheckoutButton();
+
+  document.querySelectorAll(".nominal-card").forEach((card) => {
+    card.classList.remove("selected", "border-primary");
+    card.classList.add("border-transparent");
+  });
+
   closeModal("checkout");
   showToast("Order created! Redirecting to WhatsApp...", "success");
   btn.disabled = false;
@@ -1068,7 +1149,6 @@ async function confirmOrder() {
 }
 
 // UI HELPERS
-// NEW: Helper function to setup search logic for a given input & results container
 function setupSearch(inputId, resultsId) {
   const searchInput = document.getElementById(inputId);
   const searchResults = document.getElementById(resultsId);
@@ -1275,9 +1355,11 @@ function setupEventListeners() {
         "_blank",
       );
       showToast("Redirecting to WhatsApp...", "success");
+
+      // UPDATE: RESET CONTACT FORM
+      contactForm.reset();
     });
 
-  // Updated: Register search listeners for BOTH desktop and mobile inputs
   setupSearch("search-input", "search-results");
   setupSearch("search-input-mobile", "search-results-mobile");
 }
