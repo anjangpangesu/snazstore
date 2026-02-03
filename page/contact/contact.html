@@ -27,10 +27,6 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     />
-    <link
-      href="https://fonts.googleapis.com/icon?family=Material+Icons"
-      rel="stylesheet"
-    />
     <script>
       tailwind.config = {
         darkMode: "class",
@@ -218,9 +214,9 @@
       </nav>
 
       <div id="page-contact" class="page active pt-16">
-        <section class="relative h-64 md:h-80 overflow-hidden">
+        <section class="relative w-full aspect-[32/15] overflow-hidden group">
           <img
-            src="../../asset/img/banner-2.png"
+            src="../../asset/img/banner-4.png"
             alt="Contact Us"
             class="w-full h-full object-cover"
             loading="lazy"
@@ -230,20 +226,6 @@
               this.alt = 'Contact Banner';
             "
           />
-          <div class="absolute inset-0 hero-gradient opacity-80"></div>
-          <div class="absolute inset-0 flex items-center justify-center">
-            <div class="text-center text-white px-4">
-              <h1
-                class="font-heading font-bold text-3xl md:text-5xl mb-4"
-                data-i18n="contact_title"
-              >
-                Hubungi Kami
-              </h1>
-              <p class="text-lg opacity-90" data-i18n="contact_subtitle">
-                Kami siap membantu kamu kapan saja!
-              </p>
-            </div>
-          </div>
         </section>
         <section class="py-16 px-4 bg-white dark:bg-dark">
           <div class="max-w-5xl mx-auto">
@@ -342,7 +324,7 @@
                     <div>
                       <h3 class="font-semibold mb-1">WhatsApp</h3>
                       <a
-                        href="https://wa.me/6287775314721?text=Halo%20Admin%20SnazStore%2C%0A%0ASaya%20ingin%20bertanya%20atau%20meminta%20bantuan%20terkait%20layanan%20SnazStore.%0A%0ADetail%20pertanyaan%3A%0A%5BTulis%20pesan%20Kamu%20di%20sini%5D%0A%0ATerima%20kasih."
+                        href="https://wa.me/6287775314721?text=*Halo%20Admin%20SnazStore*%2C%0A%0ASaya%20ingin%20bertanya%20atau%20meminta%20bantuan%20terkait%20layanan%20SnazStore.%0A%0ADetail%20pertanyaan%3A%0A%5BTulis%20pesan%20Kamu%20di%20sini%5D%0A%0ATerima%20kasih."
                         target="_blank"
                         rel="noopener noreferrer"
                         class="text-primary hover:text-red-700 transition-colors hover:underline"
@@ -496,7 +478,7 @@
                 </li>
                 <li>
                   <a
-                    href="../contact/contact.html"
+                    href="contact.html"
                     class="text-gray-400 hover:text-white transition-colors"
                     data-i18n="nav_contact"
                     >Kontak</a
