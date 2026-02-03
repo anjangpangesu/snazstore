@@ -9,7 +9,7 @@ const defaultConfig = {
     "https://script.google.com/macros/s/AKfycbwiwCUuCLFSRxiOlOT_PMPiQxAV7CwuBdIw8FQkhShjmx9z0GNicIZX6xVZefSBw_1yRQ/exec",
 };
 
-// CONFIG: Nama Kunci Cache
+// CONFIG: Nama Kunci Cache Lokal
 const CACHE_KEY = "snazstore_products_v1";
 
 let config = { ...defaultConfig };
@@ -56,12 +56,12 @@ const translations = {
     feat_trusted_desc: "Partner resmi SnazStore, aman dan 100% legal",
     feat_guarantee_title: "Garansi Uang Kembali",
     feat_guarantee_desc: "Refund penuh jika pesanan gagal dalam 24 jam",
-    sec_popular: "Game Populer",
+    sec_popular: "Produk Populer",
     btn_view_all: "Lihat Semua",
     stats_games: "Total Games",
     stats_products: "Aplikasi Premium",
     stats_trans: "Total Transaksi",
-    sec_all_games: "Semua Layanan",
+    sec_all_games: "Semua Produk",
     btn_show_more: "Tampilkan Lebih Banyak",
     btn_load_more: "Muat Lebih Banyak",
     sec_faq: "Pertanyaan Umum",
@@ -158,12 +158,12 @@ const translations = {
     feat_trusted_desc: "Official SnazStore partner, secure and 100% legal",
     feat_guarantee_title: "Money Back Guarantee",
     feat_guarantee_desc: "Full refund if the order fails within 24 hours",
-    sec_popular: "Popular Games",
+    sec_popular: "Popular Products",
     btn_view_all: "View All",
     stats_games: "Total Games",
     stats_products: "Premium Apps",
     stats_trans: "Total Transactions",
-    sec_all_games: "All Services",
+    sec_all_games: "All Products",
     btn_show_more: "Show More",
     btn_load_more: "Load More",
     sec_faq: "Frequently Asked Questions",
@@ -241,7 +241,7 @@ const translations = {
 document.addEventListener("DOMContentLoaded", async () => {
   setupLanguage();
 
-  if (document.getElementById("popular-games")) {
+  if (document.getElementById("popular-products")) {
     setActiveNav("nav_home");
   } else if (document.getElementById("all-games-topup")) {
     setActiveNav("nav_topup");
@@ -251,24 +251,29 @@ document.addEventListener("DOMContentLoaded", async () => {
     setActiveNav("nav_topup");
   }
 
-  // RENDER LOGIC
+  // MAIN RENDER LOGIC
   const handleRender = () => {
+    // Logic Halaman Produk
     if (document.getElementById("product-hero")) {
       const urlParams = new URLSearchParams(window.location.search);
       const productId = urlParams.get("id");
       if (productId) {
         currentProduct = products.find((p) => p.id === productId);
-        renderProductDetail();
+        if (currentProduct) {
+          renderProductDetail();
+        }
       }
     }
 
-    if (document.getElementById("popular-games")) {
+    // Logic Halaman Home
+    if (document.getElementById("popular-products")) {
       renderPopularGames();
       renderAllGames("home");
       renderFlashSale();
       updateRealtimeStats();
     }
 
+    // Logic Halaman Top Up
     if (document.getElementById("all-games-topup")) {
       const urlParams = new URLSearchParams(window.location.search);
       const categoryParam = urlParams.get("category");
@@ -281,7 +286,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   };
 
-  if (document.getElementById("popular-games")) {
+  // Init Slider & Counters
+  if (document.getElementById("popular-products")) {
     startSlider("hero");
     animateCounters();
   }
@@ -289,23 +295,29 @@ document.addEventListener("DOMContentLoaded", async () => {
     startSlider("topup");
   }
 
-  // LOAD DATA (With Cache & Skeleton)
+  // 1. LOAD DATA AWAL (Cache + Skeleton)
   await loadProductsWithCache(handleRender);
 
+  // 2. AUTO UPDATE (Polling 5 Detik)
+  setInterval(() => {
+    loadProductsWithCache(handleRender);
+  }, 5000);
+
+  // 3. SETUP LISTENERS (Search, Filter, Tracking)
   setupEventListeners();
   setupTrackingListener();
 });
 
 // =========================================
-// 4. CORE FUNCTIONS (CACHE & SKELETON)
+// 4. CORE FUNCTIONS (CACHE & DATA)
 // =========================================
 
 async function loadProductsWithCache(renderCallback) {
   const cachedData = localStorage.getItem(CACHE_KEY);
   let hasCache = false;
 
-  // 1. CEK CACHE
-  if (cachedData) {
+  // Cek Cache
+  if (products.length === 0 && cachedData) {
     try {
       products = JSON.parse(cachedData);
       renderCallback();
@@ -315,26 +327,33 @@ async function loadProductsWithCache(renderCallback) {
     }
   }
 
-  // 2. RENDER SKELETON (Jika tidak ada cache)
-  if (!hasCache) {
+  // Render Skeleton jika kosong
+  if (products.length === 0 && !hasCache) {
     renderSkeletons();
   }
 
-  // 3. FETCH BACKGROUND & UPDATE
+  // Fetch Data Server (Anti-Cache)
   try {
-    const response = await fetch(`${config.gas_url}?action=getProducts`);
+    const timestamp = new Date().getTime();
+    const response = await fetch(
+      `${config.gas_url}?action=getProducts&_t=${timestamp}`,
+    );
     if (!response.ok) throw new Error("Network response not ok");
     const freshData = await response.json();
 
     const freshDataStr = JSON.stringify(freshData);
-    if (freshDataStr !== cachedData) {
+    const currentDataStr = JSON.stringify(products);
+
+    // Update jika ada perubahan
+    if (freshDataStr !== currentDataStr) {
       products = freshData;
       localStorage.setItem(CACHE_KEY, freshDataStr);
       renderCallback();
     }
   } catch (error) {
     console.error("Failed to fetch fresh data:", error);
-    if (!hasCache) {
+    // Fallback file lokal
+    if (products.length === 0) {
       try {
         let path = "asset/json/product.json";
         if (window.location.pathname.includes("/page/")) {
@@ -348,6 +367,7 @@ async function loadProductsWithCache(renderCallback) {
   }
 }
 
+// UPDATE: Skeleton dengan items-center
 function renderSkeletons() {
   const skeletonCard = `
     <div class="bg-white dark:bg-dark rounded-xl overflow-hidden shadow-sm animate-pulse border border-gray-100 dark:border-gray-800">
@@ -359,22 +379,23 @@ function renderSkeletons() {
     </div>
   `;
 
+  // Skeleton Flash Sale Horizontal
   const skeletonFlash = `
-    <div class="bg-white dark:bg-dark rounded-2xl p-4 shadow-sm animate-pulse flex gap-4 border border-gray-100 dark:border-gray-800">
-        <div class="w-24 h-24 bg-gray-300 dark:bg-gray-700 rounded-xl flex-shrink-0"></div>
-        <div class="flex-1 space-y-2 py-2">
-            <div class="h-4 bg-gray-300 dark:bg-gray-700 rounded w-1/3"></div>
-            <div class="h-5 bg-gray-300 dark:bg-gray-700 rounded w-3/4"></div>
-            <div class="h-3 bg-gray-200 dark:bg-gray-800 rounded w-1/2 mt-2"></div>
+    <div class="bg-white dark:bg-dark rounded-xl p-2.5 shadow-sm animate-pulse flex items-center gap-2.5 border border-gray-100 dark:border-gray-800">
+        <div class="w-14 h-14 md:w-16 md:h-16 bg-gray-300 dark:bg-gray-700 rounded-lg flex-shrink-0"></div>
+        <div class="flex-1 space-y-1.5 py-1 overflow-hidden">
+            <div class="h-3 bg-gray-300 dark:bg-gray-700 rounded w-2/3"></div>
+            <div class="h-4 bg-gray-300 dark:bg-gray-700 rounded w-3/4"></div>
+            <div class="h-2.5 bg-gray-200 dark:bg-gray-800 rounded w-1/2 mt-1"></div>
         </div>
     </div>
   `;
 
   const containers = [
-    { id: "popular-games", count: 3, html: skeletonCard },
-    { id: "all-games-home", count: 10, html: skeletonCard },
+    { id: "popular-products", count: 5, html: skeletonCard },
+    { id: "all-products-home", count: 10, html: skeletonCard },
     { id: "all-games-topup", count: 15, html: skeletonCard },
-    { id: "flash-sale", count: 3, html: skeletonFlash },
+    { id: "flash-sale", count: 5, html: skeletonFlash },
   ];
 
   containers.forEach((target) => {
@@ -406,7 +427,10 @@ async function updateRealtimeStats() {
   const transEl = document.getElementById("count-trans");
   if (transEl) {
     try {
-      const res = await fetch(`${config.gas_url}?action=getOrderCount`);
+      const timestamp = new Date().getTime();
+      const res = await fetch(
+        `${config.gas_url}?action=getOrderCount&_t=${timestamp}`,
+      );
       const data = await res.json();
       if (data && data.count !== undefined) {
         transEl.textContent = data.count;
@@ -417,6 +441,10 @@ async function updateRealtimeStats() {
     }
   }
 }
+
+// =========================================
+// 5. HELPER FUNCTIONS
+// =========================================
 
 function setActiveNav(targetKey) {
   const navLinks = document.querySelectorAll(
@@ -497,10 +525,6 @@ function applyTranslations() {
   });
 }
 
-// =========================================
-// 5. SLIDER & RENDER FUNCTIONS
-// =========================================
-
 function startSlider(sliderId) {
   if (!document.getElementById(`${sliderId}-slider`)) return;
   const slider = sliders[sliderId];
@@ -566,17 +590,18 @@ function createGameCard(product, size = "small") {
       </a>
     `;
   } else {
+    // Game Populer - Vertikal
     return `
-      <a href="${productPath}" class="block card-hover bg-white dark:bg-dark rounded-2xl overflow-hidden cursor-pointer shadow-lg">
+      <a href="${productPath}" class="block card-hover bg-white dark:bg-dark rounded-2xl overflow-hidden cursor-pointer shadow-lg h-full">
         <div class="relative">
-          <img src="${product.image}" alt="${product.name}" class="${imageClass}" loading="lazy" onerror="this.style.background='#e5e7eb'; this.alt='Image unavailable';">
+          <img src="${product.image}" alt="${product.name}" class="w-full h-48 md:h-56 object-cover" loading="lazy" onerror="this.style.background='#e5e7eb'; this.alt='Image unavailable';">
           ${product.discount > 0 ? `<span class="absolute top-3 right-3 px-3 py-1 bg-primary text-white text-sm font-bold rounded-lg">-${product.discount}%</span>` : ""}
         </div>
-        <div class="p-5">
-          <span class="text-xs font-medium text-primary uppercase">${product.category}</span>
-          <h3 class="font-heading font-semibold text-lg mt-1 text-gray-900 dark:text-white">${product.name}</h3>
-          <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">${product.developer}</p>
-          <div class="flex items-center gap-1 mt-3 text-yellow-400 text-sm">
+        <div class="p-3 md:p-4">
+          <span class="text-[10px] md:text-xs font-medium text-primary uppercase">${product.category}</span>
+          <h3 class="font-heading font-semibold text-base md:text-lg mt-1 text-gray-900 dark:text-white truncate">${product.name}</h3>
+          <p class="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-1 truncate">${product.developer}</p>
+          <div class="flex items-center gap-1 mt-2 text-yellow-400 text-xs md:text-sm">
             <i class="fas fa-star"></i>
             <span class="text-gray-600 dark:text-gray-400">${rating}</span>
           </div>
@@ -587,16 +612,16 @@ function createGameCard(product, size = "small") {
 }
 
 function renderPopularGames() {
-  const container = document.getElementById("popular-games");
+  const container = document.getElementById("popular-products");
   if (!container) return;
-  const popularProducts = products.filter((p) => p.popular).slice(0, 3);
+  const popularProducts = products.filter((p) => p.popular);
   container.innerHTML = popularProducts
     .map((p) => createGameCard(p, "large"))
     .join("");
 }
 
 function renderAllGames(page) {
-  const containerId = page === "home" ? "all-games-home" : "all-games-topup";
+  const containerId = page === "home" ? "all-products-home" : "all-games-topup";
   const container = document.getElementById(containerId);
   if (!container) return;
   const filter = page === "home" ? currentFilter : currentFilterTopup;
@@ -619,6 +644,7 @@ function renderAllGames(page) {
   }
 }
 
+// UPDATE: Render Flash Sale (Horizontal, Sejajar, Rapi)
 function renderFlashSale() {
   const container = document.getElementById("flash-sale");
   if (!container) return;
@@ -635,9 +661,8 @@ function renderFlashSale() {
     }
   });
 
-  const displayItems = discountedItems.slice(0, 3);
+  const displayItems = discountedItems;
   const isInnerPage = window.location.pathname.includes("/page/");
-  const lang = translations[currentLang];
 
   if (displayItems.length === 0) {
     container.innerHTML = `<div class="col-span-full text-center text-gray-500">No Flash Sale available right now.</div>`;
@@ -656,21 +681,21 @@ function renderFlashSale() {
       const finalPrice = (n.price * (100 - disc)) / 100;
 
       return `
-    <a href="${productPath}" class="block card-hover bg-gradient-to-br from-primary/5 to-secondary/5 dark:from-primary/10 dark:to-secondary/10 rounded-2xl overflow-hidden cursor-pointer border border-primary/20">
-      <div class="flex gap-4 p-4">
-        <div class="relative w-24 h-24 flex-shrink-0">
-            <img src="${p.image}" alt="${p.name}" class="w-full h-full rounded-xl object-cover" loading="lazy">
-            <div class="absolute -bottom-2 -right-2 w-10 h-10 bg-white dark:bg-dark rounded-full p-1 shadow-md flex items-center justify-center">
-                <img src="${n.icon}" class="w-8 h-8 object-contain rounded-full" onerror="this.style.display='none'">
+    <a href="${productPath}" class="block card-hover bg-gradient-to-br from-primary/5 to-secondary/5 dark:from-primary/10 dark:to-secondary/10 rounded-xl overflow-hidden cursor-pointer border border-primary/20">
+      <div class="flex items-center gap-2.5 p-2.5">
+        <div class="relative w-12 h-12 md:w-16 md:h-16 flex-shrink-0">
+            <img src="${p.image}" alt="${p.name}" class="w-full h-full rounded-lg object-cover" loading="lazy">
+            <div class="absolute -bottom-1.5 -right-1.5 w-6 h-6 bg-white dark:bg-dark rounded-full p-0.5 shadow-md flex items-center justify-center">
+                <img src="${n.icon}" class="w-5 h-5 object-contain rounded-full" onerror="this.style.display='none'">
             </div>
         </div>
-        <div class="flex-1 min-w-0">
-          <span class="inline-block px-2 py-1 bg-primary text-white text-xs font-bold rounded-lg mb-2">-${disc}%</span>
-          <h3 class="font-heading font-semibold text-gray-900 dark:text-white truncate">${p.name}</h3>
-          <p class="text-sm text-gray-500 dark:text-gray-400 truncate">${n.name}</p>
-          <div class="mt-2">
-            <p class="text-xs text-gray-400 line-through">IDR ${formatPrice(n.price)}</p>
-            <p class="text-sm text-primary font-bold">IDR ${formatPrice(finalPrice)}</p>
+        <div class="flex-1 min-w-0 overflow-hidden">
+          <span class="inline-block px-1.5 py-0.5 bg-primary text-white text-[9px] md:text-[10px] font-bold rounded mb-0.5">-${disc}%</span>
+          <h3 class="font-heading font-semibold text-[10px] md:text-sm text-gray-900 dark:text-white truncate leading-tight">${p.name}</h3>
+          <p class="text-[10px] md:text-xs text-gray-500 dark:text-gray-400 truncate">${n.name}</p>
+          <div class="mt-1 leading-none">
+            <p class="text-[9px] text-gray-400 line-through">IDR ${formatPrice(n.price)}</p>
+            <p class="text-[10px] md:text-sm text-primary font-bold mt-0.5">IDR ${formatPrice(finalPrice)}</p>
           </div>
         </div>
       </div>
@@ -843,10 +868,15 @@ function renderNominals() {
 
 function renderOrderForm() {
   const container = document.getElementById("form-fields");
-  const isPremium = currentProduct.category === "premium";
   const lang = translations[currentLang];
 
-  if (isPremium) {
+  const isVoucher =
+    currentProduct.category === "premium" ||
+    (currentProduct.type && currentProduct.type.toLowerCase() === "voucher") ||
+    (currentProduct.form_type &&
+      currentProduct.form_type.toLowerCase() === "voucher");
+
+  if (isVoucher) {
     container.innerHTML = `
       <div>
         <label class="block text-sm font-medium mb-2 text-gray-900 dark:text-white">${lang.label_email}</label>
@@ -906,10 +936,6 @@ function renderOrderForm() {
   }
 }
 
-// =========================================
-// 8. CHECKOUT LOGIC & HELPERS
-// =========================================
-
 function selectNominal(nominalId) {
   selectedNominal = currentProduct.nominals.find((n) => n.id === nominalId);
   document.querySelectorAll(".nominal-card").forEach((card) => {
@@ -949,8 +975,13 @@ function updateCheckoutButton() {
 }
 
 function getFormData() {
-  const isPremium = currentProduct.category === "premium";
-  if (isPremium) {
+  const isVoucher =
+    currentProduct.category === "premium" ||
+    (currentProduct.type && currentProduct.type.toLowerCase() === "voucher") ||
+    (currentProduct.form_type &&
+      currentProduct.form_type.toLowerCase() === "voucher");
+
+  if (isVoucher) {
     return {
       email: document.getElementById("form-email")?.value || "",
       whatsapp: document.getElementById("form-whatsapp")?.value || "",
@@ -972,8 +1003,14 @@ function showCheckoutModal() {
     return;
   }
   const formData = getFormData();
-  const isPremium = currentProduct.category === "premium";
-  if (isPremium) {
+
+  const isVoucher =
+    currentProduct.category === "premium" ||
+    (currentProduct.type && currentProduct.type.toLowerCase() === "voucher") ||
+    (currentProduct.form_type &&
+      currentProduct.form_type.toLowerCase() === "voucher");
+
+  if (isVoucher) {
     if (!formData.email || !formData.whatsapp) {
       showToast("Please fill all required fields", "error");
       return;
@@ -994,7 +1031,7 @@ function showCheckoutModal() {
   let accountInfo = "";
   const lang = translations[currentLang];
 
-  if (isPremium) {
+  if (isVoucher) {
     accountInfo = `
       <div class="bg-gray-100 dark:bg-gray-800 rounded-xl p-4">
         <div class="mb-3"><p class="text-sm text-gray-500 dark:text-gray-400 mb-1">${lang.label_email}</p><p class="font-medium text-gray-900 dark:text-white break-all">${formData.email}</p></div>
@@ -1007,8 +1044,8 @@ function showCheckoutModal() {
         ${formData.server ? `<div class="flex justify-between"><span class="text-sm text-gray-500 dark:text-gray-400">${lang.label_server}</span><span class="font-medium text-gray-900 dark:text-white">${formData.server}</span></div>` : ""}
         ${formData.nickname ? `<div class="flex justify-between"><span class="text-sm text-gray-500 dark:text-gray-400">${lang.label_nickname}</span><span class="font-medium text-gray-900 dark:text-white">${formData.nickname}</span></div>` : ""}
         <div class="border-t border-gray-200 dark:border-gray-700 my-2 pt-2"></div>
-        <div class="mb-3"><p class="text-sm text-gray-500 dark:text-gray-400 mb-1">${lang.label_email}</p><p class="font-medium text-gray-900 dark:text-white break-all">${formData.email}</p></div>
-        <div><p class="text-sm text-gray-500 dark:text-gray-400 mb-1">${lang.label_whatsapp}</p><p class="font-medium text-gray-900 dark:text-white">${formData.whatsapp}</p></div>
+        <div class="flex justify-between"><span class="text-sm text-gray-500 dark:text-gray-400">${lang.label_email}</span><span class="font-medium text-gray-900 dark:text-white text-right break-all max-w-[60%]">${formData.email}</span></div>
+        <div class="flex justify-between"><span class="text-sm text-gray-500 dark:text-gray-400">${lang.label_whatsapp}</span><span class="font-medium text-gray-900 dark:text-white">${formData.whatsapp}</span></div>
       </div>`;
   }
   document.getElementById("checkout-content").innerHTML = `
@@ -1090,7 +1127,12 @@ async function confirmOrder() {
   const price = hasDiscount
     ? (selectedNominal.price * (100 - disc)) / 100
     : selectedNominal.price;
-  const isPremium = currentProduct.category === "premium";
+
+  const isVoucher =
+    currentProduct.category === "premium" ||
+    (currentProduct.type && currentProduct.type.toLowerCase() === "voucher") ||
+    (currentProduct.form_type &&
+      currentProduct.form_type.toLowerCase() === "voucher");
 
   const orderId = await generateOrderId();
 
@@ -1116,7 +1158,7 @@ async function confirmOrder() {
 
   let orderText = `*NEW ORDER*%0A%0AOrder ID: ${orderId}%0AProduct: ${currentProduct.name}%0ANominal: ${selectedNominal.name}%0APrice: IDR ${formatPrice(price)}%0A%0A*Account Info*%0A`;
 
-  if (isPremium) {
+  if (isVoucher) {
     orderText += `Email: ${formData.email}%0AWhatsApp: ${formData.whatsapp}`;
   } else {
     orderText += `Game ID: ${formData.gameId}%0A`;
@@ -1130,7 +1172,6 @@ async function confirmOrder() {
     "_blank",
   );
 
-  // UPDATE: RESET FORM & STATE AFTER ORDER
   const orderForm = document.getElementById("order-form");
   if (orderForm) orderForm.reset();
 
@@ -1148,65 +1189,6 @@ async function confirmOrder() {
   btn.innerHTML = originalText;
 }
 
-// UI HELPERS
-function setupSearch(inputId, resultsId) {
-  const searchInput = document.getElementById(inputId);
-  const searchResults = document.getElementById(resultsId);
-
-  if (searchInput && searchResults) {
-    searchInput.addEventListener("input", (e) => {
-      const query = e.target.value.toLowerCase().trim();
-      if (query.length > 0) {
-        const filtered = products.filter(
-          (p) =>
-            p.name.toLowerCase().includes(query) ||
-            p.category.toLowerCase().includes(query) ||
-            p.developer.toLowerCase().includes(query),
-        );
-        if (filtered.length > 0) {
-          searchResults.innerHTML = filtered
-            .slice(0, 6)
-            .map(
-              (p) => `
-            <div onclick="navigateToProduct('${p.id}')" class="flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors border-b dark:border-gray-700 last:border-b-0">
-              <img src="${p.image}" alt="${p.name}" class="w-12 h-12 rounded-lg object-cover">
-              <div class="flex-1">
-                <h4 class="font-medium text-sm text-gray-900 dark:text-white">${p.name}</h4>
-                <p class="text-xs text-gray-500 dark:text-gray-400 capitalize">${p.category} • ${p.developer}</p>
-              </div>
-              <i class="fas fa-chevron-right text-gray-400 text-sm"></i>
-            </div>`,
-            )
-            .join("");
-          searchResults.classList.remove("hidden");
-        } else {
-          searchResults.innerHTML =
-            '<div class="p-4 text-center text-gray-500 text-sm">No games found</div>';
-          searchResults.classList.remove("hidden");
-        }
-      } else {
-        searchResults.classList.add("hidden");
-      }
-    });
-
-    document.addEventListener("click", (e) => {
-      if (
-        !searchInput.contains(e.target) &&
-        !searchResults.contains(e.target)
-      ) {
-        searchResults.classList.add("hidden");
-      }
-    });
-
-    searchInput.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
-        searchResults.classList.add("hidden");
-        searchInput.blur();
-      }
-    });
-  }
-}
-
 function filterGames(category) {
   currentFilter = category;
   updateFilterButtons(".filter-btn", category);
@@ -1222,9 +1204,12 @@ function filterGamesTopup(category) {
 function updateFilterButtons(selector, active) {
   document.querySelectorAll(selector).forEach((btn) => {
     const btnText = btn.textContent.trim().toLowerCase();
+
     const isActive =
       btnText === active.toLowerCase() ||
-      (active === "all" && btnText === "all");
+      (active === "all" && btnText === "all") ||
+      (active === "premium" && btnText.includes("premium"));
+
     if (isActive) {
       btn.classList.add("active", "bg-primary", "text-white");
       btn.classList.remove(
@@ -1356,12 +1341,70 @@ function setupEventListeners() {
       );
       showToast("Redirecting to WhatsApp...", "success");
 
-      // UPDATE: RESET CONTACT FORM
       contactForm.reset();
     });
 
+  // SETUP SEARCH (Restore Functionality)
   setupSearch("search-input", "search-results");
   setupSearch("search-input-mobile", "search-results-mobile");
+}
+
+function setupSearch(inputId, resultsId) {
+  const searchInput = document.getElementById(inputId);
+  const searchResults = document.getElementById(resultsId);
+
+  if (searchInput && searchResults) {
+    searchInput.addEventListener("input", (e) => {
+      const query = e.target.value.toLowerCase().trim();
+      if (query.length > 0) {
+        const filtered = products.filter(
+          (p) =>
+            p.name.toLowerCase().includes(query) ||
+            p.category.toLowerCase().includes(query) ||
+            p.developer.toLowerCase().includes(query),
+        );
+        if (filtered.length > 0) {
+          searchResults.innerHTML = filtered
+            .slice(0, 6)
+            .map(
+              (p) => `
+            <div onclick="navigateToProduct('${p.id}')" class="flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors border-b dark:border-gray-700 last:border-b-0">
+              <img src="${p.image}" alt="${p.name}" class="w-12 h-12 rounded-lg object-cover">
+              <div class="flex-1">
+                <h4 class="font-medium text-sm text-gray-900 dark:text-white">${p.name}</h4>
+                <p class="text-xs text-gray-500 dark:text-gray-400 capitalize">${p.category} • ${p.developer}</p>
+              </div>
+              <i class="fas fa-chevron-right text-gray-400 text-sm"></i>
+            </div>`,
+            )
+            .join("");
+          searchResults.classList.remove("hidden");
+        } else {
+          searchResults.innerHTML =
+            '<div class="p-4 text-center text-gray-500 text-sm">No games found</div>';
+          searchResults.classList.remove("hidden");
+        }
+      } else {
+        searchResults.classList.add("hidden");
+      }
+    });
+
+    document.addEventListener("click", (e) => {
+      if (
+        !searchInput.contains(e.target) &&
+        !searchResults.contains(e.target)
+      ) {
+        searchResults.classList.add("hidden");
+      }
+    });
+
+    searchInput.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        searchResults.classList.add("hidden");
+        searchInput.blur();
+      }
+    });
+  }
 }
 
 function setupTrackingListener() {
@@ -1385,8 +1428,9 @@ async function checkOrderStatus() {
     '<div class="text-center py-4"><i class="fas fa-spinner fa-spin text-primary text-2xl"></i></div>';
 
   try {
+    const timestamp = new Date().getTime();
     const response = await fetch(
-      `${config.gas_url}?action=trackOrder&orderId=${orderId}`,
+      `${config.gas_url}?action=trackOrder&orderId=${orderId}&_t=${timestamp}`,
     );
     const data = await response.json();
     const lang = translations[currentLang];
@@ -1430,12 +1474,28 @@ async function checkOrderStatus() {
           </div>`;
       }
 
+      let voucherHTML = "";
+      if (data.info_admin && data.info_admin.trim() !== "") {
+        voucherHTML = `
+          <div class="mt-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl">
+            <p class="text-xs text-green-600 dark:text-green-400 font-bold uppercase mb-1">
+              <i class="fas fa-gift mr-1"></i> Data Pesanan / Voucher
+            </p>
+            <div class="font-mono text-sm text-gray-800 dark:text-white break-all select-all bg-white dark:bg-black/20 p-2 rounded border border-green-100 dark:border-green-900">
+              ${data.info_admin}
+            </div>
+            <p class="text-[10px] text-gray-400 mt-1 italic text-right">Tekan teks untuk menyalin</p>
+          </div>
+        `;
+      }
+
       resultDiv.innerHTML = `
         <div class="bg-gray-100 dark:bg-gray-800 rounded-xl p-4 mt-4">
           <div class="flex justify-between mb-2"><span class="text-sm text-gray-500">${translations[currentLang].label_order_id}</span><span class="font-medium dark:text-white">${data.orderId}</span></div>
           <div class="flex justify-between mb-2"><span class="text-sm text-gray-500">${translations[currentLang].label_product}</span><span class="font-medium dark:text-white">${data.product} - ${data.nominal}</span></div>
           ${additionalInfoHTML}
           <div class="flex justify-between mb-2 items-center"><span class="text-sm text-gray-500">${translations[currentLang].label_status}</span><span class="font-bold ${statusColor} text-lg">${displayStatus}</span></div>
+          ${voucherHTML}
         </div>`;
     } else {
       resultDiv.innerHTML =
