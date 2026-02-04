@@ -592,7 +592,7 @@ function updateSlider(sliderId) {
 function createGameCard(product, size = "small") {
   const isSmall = size === "small";
   const imageClass = isSmall
-    ? "w-full h-32 object-cover"
+    ? "w-full h-48 object-cover"
     : "w-full h-64 object-cover";
   const isInnerPage = window.location.pathname.includes("/page/");
   const productPath = isInnerPage
@@ -611,7 +611,7 @@ function createGameCard(product, size = "small") {
         </div>
         <div class="p-3">
           <h3 class="font-medium text-sm truncate text-gray-900 dark:text-white">${product.name}</h3>
-          <p class="text-xs text-gray-500 dark:text-gray-400 capitalize">${product.category}</p>
+          <p class="text-xs text-gray-500 dark:text-gray-400 truncate">${product.developer}</p>
         </div>
       </a>
     `;
