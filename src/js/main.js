@@ -11,6 +11,7 @@ const defaultConfig = {
 
 // CONFIG: Nama Kunci Cache Lokal
 const CACHE_KEY = "snazstore_products_v1";
+const HISTORY_KEY = "snazstore_order_history";
 
 let config = { ...defaultConfig };
 let products = [];
@@ -20,6 +21,8 @@ let topupDisplayCount = 15;
 let currentFilter = "all";
 let currentFilterTopup = "all";
 let currentLang = localStorage.getItem("site_lang") || "id";
+let appliedCoupon = null;
+let pollingInterval = null;
 
 const sliders = {
   hero: { current: 0, total: 3, interval: null },
@@ -135,6 +138,12 @@ const translations = {
     follow_us: "Ikuti Kami",
     text_out_of_stock: "HABIS",
     product_empty: "Produk sedang tidak tersedia sementara waktu.",
+    label_promo: "Kode Promo",
+    btn_apply: "Gunakan",
+    text_discount_promo: "Diskon Promo",
+    text_history_title: "Riwayat Pesanan Terakhir",
+    text_copy_success: "Disalin!",
+    text_copy: "Salin",
   },
   en: {
     sect_why_choose: "Why Choose <span class='text-primary'>SnazStore</span>?",
@@ -238,6 +247,12 @@ const translations = {
     follow_us: "Follow us",
     text_out_of_stock: "SOLD OUT",
     product_empty: "Product is currently unavailable.",
+    label_promo: "Promo Code",
+    btn_apply: "Apply",
+    text_discount_promo: "Promo Discount",
+    text_history_title: "Recent Order History",
+    text_copy_success: "Copied!",
+    text_copy: "Copy",
   },
 };
 
@@ -246,6 +261,7 @@ const translations = {
 // =========================================
 document.addEventListener("DOMContentLoaded", async () => {
   setupLanguage();
+  checkHistoryExpiration();
 
   if (document.getElementById("popular-products")) {
     setActiveNav("nav_home");
@@ -257,9 +273,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     setActiveNav("nav_topup");
   }
 
-  // MAIN RENDER LOGIC
   const handleRender = () => {
-    // Logic Halaman Produk
     if (document.getElementById("product-hero")) {
       const urlParams = new URLSearchParams(window.location.search);
       const productId = urlParams.get("id");
@@ -271,7 +285,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     }
 
-    // Logic Halaman Home
     if (document.getElementById("popular-products")) {
       renderPopularGames();
       renderAllGames("home");
@@ -279,7 +292,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       updateRealtimeStats();
     }
 
-    // Logic Halaman Top Up
     if (document.getElementById("all-games-topup")) {
       const urlParams = new URLSearchParams(window.location.search);
       const categoryParam = urlParams.get("category");
@@ -292,7 +304,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   };
 
-  // Init Slider & Counters
   if (document.getElementById("popular-products")) {
     startSlider("hero");
     animateCounters();
@@ -301,22 +312,38 @@ document.addEventListener("DOMContentLoaded", async () => {
     startSlider("topup");
   }
 
-  // 1. LOAD DATA AWAL (Cache + Skeleton)
   await loadProductsWithCache(handleRender);
+  startAdaptivePolling(handleRender);
 
-  // 2. AUTO UPDATE (Polling 5 Detik)
-  setInterval(() => {
-    loadProductsWithCache(handleRender);
-  }, 5000);
-
-  // 3. SETUP LISTENERS
   setupEventListeners();
   setupTrackingListener();
 });
 
 // =========================================
-// 4. CORE FUNCTIONS (CACHE & DATA)
+// 4. CORE FUNCTIONS
 // =========================================
+
+function startAdaptivePolling(renderCallback) {
+  const POLLING_INTERVAL = 15000;
+
+  const runPolling = () => {
+    loadProductsWithCache(renderCallback);
+  };
+
+  if (!document.hidden) {
+    runPolling();
+    pollingInterval = setInterval(runPolling, POLLING_INTERVAL);
+  }
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      if (pollingInterval) clearInterval(pollingInterval);
+    } else {
+      runPolling();
+      pollingInterval = setInterval(runPolling, POLLING_INTERVAL);
+    }
+  });
+}
 
 async function loadProductsWithCache(renderCallback) {
   const cachedData = localStorage.getItem(CACHE_KEY);
@@ -651,7 +678,6 @@ function renderFlashSale() {
     if (product.nominals && product.nominals.length > 0) {
       product.nominals.forEach((nominal) => {
         const disc = parseFloat(nominal.discount);
-        // Validasi stok di flash sale juga
         if (!isNaN(disc) && disc > 0 && nominal.price > 0) {
           discountedItems.push({ product: product, nominal: nominal });
         }
@@ -741,7 +767,6 @@ function renderProductDetail() {
     </div>
   `;
 
-  // UPDATE: Logic jika produk kosong (tidak ada nominal)
   const containerNominal = document.getElementById("nominal-grid");
   if (!currentProduct.nominals || currentProduct.nominals.length === 0) {
     containerNominal.innerHTML = `
@@ -749,8 +774,7 @@ function renderProductDetail() {
         <i class="fas fa-box-open text-4xl mb-3 block opacity-50"></i>
         <p>${translations[currentLang].product_empty}</p>
       </div>`;
-    // Update button jadi disabled jika kosong
-    renderOrderForm(); // Re-render form state
+    renderOrderForm();
     return;
   }
 
@@ -815,7 +839,6 @@ function renderProductFAQ() {
   }
 }
 
-// UPDATE: Render Nominal dengan Penanda "HABIS" (Price = 0)
 function renderNominals() {
   const container = document.getElementById("nominal-grid");
   const groupedNominals = {};
@@ -846,13 +869,12 @@ function renderNominals() {
             .map((n) => {
               const disc = parseFloat(n.discount);
               const hasDiscount = !isNaN(disc) && disc > 0;
-              const isOutOfStock = n.price === 0; // Logic: Harga 0 = Habis
+              const isOutOfStock = n.price === 0;
 
               const finalPrice = hasDiscount
                 ? (n.price * (100 - disc)) / 100
                 : n.price;
 
-              // Styling untuk item habis
               const cardClass = isOutOfStock
                 ? "nominal-card bg-gray-100 dark:bg-gray-800 rounded-xl p-3 sm:p-4 border-2 border-transparent relative opacity-70 cursor-not-allowed grayscale"
                 : "nominal-card card-hover bg-white dark:bg-dark rounded-xl p-3 sm:p-4 cursor-pointer border-2 border-transparent hover:border-primary/50 transition-all relative";
@@ -890,12 +912,10 @@ function renderNominals() {
   container.innerHTML = html;
 }
 
-// UPDATE: Render Form (Sembunyikan Server jika server_type = "-")
 function renderOrderForm() {
   const container = document.getElementById("form-fields");
   const lang = translations[currentLang];
 
-  // Logic Voucher: Hanya jika form_type = 'voucher'
   const isVoucher =
     (currentProduct.type && currentProduct.type.toLowerCase() === "voucher") ||
     (currentProduct.form_type &&
@@ -913,17 +933,11 @@ function renderOrderForm() {
       </div>
     `;
   } else {
-    // Logic Standard (Game & Premium)
-    // 1. Tentukan Label ID (Game atau Account)
     const idLabel =
       currentProduct.category === "premium"
         ? lang.label_account_id
         : lang.label_game_id;
 
-    // 2. Logic Server Visibility
-    // - Jika server_type = "-" -> HIDE (Hidden)
-    // - Jika server_type ada koma (,) -> DROPDOWN
-    // - Jika server_type kosong atau teks biasa -> TEXT INPUT (Default)
     let showServerInput = true;
     let isDropdown = false;
 
@@ -959,7 +973,6 @@ function renderOrderForm() {
               </div>
             </div>`;
       } else {
-        // Text Input (Manual Server)
         serverInputHTML = `
             <div>
                 <label class="block text-sm font-medium mb-2 text-gray-900 dark:text-white">${lang.label_server}</label>
@@ -968,7 +981,6 @@ function renderOrderForm() {
       }
     }
 
-    // Grid Layout menyesuaikan ada server atau tidak
     const gridClass = showServerInput
       ? "grid grid-cols-2 gap-4"
       : "grid grid-cols-1 gap-4";
@@ -998,11 +1010,12 @@ function renderOrderForm() {
 }
 
 function selectNominal(nominalId) {
-  // Cek apakah nominal valid (tidak habis)
   const nominal = currentProduct.nominals.find((n) => n.id === nominalId);
-  if (!nominal || nominal.price === 0) return; // Prevent selection if out of stock
+  if (!nominal || nominal.price === 0) return;
 
   selectedNominal = nominal;
+  appliedCoupon = null; // Reset kupon saat ganti nominal
+
   document.querySelectorAll(".nominal-card").forEach((card) => {
     card.classList.remove("selected", "border-primary");
     card.classList.add("border-transparent");
@@ -1051,11 +1064,10 @@ function getFormData() {
       whatsapp: document.getElementById("form-whatsapp")?.value || "",
     };
   } else {
-    // Check if server input exists
     const serverInput = document.getElementById("form-server");
     return {
       gameId: document.getElementById("form-game-id")?.value || "",
-      server: serverInput ? serverInput.value : "", // Handle no server field
+      server: serverInput ? serverInput.value : "",
       nickname: document.getElementById("form-nickname")?.value || "",
       email: document.getElementById("form-email")?.value || "",
       whatsapp: document.getElementById("form-whatsapp")?.value || "",
@@ -1081,7 +1093,6 @@ function showCheckoutModal() {
       return;
     }
   } else {
-    // Check required fields based on visibility
     const serverInput = document.getElementById("form-server");
     const isServerRequired = !!serverInput;
 
@@ -1098,51 +1109,120 @@ function showCheckoutModal() {
 
   const disc = parseFloat(selectedNominal.discount);
   const hasDiscount = !isNaN(disc) && disc > 0;
-  const price = hasDiscount
+  let price = hasDiscount
     ? (selectedNominal.price * (100 - disc)) / 100
     : selectedNominal.price;
 
-  let accountInfo = "";
   const lang = translations[currentLang];
 
+  let accountInfoHTML = "";
   if (isVoucher) {
-    accountInfo = `
+    accountInfoHTML = `
       <div class="bg-gray-100 dark:bg-gray-800 rounded-xl p-4">
         <div class="mb-3"><p class="text-sm text-gray-500 dark:text-gray-400 mb-1">${lang.label_email}</p><p class="font-medium text-gray-900 dark:text-white break-all">${formData.email}</p></div>
         <div><p class="text-sm text-gray-500 dark:text-gray-400 mb-1">${lang.label_whatsapp}</p><p class="font-medium text-gray-900 dark:text-white">${formData.whatsapp}</p></div>
       </div>`;
   } else {
-    // Tampilkan label Server hanya jika ada datanya
     const serverDisplay = formData.server
       ? `<div class="flex justify-between"><span class="text-sm text-gray-500 dark:text-gray-400">${lang.label_server}</span><span class="font-medium text-gray-900 dark:text-white">${formData.server}</span></div>`
       : "";
-
-    // Label ID dinamis sesuai kategori
     const idLabel =
       currentProduct.category === "premium"
         ? lang.label_account_id
         : lang.label_game_id;
 
-    accountInfo = `
+    accountInfoHTML = `
       <div class="bg-gray-100 dark:bg-gray-800 rounded-xl p-4 space-y-3">
         <div class="flex justify-between"><span class="text-sm text-gray-500 dark:text-gray-400">${idLabel}</span><span class="font-medium text-gray-900 dark:text-white">${formData.gameId}</span></div>
         ${serverDisplay}
         ${formData.nickname ? `<div class="flex justify-between"><span class="text-sm text-gray-500 dark:text-gray-400">${lang.label_nickname}</span><span class="font-medium text-gray-900 dark:text-white">${formData.nickname}</span></div>` : ""}
         <div class="border-t border-gray-200 dark:border-gray-700 my-2 pt-2"></div>
-        <div class="mb-3"><p class="text-sm text-gray-500 dark:text-gray-400 mb-1">${lang.label_email}</p><p class="font-medium text-gray-900 dark:text-white break-all">${formData.email}</p></div>
-        <div><p class="text-sm text-gray-500 dark:text-gray-400 mb-1">${lang.label_whatsapp}</p><p class="font-medium text-gray-900 dark:text-white">${formData.whatsapp}</p></div>
+        <div class="flex justify-between"><span class="text-sm text-gray-500 dark:text-gray-400">${lang.label_email}</span><span class="font-medium text-gray-900 dark:text-white text-right break-all max-w-[60%]">${formData.email}</span></div>
+        <div class="flex justify-between"><span class="text-sm text-gray-500 dark:text-gray-400">${lang.label_whatsapp}</span><span class="font-medium text-gray-900 dark:text-white">${formData.whatsapp}</span></div>
       </div>`;
   }
+
+  const promoHTML = `
+    <div class="mt-4 mb-4">
+      <label class="block text-sm font-medium mb-2 text-gray-900 dark:text-white">${lang.label_promo}</label>
+      <div class="flex gap-2">
+        <input type="text" id="promo-code-input" class="flex-1 px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-gray-900 dark:text-white uppercase" placeholder="CODE">
+        <button onclick="applyCoupon()" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-primary hover:text-white rounded-xl font-medium transition-colors">${lang.btn_apply}</button>
+      </div>
+      <div id="promo-message" class="text-xs mt-2"></div>
+    </div>
+  `;
+
   document.getElementById("checkout-content").innerHTML = `
     <div class="flex items-center gap-4 pb-4 border-b dark:border-gray-700">
       <img src="${currentProduct.image}" alt="${currentProduct.name}" class="w-16 h-16 rounded-xl object-cover">
       <div><h4 class="font-semibold text-gray-900 dark:text-white">${currentProduct.name}</h4><p class="text-sm text-gray-500 dark:text-gray-400">${selectedNominal.name}</p></div>
     </div>
-    ${accountInfo}
+    ${accountInfoHTML}
+    ${promoHTML}
     <div class="bg-primary/10 rounded-xl p-4">
-      <div class="flex justify-between items-center"><span class="font-medium text-gray-900 dark:text-primary">${lang.label_total}</span><span class="text-xl font-bold text-primary">IDR ${formatPrice(price)}</span></div>
+      <div id="price-summary">
+        <div class="flex justify-between items-center"><span class="font-medium text-gray-900 dark:text-primary">${lang.label_total}</span><span class="text-xl font-bold text-primary">IDR ${formatPrice(price)}</span></div>
+      </div>
     </div>`;
+
   openModal("checkout");
+}
+
+async function applyCoupon() {
+  const input = document.getElementById("promo-code-input");
+  const msg = document.getElementById("promo-message");
+  const priceContainer = document.getElementById("price-summary");
+  const code = input.value.trim();
+  const lang = translations[currentLang];
+
+  if (!code) return;
+
+  msg.className = "text-xs mt-2 text-gray-500";
+  msg.textContent = "Checking...";
+
+  try {
+    const timestamp = new Date().getTime();
+    const response = await fetch(
+      `${config.gas_url}?action=checkCoupon&code=${code}&_t=${timestamp}`,
+    );
+    const data = await response.json();
+
+    if (data.valid) {
+      appliedCoupon = { code: code, discount: data.discount };
+      msg.className = "text-xs mt-2 text-green-500 font-medium";
+      msg.textContent = `✓ ${data.message}`;
+
+      const disc = parseFloat(selectedNominal.discount);
+      const hasDiscount = !isNaN(disc) && disc > 0;
+      let basePrice = hasDiscount
+        ? (selectedNominal.price * (100 - disc)) / 100
+        : selectedNominal.price;
+      let finalPrice = basePrice - data.discount;
+      if (finalPrice < 0) finalPrice = 0;
+
+      priceContainer.innerHTML = `
+        <div class="flex justify-between items-center mb-1 text-sm text-gray-500"><span class="dark:text-gray-400">Subtotal</span><span>IDR ${formatPrice(basePrice)}</span></div>
+        <div class="flex justify-between items-center mb-2 text-sm text-green-500 font-medium"><span>${lang.text_discount_promo} (${code})</span><span>- IDR ${formatPrice(data.discount)}</span></div>
+        <div class="border-t border-primary/20 my-2 pt-2"></div>
+        <div class="flex justify-between items-center"><span class="font-medium text-gray-900 dark:text-primary">${lang.label_total}</span><span class="text-xl font-bold text-primary">IDR ${formatPrice(finalPrice)}</span></div>
+      `;
+    } else {
+      appliedCoupon = null;
+      msg.className = "text-xs mt-2 text-red-500";
+      msg.textContent = `✕ ${data.message}`;
+
+      const disc = parseFloat(selectedNominal.discount);
+      const hasDiscount = !isNaN(disc) && disc > 0;
+      let basePrice = hasDiscount
+        ? (selectedNominal.price * (100 - disc)) / 100
+        : selectedNominal.price;
+
+      priceContainer.innerHTML = `<div class="flex justify-between items-center"><span class="font-medium text-gray-900 dark:text-primary">${lang.label_total}</span><span class="text-xl font-bold text-primary">IDR ${formatPrice(basePrice)}</span></div>`;
+    }
+  } catch (e) {
+    msg.textContent = "Error checking coupon";
+  }
 }
 
 function recheckOrder() {
@@ -1209,9 +1289,14 @@ async function confirmOrder() {
   const formData = getFormData();
   const disc = parseFloat(selectedNominal.discount);
   const hasDiscount = !isNaN(disc) && disc > 0;
-  const price = hasDiscount
+  let price = hasDiscount
     ? (selectedNominal.price * (100 - disc)) / 100
     : selectedNominal.price;
+
+  if (appliedCoupon) {
+    price = price - appliedCoupon.discount;
+    if (price < 0) price = 0;
+  }
 
   const isVoucher =
     (currentProduct.type && currentProduct.type.toLowerCase() === "voucher") ||
@@ -1231,6 +1316,7 @@ async function confirmOrder() {
     nickname: formData.nickname || "",
     email: formData.email,
     whatsapp: formData.whatsapp,
+    couponCode: appliedCoupon ? appliedCoupon.code : "",
   };
 
   fetch(config.gas_url, {
@@ -1240,12 +1326,13 @@ async function confirmOrder() {
     body: JSON.stringify(orderData),
   }).catch((err) => console.error("Order submit failed:", err));
 
+  saveOrderToHistory(orderId);
+
   let orderText = `*NEW ORDER*%0A%0AOrder ID: ${orderId}%0AProduct: ${currentProduct.name}%0ANominal: ${selectedNominal.name}%0APrice: IDR ${formatPrice(price)}%0A%0A*Account Info*%0A`;
 
   if (isVoucher) {
     orderText += `Email: ${formData.email}%0AWhatsApp: ${formData.whatsapp}`;
   } else {
-    // Dinamis Label untuk pesan WA juga
     const idLabel =
       currentProduct.category === "premium" ? "ID Account" : "Game ID";
 
@@ -1253,6 +1340,10 @@ async function confirmOrder() {
     if (formData.server) orderText += `Server: ${formData.server}%0A`;
     if (formData.nickname) orderText += `Nickname: ${formData.nickname}%0A`;
     orderText += `Email: ${formData.email}%0AWhatsApp: ${formData.whatsapp}`;
+  }
+
+  if (appliedCoupon) {
+    orderText += `%0A%0A*Promo Used:* ${appliedCoupon.code}`;
   }
 
   window.open(
@@ -1264,6 +1355,7 @@ async function confirmOrder() {
   if (orderForm) orderForm.reset();
 
   selectedNominal = null;
+  appliedCoupon = null;
   updateCheckoutButton();
 
   document.querySelectorAll(".nominal-card").forEach((card) => {
@@ -1275,6 +1367,37 @@ async function confirmOrder() {
   showToast("Order created! Redirecting to WhatsApp...", "success");
   btn.disabled = false;
   btn.innerHTML = originalText;
+}
+
+function saveOrderToHistory(orderId) {
+  let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+  history.unshift({ id: orderId, timestamp: new Date().getTime() });
+  if (history.length > 5) history = history.slice(0, 5);
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+}
+
+function checkHistoryExpiration() {
+  const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+  if (history.length > 0) {
+    const lastOrder = history[0];
+    const oneDay = 24 * 60 * 60 * 1000;
+    if (new Date().getTime() - lastOrder.timestamp > oneDay) {
+      localStorage.removeItem(HISTORY_KEY);
+    }
+  }
+}
+
+// UPDATE: Copy Text Logic
+function copyText(text, btnElement) {
+  navigator.clipboard.writeText(text).then(() => {
+    const tooltip = btnElement.querySelector(".copy-tooltip");
+    if (tooltip) {
+      tooltip.classList.remove("opacity-0", "invisible");
+      setTimeout(() => {
+        tooltip.classList.add("opacity-0", "invisible");
+      }, 2000);
+    }
+  });
 }
 
 function filterGames(category) {
@@ -1345,35 +1468,125 @@ function toggleFaq(btn) {
     ? "rotate(0deg)"
     : "rotate(180deg)";
 }
-// UPDATE: Close Modal + Reset Tracking Data
-function closeModal(modalId) {
-  document.getElementById(`${modalId}-modal`).classList.remove("active");
-  document.body.style.overflow = "";
 
-  // Fitur: Bersihkan data lacak saat popup ditutup
+// UPDATE: Close Modal Fix
+function closeModal(modalId) {
+  const modal = document.getElementById(`${modalId}-modal`);
+  if (modal) {
+    modal.classList.add("opacity-0", "pointer-events-none");
+    modal.classList.remove("active"); // Jika style lama masih ada
+    document.body.style.overflow = "";
+  }
+
   if (modalId === "tracking") {
     const input = document.getElementById("tracking-order-id");
     const resultDiv = document.getElementById("tracking-result");
+    const historyDiv = document.getElementById("tracking-history");
     if (input) input.value = "";
     if (resultDiv) resultDiv.innerHTML = "";
+    if (historyDiv) historyDiv.innerHTML = "";
   }
 }
+
+// UPDATE: Open Modal Fix (Menghapus class hidden/invisible)
 function openModal(modalId) {
-  document.getElementById(`${modalId}-modal`).classList.add("active");
-  document.body.style.overflow = "hidden";
+  const modal = document.getElementById(`${modalId}-modal`);
+  if (modal) {
+    modal.classList.remove("opacity-0", "pointer-events-none");
+    modal.classList.add("active"); // Support legacy
+    document.body.style.overflow = "hidden";
+
+    if (modalId === "tracking") {
+      renderTrackingHistory();
+    }
+  }
+}
+
+function renderTrackingHistory() {
+  let historyDiv = document.getElementById("tracking-history");
+  if (!historyDiv) {
+    const modalBody = document.querySelector("#tracking-modal .p-6");
+    if (modalBody) {
+      historyDiv = document.createElement("div");
+      historyDiv.id = "tracking-history";
+      historyDiv.className = "mt-6";
+      modalBody.appendChild(historyDiv);
+    }
+  }
+
+  if (!historyDiv) return;
+
+  const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+  const lang = translations[currentLang];
+
+  if (history.length > 0) {
+    const listHtml = history
+      .map(
+        (item) =>
+          `<div onclick="fillTrackingInput('${item.id}')" class="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors mb-2">
+         <span class="text-sm font-medium text-gray-700 dark:text-gray-300">${item.id}</span>
+         <span class="text-xs text-gray-400">Klik untuk cek</span>
+       </div>`,
+      )
+      .join("");
+
+    historyDiv.innerHTML = `
+      <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-3 border-t dark:border-gray-700 pt-4">${lang.text_history_title}</h4>
+      ${listHtml}
+    `;
+  } else {
+    historyDiv.innerHTML = "";
+  }
+}
+
+function fillTrackingInput(orderId) {
+  const input = document.getElementById("tracking-order-id");
+  if (input) {
+    input.value = orderId;
+    checkOrderStatus();
+  }
 }
 
 function showToast(message, type = "success") {
-  const toast = document.getElementById("toast");
-  const icon = document.getElementById("toast-icon");
-  const msg = document.getElementById("toast-message");
+  let toast = document.getElementById("toast");
+
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.id = "toast";
+    toast.className =
+      "fixed top-4 right-4 z-50 hidden transition-all duration-300 transform translate-y-[-20px] opacity-0";
+    toast.innerHTML = `
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 p-4 flex items-center gap-3">
+        <div id="toast-icon" class="text-xl"></div>
+        <p id="toast-message" class="text-sm font-medium text-gray-800 dark:text-white"></p>
+      </div>
+    `;
+    document.body.appendChild(toast);
+  }
+
+  const icon =
+    toast.querySelector("#toast-icon") || document.getElementById("toast-icon");
+  const msg =
+    toast.querySelector("#toast-message") ||
+    document.getElementById("toast-message");
+
+  if (!msg || !icon) return;
+
   msg.textContent = message;
   icon.className =
     type === "success"
       ? "fas fa-check-circle text-green-500"
       : "fas fa-exclamation-circle text-red-500";
+
   toast.classList.remove("hidden");
-  setTimeout(() => toast.classList.add("hidden"), 3000);
+  setTimeout(() => {
+    toast.classList.remove("translate-y-[-20px]", "opacity-0");
+  }, 10);
+
+  setTimeout(() => {
+    toast.classList.add("translate-y-[-20px]", "opacity-0");
+    setTimeout(() => toast.classList.add("hidden"), 300);
+  }, 3000);
 }
 
 function animateCounters() {
@@ -1441,7 +1654,6 @@ function setupEventListeners() {
       contactForm.reset();
     });
 
-  // SETUP SEARCH (Restore Functionality)
   setupSearch("search-input", "search-results");
   setupSearch("search-input-mobile", "search-results-mobile");
 }
@@ -1550,10 +1762,7 @@ async function checkOrderStatus() {
         displayStatus = translations[currentLang].status_canceled;
       }
 
-      // UPDATE LOGIC LACAK PESANAN
       let additionalInfoHTML = "";
-
-      // Jika memiliki Game ID (Berarti produk Game/Premium Login/Non-Voucher)
       if (
         data.gameId &&
         data.gameId !== "-" &&
@@ -1564,38 +1773,41 @@ async function checkOrderStatus() {
         additionalInfoHTML = `
           <div class="flex justify-between mb-2">
             <span class="text-sm text-gray-500">${translations[currentLang].label_account_info}</span>
-            <span class="font-medium dark:text-white text-right">${data.gameId}${nickDisplay}</span>
+            <span class="text-sm md:text-basefont-medium dark:text-white text-right">${data.gameId}${nickDisplay}</span>
           </div>`;
       } else {
-        // Jika tidak ada ID (Berarti Voucher Murni) -> Tampilkan Email
         additionalInfoHTML = `
           <div class="flex justify-between mb-2">
             <span class="text-sm text-gray-500">${translations[currentLang].label_email}</span>
-            <span class="font-medium dark:text-white text-right">${data.email}</span>
+            <span class="text-sm md:text-base font-medium dark:text-white text-right">${data.email}</span>
           </div>`;
       }
 
       let voucherHTML = "";
       if (data.info_admin && data.info_admin.trim() !== "") {
+        // UPDATE: BUTTON COPY dengan Tooltip di atasnya
         voucherHTML = `
-          <div class="mt-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl">
-            <p class="text-xs text-green-600 dark:text-green-400 font-bold uppercase mb-1">
+          <div class="mt-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl relative group">
+            <p class="text-xs text-green-600 dark:text-green-400 font-bold uppercase mb-2">
               <i class="fas fa-gift mr-1"></i> Data Pesanan / Voucher
             </p>
-            <div class="font-mono text-sm text-gray-800 dark:text-white break-all select-all bg-white dark:bg-black/20 p-2 rounded border border-green-100 dark:border-green-900">
+            <div class="font-mono text-sm text-gray-800 dark:text-white break-all select-all bg-white dark:bg-black/20 p-3 rounded border border-green-100 dark:border-green-900 pr-10">
               ${data.info_admin}
             </div>
-            <p class="text-[10px] text-gray-400 mt-1 italic text-right">Tekan teks untuk menyalin</p>
+            <button onclick="copyText('${data.info_admin.replace(/'/g, "\\'")}', this)" class="absolute top-10 right-6 p-2 text-gray-400 hover:text-primary transition-colors bg-white dark:bg-gray-800 rounded shadow-sm border border-gray-200 dark:border-gray-700" title="${translations[currentLang].text_copy}">
+               <i class="far fa-copy"></i>
+               <span class="copy-tooltip absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 invisible transition-opacity shadow-lg">Disalin!</span>
+            </button>
           </div>
         `;
       }
 
       resultDiv.innerHTML = `
         <div class="bg-gray-100 dark:bg-gray-800 rounded-xl p-4 mt-4">
-          <div class="flex justify-between mb-2"><span class="text-sm text-gray-500">${translations[currentLang].label_order_id}</span><span class="font-medium dark:text-white">${data.orderId}</span></div>
-          <div class="flex justify-between mb-2"><span class="text-sm text-gray-500">${translations[currentLang].label_product}</span><span class="font-medium dark:text-white">${data.product} - ${data.nominal}</span></div>
+          <div class="flex justify-between mb-2"><span class="text-sm text-gray-500">${translations[currentLang].label_order_id}</span><span class="text-sm md:text-base font-medium dark:text-white">${data.orderId}</span></div>
+          <div class="flex justify-between mb-2"><span class="text-sm text-gray-500">${translations[currentLang].label_product}</span><span class="text-sm md:text-base font-medium dark:text-white">${data.product} - ${data.nominal}</span></div>
           ${additionalInfoHTML}
-          <div class="flex justify-between mb-2 items-center"><span class="text-sm text-gray-500">${translations[currentLang].label_status}</span><span class="font-bold ${statusColor} text-lg">${displayStatus}</span></div>
+          <div class="flex justify-between mb-2 items-center"><span class="text-sm text-gray-500">${translations[currentLang].label_status}</span><span class="font-bold ${statusColor} text-sm md:text-base">${displayStatus}</span></div>
           ${voucherHTML}
         </div>`;
     } else {

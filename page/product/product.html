@@ -404,26 +404,29 @@
 
       <div
         id="tracking-modal"
-        class="modal fixed inset-0 z-50 items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+        class="fixed-modal fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300"
       >
         <div
-          class="bg-white dark:bg-dark rounded-2xl shadow-2xl w-full max-w-md"
+          class="bg-white dark:bg-dark w-full max-w-md rounded-3xl shadow-2xl transform scale-95 transition-all duration-300 m-4 flex flex-col max-h-[90vh]"
         >
-          <div class="p-6">
-            <div class="flex items-center justify-between mb-6">
-              <h3
-                class="font-heading font-bold text-xl text-gray-900 dark:text-white"
-                data-i18n="modal_track_title"
-              >
-                Lacak Pesanan
-              </h3>
-              <button
-                onclick="closeModal('tracking')"
-                class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-              >
-                <i class="fas fa-times"></i>
-              </button>
-            </div>
+          <div
+            class="flex justify-between items-center p-6 border-b border-gray-100 dark:border-gray-800 flex-shrink-0"
+          >
+            <h3
+              class="font-heading font-bold text-xl text-gray-900 dark:text-white"
+              data-i18n="modal_track_title"
+            >
+              Lacak Pesanan
+            </h3>
+            <button
+              onclick="closeModal('tracking')"
+              class="text-gray-400 hover:text-red-500 transition-colors"
+            >
+              <i class="fas fa-times text-xl"></i>
+            </button>
+          </div>
+
+          <div class="p-6 overflow-y-auto">
             <div class="space-y-4">
               <div>
                 <label
@@ -434,19 +437,22 @@
                 <input
                   type="text"
                   id="tracking-order-id"
-                  class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-gray-900 dark:text-white"
+                  class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-gray-900 dark:text-white placeholder-gray-400"
                   data-i18n="placeholder_order_id"
-                  placeholder="Masukan order id anda"
+                  placeholder="Masukkan Order ID (Ex: ISS/...)"
                 />
               </div>
+
               <button
                 onclick="checkOrderStatus()"
-                class="w-full py-4 bg-primary hover:bg-red-700 text-white rounded-xl font-semibold transition-colors"
+                class="w-full py-3.5 bg-primary hover:bg-red-700 text-white rounded-xl font-semibold transition-colors shadow-lg shadow-red-500/30"
                 data-i18n="btn_check_status"
               >
-                Cek Status
+                Check Status
               </button>
+
               <div id="tracking-result"></div>
+              <div id="tracking-history"></div>
             </div>
           </div>
         </div>
