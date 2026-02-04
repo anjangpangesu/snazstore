@@ -88,13 +88,14 @@ const translations = {
     prod_faq_3_q: "Butuh bantuan?",
     prod_faq_3_a: "Hubungi WhatsApp Admin jika mengalami kendala.",
     label_game_id: "ID Game",
+    label_account_id: "ID Account",
     label_server: "Server",
     label_nickname: "Nickname",
     label_email: "Email",
     label_whatsapp: "Nomor WhatsApp",
     text_select_server: "Pilih Server",
-    placeholder_game_id: "Masukkan ID Game",
-    placeholder_server: "ID Server",
+    placeholder_game_id: "Masukkan ID",
+    placeholder_server: "Masukkan Server",
     placeholder_nickname: "Masukkan Nickname (Opsional)",
     placeholder_email: "Masukkan email aktif",
     placeholder_whatsapp: "Contoh: 087775314721",
@@ -132,6 +133,8 @@ const translations = {
     op_hours: "Jam Operasional",
     op_desc: "Senin - Minggu: 07.00 - 22.00 WIB",
     follow_us: "Ikuti Kami",
+    text_out_of_stock: "HABIS",
+    product_empty: "Produk sedang tidak tersedia sementara waktu.",
   },
   en: {
     sect_why_choose: "Why Choose <span class='text-primary'>SnazStore</span>?",
@@ -188,13 +191,14 @@ const translations = {
     prod_faq_3_q: "Need help?",
     prod_faq_3_a: "Contact our WhatsApp Admin if you face any issues.",
     label_game_id: "Game ID",
+    label_account_id: "Account ID",
     label_server: "Server",
     label_nickname: "Nickname",
     label_email: "Email",
     label_whatsapp: "WhatsApp Number",
     text_select_server: "Select Server",
-    placeholder_game_id: "Enter Game ID",
-    placeholder_server: "Server ID",
+    placeholder_game_id: "Enter ID",
+    placeholder_server: "Enter Server",
     placeholder_nickname: "Enter Nickname (Optional)",
     placeholder_email: "Enter valid email",
     placeholder_whatsapp: "Example: 087775314721",
@@ -232,6 +236,8 @@ const translations = {
     op_hours: "Operating Hours",
     op_desc: "Mon - Sun: 07.00 - 22.00 WIB",
     follow_us: "Follow us",
+    text_out_of_stock: "SOLD OUT",
+    product_empty: "Product is currently unavailable.",
   },
 };
 
@@ -303,7 +309,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     loadProductsWithCache(handleRender);
   }, 5000);
 
-  // 3. SETUP LISTENERS (Search, Filter, Tracking)
+  // 3. SETUP LISTENERS
   setupEventListeners();
   setupTrackingListener();
 });
@@ -316,7 +322,6 @@ async function loadProductsWithCache(renderCallback) {
   const cachedData = localStorage.getItem(CACHE_KEY);
   let hasCache = false;
 
-  // Cek Cache
   if (products.length === 0 && cachedData) {
     try {
       products = JSON.parse(cachedData);
@@ -327,12 +332,10 @@ async function loadProductsWithCache(renderCallback) {
     }
   }
 
-  // Render Skeleton jika kosong
   if (products.length === 0 && !hasCache) {
     renderSkeletons();
   }
 
-  // Fetch Data Server (Anti-Cache)
   try {
     const timestamp = new Date().getTime();
     const response = await fetch(
@@ -344,7 +347,6 @@ async function loadProductsWithCache(renderCallback) {
     const freshDataStr = JSON.stringify(freshData);
     const currentDataStr = JSON.stringify(products);
 
-    // Update jika ada perubahan
     if (freshDataStr !== currentDataStr) {
       products = freshData;
       localStorage.setItem(CACHE_KEY, freshDataStr);
@@ -352,7 +354,6 @@ async function loadProductsWithCache(renderCallback) {
     }
   } catch (error) {
     console.error("Failed to fetch fresh data:", error);
-    // Fallback file lokal
     if (products.length === 0) {
       try {
         let path = "asset/json/product.json";
@@ -367,7 +368,6 @@ async function loadProductsWithCache(renderCallback) {
   }
 }
 
-// UPDATE: Skeleton dengan items-center
 function renderSkeletons() {
   const skeletonCard = `
     <div class="bg-white dark:bg-dark rounded-xl overflow-hidden shadow-sm animate-pulse border border-gray-100 dark:border-gray-800">
@@ -379,7 +379,6 @@ function renderSkeletons() {
     </div>
   `;
 
-  // Skeleton Flash Sale Horizontal
   const skeletonFlash = `
     <div class="bg-white dark:bg-dark rounded-xl p-2.5 shadow-sm animate-pulse flex items-center gap-2.5 border border-gray-100 dark:border-gray-800">
         <div class="w-14 h-14 md:w-16 md:h-16 bg-gray-300 dark:bg-gray-700 rounded-lg flex-shrink-0"></div>
@@ -590,7 +589,6 @@ function createGameCard(product, size = "small") {
       </a>
     `;
   } else {
-    // Game Populer - Vertikal
     return `
       <a href="${productPath}" class="block card-hover bg-white dark:bg-dark rounded-2xl overflow-hidden cursor-pointer shadow-lg h-full">
         <div class="relative">
@@ -644,7 +642,6 @@ function renderAllGames(page) {
   }
 }
 
-// UPDATE: Render Flash Sale (Horizontal, Sejajar, Rapi)
 function renderFlashSale() {
   const container = document.getElementById("flash-sale");
   if (!container) return;
@@ -654,7 +651,8 @@ function renderFlashSale() {
     if (product.nominals && product.nominals.length > 0) {
       product.nominals.forEach((nominal) => {
         const disc = parseFloat(nominal.discount);
-        if (!isNaN(disc) && disc > 0) {
+        // Validasi stok di flash sale juga
+        if (!isNaN(disc) && disc > 0 && nominal.price > 0) {
           discountedItems.push({ product: product, nominal: nominal });
         }
       });
@@ -743,6 +741,19 @@ function renderProductDetail() {
     </div>
   `;
 
+  // UPDATE: Logic jika produk kosong (tidak ada nominal)
+  const containerNominal = document.getElementById("nominal-grid");
+  if (!currentProduct.nominals || currentProduct.nominals.length === 0) {
+    containerNominal.innerHTML = `
+      <div class="col-span-full py-10 text-center text-gray-500 dark:text-gray-400">
+        <i class="fas fa-box-open text-4xl mb-3 block opacity-50"></i>
+        <p>${translations[currentLang].product_empty}</p>
+      </div>`;
+    // Update button jadi disabled jika kosong
+    renderOrderForm(); // Re-render form state
+    return;
+  }
+
   renderNominals();
   renderOrderForm();
   renderProductFAQ();
@@ -804,16 +815,13 @@ function renderProductFAQ() {
   }
 }
 
+// UPDATE: Render Nominal dengan Penanda "HABIS" (Price = 0)
 function renderNominals() {
   const container = document.getElementById("nominal-grid");
   const groupedNominals = {};
   const nominalList = currentProduct.nominals || [];
 
-  if (nominalList.length === 0) {
-    container.innerHTML =
-      '<div class="col-span-full text-center text-gray-500 py-8">No nominals available yet.</div>';
-    return;
-  }
+  if (nominalList.length === 0) return;
 
   nominalList.forEach((n) => {
     if (!groupedNominals[n.category]) groupedNominals[n.category] = [];
@@ -838,12 +846,26 @@ function renderNominals() {
             .map((n) => {
               const disc = parseFloat(n.discount);
               const hasDiscount = !isNaN(disc) && disc > 0;
+              const isOutOfStock = n.price === 0; // Logic: Harga 0 = Habis
+
               const finalPrice = hasDiscount
                 ? (n.price * (100 - disc)) / 100
                 : n.price;
+
+              // Styling untuk item habis
+              const cardClass = isOutOfStock
+                ? "nominal-card bg-gray-100 dark:bg-gray-800 rounded-xl p-3 sm:p-4 border-2 border-transparent relative opacity-70 cursor-not-allowed grayscale"
+                : "nominal-card card-hover bg-white dark:bg-dark rounded-xl p-3 sm:p-4 cursor-pointer border-2 border-transparent hover:border-primary/50 transition-all relative";
+
+              const onClickAction = isOutOfStock
+                ? ""
+                : `onclick="selectNominal('${n.id}')"`;
+
               return `
-              <div onclick="selectNominal('${n.id}')" data-nominal-id="${n.id}" class="nominal-card card-hover bg-white dark:bg-dark rounded-xl p-3 sm:p-4 cursor-pointer border-2 border-transparent hover:border-primary/50 transition-all relative">
-                ${hasDiscount ? `<span class="absolute top-2 right-2 px-1.5 py-0.5 bg-primary text-white text-[10px] font-bold rounded">- ${disc}%</span>` : ""}
+              <div ${onClickAction} data-nominal-id="${n.id}" class="${cardClass}">
+                ${hasDiscount && !isOutOfStock ? `<span class="absolute top-2 right-2 px-1.5 py-0.5 bg-primary text-white text-[10px] font-bold rounded">- ${disc}%</span>` : ""}
+                ${isOutOfStock ? `<span class="absolute top-2 right-2 px-1.5 py-0.5 bg-gray-500 text-white text-[10px] font-bold rounded">${translations[currentLang].text_out_of_stock}</span>` : ""}
+                
                 <div class="flex items-center gap-3 mb-3">
                   <div class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/10 rounded-lg flex-shrink-0 overflow-hidden">
                     <img src="${n.icon}" alt="${n.name}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/40'">
@@ -853,9 +875,11 @@ function renderNominals() {
                   </div>
                 </div>
                 ${
-                  hasDiscount
-                    ? `<p class="text-xs text-gray-400 line-through">IDR ${formatPrice(n.price)}</p><p class="text-primary font-bold">IDR ${formatPrice(finalPrice)}</p>`
-                    : `<p class="text-primary font-bold">IDR ${formatPrice(n.price)}</p>`
+                  isOutOfStock
+                    ? `<p class="text-xs text-gray-400 font-bold">Unavailable</p>`
+                    : hasDiscount
+                      ? `<p class="text-xs text-gray-400 line-through">IDR ${formatPrice(n.price)}</p><p class="text-primary font-bold">IDR ${formatPrice(finalPrice)}</p>`
+                      : `<p class="text-primary font-bold">IDR ${formatPrice(n.price)}</p>`
                 }
               </div>`;
             })
@@ -866,12 +890,13 @@ function renderNominals() {
   container.innerHTML = html;
 }
 
+// UPDATE: Render Form (Sembunyikan Server jika server_type = "-")
 function renderOrderForm() {
   const container = document.getElementById("form-fields");
   const lang = translations[currentLang];
 
+  // Logic Voucher: Hanya jika form_type = 'voucher'
   const isVoucher =
-    currentProduct.category === "premium" ||
     (currentProduct.type && currentProduct.type.toLowerCase() === "voucher") ||
     (currentProduct.form_type &&
       currentProduct.form_type.toLowerCase() === "voucher");
@@ -888,37 +913,73 @@ function renderOrderForm() {
       </div>
     `;
   } else {
-    let serverInputHTML = "";
+    // Logic Standard (Game & Premium)
+    // 1. Tentukan Label ID (Game atau Account)
+    const idLabel =
+      currentProduct.category === "premium"
+        ? lang.label_account_id
+        : lang.label_game_id;
+
+    // 2. Logic Server Visibility
+    // - Jika server_type = "-" -> HIDE (Hidden)
+    // - Jika server_type ada koma (,) -> DROPDOWN
+    // - Jika server_type kosong atau teks biasa -> TEXT INPUT (Default)
+    let showServerInput = true;
+    let isDropdown = false;
+
     if (
       currentProduct.server_type &&
-      String(currentProduct.server_type).trim().length > 0
+      String(currentProduct.server_type).trim() === "-"
     ) {
-      const serverList = currentProduct.server_type.split(",");
-      const options = serverList
-        .map((s) => `<option value="${s.trim()}">${s.trim()}</option>`)
-        .join("");
-      serverInputHTML = `
-        <div class="relative">
-          <select id="form-server" class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-gray-900 dark:text-white appearance-none cursor-pointer">
-            <option value="" disabled selected>${lang.text_select_server}</option>
-            ${options}
-          </select>
-          <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-gray-500 dark:text-gray-400"><i class="fas fa-chevron-down text-sm"></i></div>
-        </div>`;
-    } else {
-      serverInputHTML = `<input type="text" id="form-server" class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-gray-900 dark:text-white" placeholder="${lang.placeholder_server}">`;
+      showServerInput = false;
+    } else if (
+      currentProduct.server_type &&
+      String(currentProduct.server_type).includes(",")
+    ) {
+      isDropdown = true;
     }
 
+    let serverInputHTML = "";
+    if (showServerInput) {
+      if (isDropdown) {
+        const serverList = currentProduct.server_type.split(",");
+        const options = serverList
+          .map((s) => `<option value="${s.trim()}">${s.trim()}</option>`)
+          .join("");
+
+        serverInputHTML = `
+            <div>
+              <label class="block text-sm font-medium mb-2 text-gray-900 dark:text-white">${lang.label_server}</label>
+              <div class="relative">
+                <select id="form-server" class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-gray-900 dark:text-white appearance-none cursor-pointer">
+                  <option value="" disabled selected>${lang.text_select_server}</option>
+                  ${options}
+                </select>
+                <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-gray-500 dark:text-gray-400"><i class="fas fa-chevron-down text-sm"></i></div>
+              </div>
+            </div>`;
+      } else {
+        // Text Input (Manual Server)
+        serverInputHTML = `
+            <div>
+                <label class="block text-sm font-medium mb-2 text-gray-900 dark:text-white">${lang.label_server}</label>
+                <input type="text" id="form-server" class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-gray-900 dark:text-white" placeholder="${lang.placeholder_server}">
+            </div>`;
+      }
+    }
+
+    // Grid Layout menyesuaikan ada server atau tidak
+    const gridClass = showServerInput
+      ? "grid grid-cols-2 gap-4"
+      : "grid grid-cols-1 gap-4";
+
     container.innerHTML = `
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <label class="block text-sm font-medium mb-2 text-gray-900 dark:text-white">${lang.label_game_id}</label>
+      <div class="${gridClass}">
+        <div class="${showServerInput ? "" : "col-span-1"}">
+          <label class="block text-sm font-medium mb-2 text-gray-900 dark:text-white">${idLabel}</label>
           <input type="text" id="form-game-id" required class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-gray-900 dark:text-white" placeholder="${lang.placeholder_game_id}">
         </div>
-        <div>
-          <label class="block text-sm font-medium mb-2 text-gray-900 dark:text-white">${lang.label_server}</label>
-          ${serverInputHTML}
-        </div>
+        ${showServerInput ? serverInputHTML : ""}
       </div>
       <div>
         <label class="block text-sm font-medium mb-2 text-gray-900 dark:text-white">${lang.label_nickname}</label>
@@ -937,7 +998,11 @@ function renderOrderForm() {
 }
 
 function selectNominal(nominalId) {
-  selectedNominal = currentProduct.nominals.find((n) => n.id === nominalId);
+  // Cek apakah nominal valid (tidak habis)
+  const nominal = currentProduct.nominals.find((n) => n.id === nominalId);
+  if (!nominal || nominal.price === 0) return; // Prevent selection if out of stock
+
+  selectedNominal = nominal;
   document.querySelectorAll(".nominal-card").forEach((card) => {
     card.classList.remove("selected", "border-primary");
     card.classList.add("border-transparent");
@@ -976,7 +1041,6 @@ function updateCheckoutButton() {
 
 function getFormData() {
   const isVoucher =
-    currentProduct.category === "premium" ||
     (currentProduct.type && currentProduct.type.toLowerCase() === "voucher") ||
     (currentProduct.form_type &&
       currentProduct.form_type.toLowerCase() === "voucher");
@@ -987,9 +1051,11 @@ function getFormData() {
       whatsapp: document.getElementById("form-whatsapp")?.value || "",
     };
   } else {
+    // Check if server input exists
+    const serverInput = document.getElementById("form-server");
     return {
       gameId: document.getElementById("form-game-id")?.value || "",
-      server: document.getElementById("form-server")?.value || "",
+      server: serverInput ? serverInput.value : "", // Handle no server field
       nickname: document.getElementById("form-nickname")?.value || "",
       email: document.getElementById("form-email")?.value || "",
       whatsapp: document.getElementById("form-whatsapp")?.value || "",
@@ -1005,7 +1071,6 @@ function showCheckoutModal() {
   const formData = getFormData();
 
   const isVoucher =
-    currentProduct.category === "premium" ||
     (currentProduct.type && currentProduct.type.toLowerCase() === "voucher") ||
     (currentProduct.form_type &&
       currentProduct.form_type.toLowerCase() === "voucher");
@@ -1016,7 +1081,16 @@ function showCheckoutModal() {
       return;
     }
   } else {
-    if (!formData.gameId || !formData.email || !formData.whatsapp) {
+    // Check required fields based on visibility
+    const serverInput = document.getElementById("form-server");
+    const isServerRequired = !!serverInput;
+
+    if (
+      !formData.gameId ||
+      !formData.email ||
+      !formData.whatsapp ||
+      (isServerRequired && !formData.server)
+    ) {
       showToast("Please fill all required fields", "error");
       return;
     }
@@ -1038,10 +1112,21 @@ function showCheckoutModal() {
         <div><p class="text-sm text-gray-500 dark:text-gray-400 mb-1">${lang.label_whatsapp}</p><p class="font-medium text-gray-900 dark:text-white">${formData.whatsapp}</p></div>
       </div>`;
   } else {
+    // Tampilkan label Server hanya jika ada datanya
+    const serverDisplay = formData.server
+      ? `<div class="flex justify-between"><span class="text-sm text-gray-500 dark:text-gray-400">${lang.label_server}</span><span class="font-medium text-gray-900 dark:text-white">${formData.server}</span></div>`
+      : "";
+
+    // Label ID dinamis sesuai kategori
+    const idLabel =
+      currentProduct.category === "premium"
+        ? lang.label_account_id
+        : lang.label_game_id;
+
     accountInfo = `
       <div class="bg-gray-100 dark:bg-gray-800 rounded-xl p-4 space-y-3">
-        <div class="flex justify-between"><span class="text-sm text-gray-500 dark:text-gray-400">${lang.label_game_id}</span><span class="font-medium text-gray-900 dark:text-white">${formData.gameId}</span></div>
-        ${formData.server ? `<div class="flex justify-between"><span class="text-sm text-gray-500 dark:text-gray-400">${lang.label_server}</span><span class="font-medium text-gray-900 dark:text-white">${formData.server}</span></div>` : ""}
+        <div class="flex justify-between"><span class="text-sm text-gray-500 dark:text-gray-400">${idLabel}</span><span class="font-medium text-gray-900 dark:text-white">${formData.gameId}</span></div>
+        ${serverDisplay}
         ${formData.nickname ? `<div class="flex justify-between"><span class="text-sm text-gray-500 dark:text-gray-400">${lang.label_nickname}</span><span class="font-medium text-gray-900 dark:text-white">${formData.nickname}</span></div>` : ""}
         <div class="border-t border-gray-200 dark:border-gray-700 my-2 pt-2"></div>
         <div class="flex justify-between"><span class="text-sm text-gray-500 dark:text-gray-400">${lang.label_email}</span><span class="font-medium text-gray-900 dark:text-white text-right break-all max-w-[60%]">${formData.email}</span></div>
@@ -1129,7 +1214,6 @@ async function confirmOrder() {
     : selectedNominal.price;
 
   const isVoucher =
-    currentProduct.category === "premium" ||
     (currentProduct.type && currentProduct.type.toLowerCase() === "voucher") ||
     (currentProduct.form_type &&
       currentProduct.form_type.toLowerCase() === "voucher");
@@ -1161,7 +1245,11 @@ async function confirmOrder() {
   if (isVoucher) {
     orderText += `Email: ${formData.email}%0AWhatsApp: ${formData.whatsapp}`;
   } else {
-    orderText += `Game ID: ${formData.gameId}%0A`;
+    // Dinamis Label untuk pesan WA juga
+    const idLabel =
+      currentProduct.category === "premium" ? "ID Account" : "Game ID";
+
+    orderText += `${idLabel}: ${formData.gameId}%0A`;
     if (formData.server) orderText += `Server: ${formData.server}%0A`;
     if (formData.nickname) orderText += `Nickname: ${formData.nickname}%0A`;
     orderText += `Email: ${formData.email}%0AWhatsApp: ${formData.whatsapp}`;
