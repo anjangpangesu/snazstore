@@ -1137,8 +1137,8 @@ function showCheckoutModal() {
         ${serverDisplay}
         ${formData.nickname ? `<div class="flex justify-between"><span class="text-sm text-gray-500 dark:text-gray-400">${lang.label_nickname}</span><span class="font-medium text-gray-900 dark:text-white">${formData.nickname}</span></div>` : ""}
         <div class="border-t border-gray-200 dark:border-gray-700 my-2 pt-2"></div>
-        <div class="flex justify-between"><span class="text-sm text-gray-500 dark:text-gray-400">${lang.label_email}</span><span class="font-medium text-gray-900 dark:text-white text-right break-all max-w-[60%]">${formData.email}</span></div>
-        <div class="flex justify-between"><span class="text-sm text-gray-500 dark:text-gray-400">${lang.label_whatsapp}</span><span class="font-medium text-gray-900 dark:text-white">${formData.whatsapp}</span></div>
+        <div class="mb-3"><p class="text-sm text-gray-500 dark:text-gray-400 mb-1">${lang.label_email}</p><p class="font-medium text-gray-900 dark:text-white break-all">${formData.email}</p></div>
+        <div><p class="text-sm text-gray-500 dark:text-gray-400 mb-1">${lang.label_whatsapp}</p><p class="font-medium text-gray-900 dark:text-white">${formData.whatsapp}</p></div>
       </div>`;
   }
 
