@@ -1129,8 +1129,8 @@ function showCheckoutModal() {
         ${serverDisplay}
         ${formData.nickname ? `<div class="flex justify-between"><span class="text-sm text-gray-500 dark:text-gray-400">${lang.label_nickname}</span><span class="font-medium text-gray-900 dark:text-white">${formData.nickname}</span></div>` : ""}
         <div class="border-t border-gray-200 dark:border-gray-700 my-2 pt-2"></div>
-        <div class="flex justify-between"><span class="text-sm text-gray-500 dark:text-gray-400">${lang.label_email}</span><span class="font-medium text-gray-900 dark:text-white text-right break-all max-w-[60%]">${formData.email}</span></div>
-        <div class="flex justify-between"><span class="text-sm text-gray-500 dark:text-gray-400">${lang.label_whatsapp}</span><span class="font-medium text-gray-900 dark:text-white">${formData.whatsapp}</span></div>
+        <div class="mb-3"><p class="text-sm text-gray-500 dark:text-gray-400 mb-1">${lang.label_email}</p><p class="font-medium text-gray-900 dark:text-white break-all">${formData.email}</p></div>
+        <div><p class="text-sm text-gray-500 dark:text-gray-400 mb-1">${lang.label_whatsapp}</p><p class="font-medium text-gray-900 dark:text-white">${formData.whatsapp}</p></div>
       </div>`;
   }
   document.getElementById("checkout-content").innerHTML = `
@@ -1345,13 +1345,22 @@ function toggleFaq(btn) {
     ? "rotate(0deg)"
     : "rotate(180deg)";
 }
-function openModal(modalId) {
-  document.getElementById(`${modalId}-modal`).classList.add("active");
-  document.body.style.overflow = "hidden";
-}
+// UPDATE: Close Modal + Reset Tracking Data
 function closeModal(modalId) {
   document.getElementById(`${modalId}-modal`).classList.remove("active");
   document.body.style.overflow = "";
+
+  // Fitur: Bersihkan data lacak saat popup ditutup
+  if (modalId === "tracking") {
+    const input = document.getElementById("tracking-order-id");
+    const resultDiv = document.getElementById("tracking-result");
+    if (input) input.value = "";
+    if (resultDiv) resultDiv.innerHTML = "";
+  }
+}
+function openModal(modalId) {
+  document.getElementById(`${modalId}-modal`).classList.add("active");
+  document.body.style.overflow = "hidden";
 }
 
 function showToast(message, type = "success") {
@@ -1541,7 +1550,10 @@ async function checkOrderStatus() {
         displayStatus = translations[currentLang].status_canceled;
       }
 
+      // UPDATE LOGIC LACAK PESANAN
       let additionalInfoHTML = "";
+
+      // Jika memiliki Game ID (Berarti produk Game/Premium Login/Non-Voucher)
       if (
         data.gameId &&
         data.gameId !== "-" &&
@@ -1555,9 +1567,10 @@ async function checkOrderStatus() {
             <span class="font-medium dark:text-white text-right">${data.gameId}${nickDisplay}</span>
           </div>`;
       } else {
+        // Jika tidak ada ID (Berarti Voucher Murni) -> Tampilkan Email
         additionalInfoHTML = `
           <div class="flex justify-between mb-2">
-            <span class="text-sm text-gray-500">${translations[currentLang].label_account_info}</span>
+            <span class="text-sm text-gray-500">${translations[currentLang].label_email}</span>
             <span class="font-medium dark:text-white text-right">${data.email}</span>
           </div>`;
       }
