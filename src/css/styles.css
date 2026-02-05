@@ -39,6 +39,19 @@ body.lang-loaded #app {
   opacity: 1;
   visibility: visible;
 }
+.coupon-card {
+  border: 1px dashed #DC2626;
+  background-color: #FFF5F5;
+  transition: all 0.2s;
+}
+.dark .coupon-card {
+  border: 1px dashed #EF4444;
+  background-color: rgba(220, 38, 38, 0.1);
+}
+.coupon-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
 @keyframes fadeIn {
   from {
     opacity: 0;

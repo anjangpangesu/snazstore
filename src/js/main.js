@@ -1144,7 +1144,17 @@ function showCheckoutModal() {
 
   const promoHTML = `
     <div class="mt-4 mb-4">
-      <label class="block text-sm font-medium mb-2 text-gray-900 dark:text-white">${lang.label_promo}</label>
+      <div class="flex justify-between items-center mb-2">
+         <label class="block text-sm font-medium text-gray-900 dark:text-white">${lang.label_promo}</label>
+         <button type="button" onclick="toggleCouponList()" class="text-xs text-primary hover:underline font-medium">
+           <i class="fas fa-tags mr-1"></i> Lihat Promo Tersedia
+         </button>
+      </div>
+      
+      <div id="available-coupons-area" class="hidden mb-3 space-y-2 max-h-40 overflow-y-auto custom-scrollbar p-1">
+         <div class="text-center py-2"><i class="fas fa-spinner fa-spin text-primary"></i> Loading coupons...</div>
+      </div>
+
       <div class="flex gap-2">
         <input type="text" id="promo-code-input" class="flex-1 px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-gray-900 dark:text-white uppercase" placeholder="CODE">
         <button onclick="applyCoupon()" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-primary hover:text-white rounded-xl font-medium transition-colors">${lang.btn_apply}</button>
@@ -1169,6 +1179,130 @@ function showCheckoutModal() {
   openModal("checkout");
 }
 
+async function toggleCouponList() {
+  const area = document.getElementById("available-coupons-area");
+  const emailVal = document.getElementById("form-email")?.value || "";
+  const waVal = document.getElementById("form-whatsapp")?.value || "";
+  
+  if (area.classList.contains("hidden")) {
+    area.classList.remove("hidden");
+    area.innerHTML = `<div class="text-center py-2"><i class="fas fa-spinner fa-spin text-primary"></i> Mencari promo terbaik...</div>`;
+    
+    try {
+      const timestamp = new Date().getTime();
+      
+      const params = new URLSearchParams({
+        action: "getCoupons",
+        email: emailVal,
+        phone: waVal,
+        _t: timestamp
+      });
+      
+      const response = await fetch(`${config.gas_url}?${params.toString()}`);
+      const allCoupons = await response.json();
+      
+      const validCoupons = allCoupons.filter(c => {
+        const pCat = currentProduct.category.toLowerCase();
+        const pId = currentProduct.id.toLowerCase();
+        
+        if (c.allowed_category !== 'all' && c.allowed_category.toLowerCase() !== pCat) return false;
+        
+        if (c.allowed_products !== 'all' && c.allowed_products.toLowerCase() !== pId) return false;
+
+        if (selectedNominal && c.allowed_nominal_category !== 'all') {
+           if (selectedNominal.category.toLowerCase() !== c.allowed_nominal_category.toLowerCase()) return false;
+        }
+
+        const now = new Date();
+        
+        if (c.start_date) {
+          const start = new Date(c.start_date);
+          start.setHours(0,0,0,0);
+          if (now < start) return false;
+        }
+        
+        if (c.end_date) {
+          const end = new Date(c.end_date);
+          end.setHours(23,59,59,999);
+          if (now > end) return false;
+        }
+        
+        if (c.allowed_hours && c.allowed_hours.includes("-")) {
+        }
+
+        return true;
+      });
+
+      if (validCoupons.length === 0) {
+        area.innerHTML = `<div class="text-xs text-gray-500 text-center py-2">Tidak ada promo yang cocok untuk produk ini :(</div>`;
+      } else {
+        area.innerHTML = validCoupons.map(c => formatCouponCard(c)).join("");
+      }
+    } catch (e) {
+      console.error(e);
+      area.innerHTML = `<div class="text-xs text-red-500 text-center">Gagal memuat promo.</div>`;
+    }
+  } else {
+    area.classList.add("hidden");
+  }
+}
+
+function formatCouponCard(c) {
+  let discountText = "";
+  if (c.type === 'fixed') {
+    discountText = `Potongan Rp ${formatPrice(c.value)}`;
+  } else {
+    discountText = `Diskon ${c.value}%`;
+    if (c.max_discount > 0) {
+      discountText += ` (Max Rp ${formatPrice(c.max_discount)})`;
+    }
+  }
+
+  let minBuyText = "";
+  if (c.min_purchase > 0) {
+    minBuyText = `Min. Belanja Rp ${formatPrice(c.min_purchase)}`;
+  } else {
+    minBuyText = "Tanpa Minimal Pembelian";
+  }
+
+  let timeInfo = "";
+  if (c.end_date) {
+    const d = new Date(c.end_date);
+    const dateStr = d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+    timeInfo += `<span class="bg-red-100 text-red-600 px-1.5 py-0.5 rounded text-[10px] mr-1"><i class="far fa-clock"></i> S/d ${dateStr}</span>`;
+  }
+  if (c.allowed_hours) {
+    timeInfo += `<span class="bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded text-[10px]"><i class="far fa-clock"></i> Jam ${c.allowed_hours}</span>`;
+  }
+
+  return `
+    <div onclick="useCoupon('${c.code}')" class="coupon-card rounded-xl p-3 mb-2 cursor-pointer relative group bg-white dark:bg-gray-800 border border-dashed border-gray-300 dark:border-gray-600 hover:border-primary transition-all shadow-sm">
+       <div class="flex justify-between items-start">
+         <div>
+           <div class="font-bold text-gray-800 dark:text-white text-sm flex items-center gap-2">
+             ${c.code}
+             ${timeInfo} </div>
+           <div class="text-primary font-bold text-xs mt-0.5">${discountText}</div>
+           <div class="text-[10px] text-gray-500 dark:text-gray-400 mt-1">${minBuyText}</div>
+         </div>
+         
+         <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
+             <button class="text-xs bg-primary/10 text-primary px-3 py-1.5 rounded-lg font-medium hover:bg-primary hover:text-white transition-colors">
+               Pakai
+             </button>
+         </div>
+       </div>
+    </div>
+  `;
+}
+
+function useCoupon(code) {
+  const input = document.getElementById("promo-code-input");
+  input.value = code;
+  document.getElementById("available-coupons-area").classList.add("hidden");
+  applyCoupon();
+}
+
 async function applyCoupon() {
   const input = document.getElementById("promo-code-input");
   const msg = document.getElementById("promo-message");
@@ -1176,16 +1310,34 @@ async function applyCoupon() {
   const code = input.value.trim();
   const lang = translations[currentLang];
 
+  const emailVal = document.getElementById("form-email")?.value || "";
+  const waVal = document.getElementById("form-whatsapp")?.value || "";
+
   if (!code) return;
 
   msg.className = "text-xs mt-2 text-gray-500";
   msg.textContent = "Checking...";
 
+  const disc = parseFloat(selectedNominal.discount);
+  const hasDiscount = !isNaN(disc) && disc > 0;
+  let basePrice = hasDiscount
+    ? (selectedNominal.price * (100 - disc)) / 100
+    : selectedNominal.price;
+
+  const params = new URLSearchParams({
+    action: "checkCoupon",
+    code: code,
+    price: basePrice,
+    category: currentProduct.category,
+    productId: currentProduct.id,
+    nominalCategory: selectedNominal.category,
+    email: emailVal,
+    phone: waVal    
+  });
+
   try {
     const timestamp = new Date().getTime();
-    const response = await fetch(
-      `${config.gas_url}?action=checkCoupon&code=${code}&_t=${timestamp}`,
-    );
+    const response = await fetch(`${config.gas_url}?${params.toString()}&_t=${timestamp}`);
     const data = await response.json();
 
     if (data.valid) {
@@ -1193,11 +1345,6 @@ async function applyCoupon() {
       msg.className = "text-xs mt-2 text-green-500 font-medium";
       msg.textContent = `✓ ${data.message}`;
 
-      const disc = parseFloat(selectedNominal.discount);
-      const hasDiscount = !isNaN(disc) && disc > 0;
-      let basePrice = hasDiscount
-        ? (selectedNominal.price * (100 - disc)) / 100
-        : selectedNominal.price;
       let finalPrice = basePrice - data.discount;
       if (finalPrice < 0) finalPrice = 0;
 
@@ -1212,15 +1359,10 @@ async function applyCoupon() {
       msg.className = "text-xs mt-2 text-red-500";
       msg.textContent = `✕ ${data.message}`;
 
-      const disc = parseFloat(selectedNominal.discount);
-      const hasDiscount = !isNaN(disc) && disc > 0;
-      let basePrice = hasDiscount
-        ? (selectedNominal.price * (100 - disc)) / 100
-        : selectedNominal.price;
-
       priceContainer.innerHTML = `<div class="flex justify-between items-center"><span class="font-medium text-gray-900 dark:text-primary">${lang.label_total}</span><span class="text-xl font-bold text-primary">IDR ${formatPrice(basePrice)}</span></div>`;
     }
   } catch (e) {
+    console.error(e);
     msg.textContent = "Error checking coupon";
   }
 }
@@ -1785,11 +1927,40 @@ async function checkOrderStatus() {
 
       let voucherHTML = "";
       if (data.info_admin && data.info_admin.trim() !== "") {
-        // UPDATE: BUTTON COPY dengan Tooltip di atasnya
+        let subscriptionInfo = "";
+        if (data.start_date !== "-" && data.expiry_date !== "-") {
+           subscriptionInfo = `
+             <div class="mt-3 pt-3 border-t border-green-200 dark:border-green-800 flex justify-between text-xs">
+                <div>
+                   <span class="block text-gray-500 dark:text-gray-400">Mulai</span>
+                   <span class="font-medium text-gray-800 dark:text-white">${data.start_date}</span>
+                </div>
+                <div class="text-right">
+                   <span class="block text-gray-500 dark:text-gray-400">Berakhir</span>
+                   <span class="font-bold text-primary">${data.expiry_date}</span>
+                </div>
+             </div>
+           `;
+        }
+
+        let renewalHTML = "";
+        if (data.renewal_info && data.renewal_info.trim() !== "") {
+           renewalHTML = `
+             <div class="mt-3 bg-yellow-50 dark:bg-yellow-900/20 p-3 rounded-lg border border-yellow-200 dark:border-yellow-700">
+               <p class="text-xs font-bold text-yellow-700 dark:text-yellow-400 mb-1">
+                 <i class="fas fa-sync-alt mr-1"></i> UPDATE AKUN/PERPANJANGAN
+               </p>
+               <div class="text-sm font-mono text-gray-800 dark:text-white break-all select-all">
+                 ${data.renewal_info}
+               </div>
+             </div>
+           `;
+        }
+
         voucherHTML = `
           <div class="mt-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl relative group">
             <p class="text-xs text-green-600 dark:text-green-400 font-bold uppercase mb-2">
-              <i class="fas fa-gift mr-1"></i> Data Pesanan / Voucher
+              <i class="fas fa-gift mr-1"></i> Data Pesanan
             </p>
             <div class="font-mono text-sm text-gray-800 dark:text-white break-all select-all bg-white dark:bg-black/20 p-3 rounded border border-green-100 dark:border-green-900 pr-10">
               ${data.info_admin}
@@ -1798,6 +1969,8 @@ async function checkOrderStatus() {
                <i class="far fa-copy"></i>
                <span class="copy-tooltip absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-black text-white text-xs rounded opacity-0 invisible transition-opacity shadow-lg">Disalin!</span>
             </button>
+            ${subscriptionInfo}
+            ${renewalHTML}
           </div>
         `;
       }
