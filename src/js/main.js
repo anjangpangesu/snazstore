@@ -301,6 +301,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         currentProduct = products.find((p) => p.id === productId);
         if (currentProduct) {
           renderProductDetail();
+        } else {
+          window.location.replace("../topup/topup.html");
         }
       }
     }
@@ -342,21 +344,36 @@ document.addEventListener("DOMContentLoaded", async () => {
 function startAdaptivePolling(renderCallback) {
   const POLLING_INTERVAL = 15000;
 
-  const runPolling = () => {
-    loadProductsWithCache(renderCallback);
+  const checkVersion = async () => {
+    try {
+      const timestamp = new Date().getTime();
+      const res = await fetch(`${config.gas_url}?action=getVersion&_t=${timestamp}`);
+      const data = await res.json();
+      const serverVersion = String(data.version);
+      const localVersion = localStorage.getItem("data_version");
+
+      if (serverVersion !== localVersion) {
+        console.log("New version found:", serverVersion);
+        localStorage.setItem("data_version", serverVersion);
+        localStorage.removeItem(CACHE_KEY);
+        loadProductsWithCache(renderCallback);
+      }
+    } catch (e) {
+      console.error("Version check failed", e);
+    }
   };
 
   if (!document.hidden) {
-    runPolling();
-    pollingInterval = setInterval(runPolling, POLLING_INTERVAL);
+    checkVersion();
+    pollingInterval = setInterval(checkVersion, POLLING_INTERVAL);
   }
 
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) {
       if (pollingInterval) clearInterval(pollingInterval);
     } else {
-      runPolling();
-      pollingInterval = setInterval(runPolling, POLLING_INTERVAL);
+      checkVersion();
+      pollingInterval = setInterval(checkVersion, POLLING_INTERVAL);
     }
   });
 }
@@ -764,7 +781,6 @@ function renderProductDetail() {
   let rating = parseFloat(currentProduct.rating);
   if (isNaN(rating)) rating = 0;
   const percentage = (rating / 5) * 100;
-
   ratingContainer.innerHTML = `
     <div class="flex items-center gap-1">
       <div class="relative inline-flex">
@@ -779,6 +795,9 @@ function renderProductDetail() {
     </div>
   `;
 
+  renderProductFAQ();
+  renderOrderForm();
+
   const containerNominal = document.getElementById("nominal-grid");
   if (!currentProduct.nominals || currentProduct.nominals.length === 0) {
     containerNominal.innerHTML = `
@@ -786,13 +805,9 @@ function renderProductDetail() {
         <i class="fas fa-box-open text-4xl mb-3 block opacity-50"></i>
         <p>${translations[currentLang].product_empty}</p>
       </div>`;
-    renderOrderForm();
-    return;
+  } else {
+    renderNominals();
   }
-
-  renderNominals();
-  renderOrderForm();
-  renderProductFAQ();
 
   const urlParams = new URLSearchParams(window.location.search);
   const autoSelectId = urlParams.get("nominal");
@@ -1195,6 +1210,7 @@ async function toggleCouponList() {
   const area = document.getElementById("available-coupons-area");
   const emailVal = document.getElementById("form-email")?.value || "";
   const waVal = document.getElementById("form-whatsapp")?.value || "";
+  const gameIdVal = document.getElementById("form-game-id")?.value || "";
 
   const lang = translations[currentLang];
 
@@ -1209,6 +1225,7 @@ async function toggleCouponList() {
         action: "getCoupons",
         email: emailVal,
         phone: waVal,
+        gameId: gameIdVal,
         _t: timestamp,
       });
 
@@ -1337,11 +1354,11 @@ async function applyCoupon() {
   const lang = translations[currentLang]; 
   const emailVal = document.getElementById("form-email")?.value || "";
   const waVal = document.getElementById("form-whatsapp")?.value || "";
+  const gameIdVal = document.getElementById("form-game-id")?.value || "";
 
   if (!code) return;
 
   msg.className = "text-xs mt-2 text-gray-500";
-  
   msg.textContent = currentLang === 'en' ? "Checking..." : "Mengecek..."; 
 
   const disc = parseFloat(selectedNominal.discount);
@@ -1359,6 +1376,7 @@ async function applyCoupon() {
     nominalCategory: selectedNominal.category,
     email: emailVal,
     phone: waVal,
+    gameId: gameIdVal,
     lang: currentLang
   });
 
