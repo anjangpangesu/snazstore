@@ -1,6 +1,3 @@
-// =========================================
-// 1. CONFIGURATION & STATE
-// =========================================
 const defaultConfig = {
   site_name: "SnazStore",
   hero_title: "Instant Game Top Up",
@@ -9,7 +6,6 @@ const defaultConfig = {
     "https://script.google.com/macros/s/AKfycbwiwCUuCLFSRxiOlOT_PMPiQxAV7CwuBdIw8FQkhShjmx9z0GNicIZX6xVZefSBw_1yRQ/exec",
 };
 
-// CONFIG: Nama Kunci Cache Lokal
 const CACHE_KEY = "snazstore_products_v1";
 const HISTORY_KEY = "snazstore_order_history";
 
@@ -29,9 +25,6 @@ const sliders = {
   topup: { current: 0, total: 3, interval: null },
 };
 
-// =========================================
-// 2. TRANSLATION DICTIONARY
-// =========================================
 const translations = {
   id: {
     sect_why_choose:
@@ -256,9 +249,6 @@ const translations = {
   },
 };
 
-// =========================================
-// 3. INITIALIZATION
-// =========================================
 document.addEventListener("DOMContentLoaded", async () => {
   setupLanguage();
   checkHistoryExpiration();
@@ -318,10 +308,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   setupEventListeners();
   setupTrackingListener();
 });
-
-// =========================================
-// 4. CORE FUNCTIONS
-// =========================================
 
 function startAdaptivePolling(renderCallback) {
   const POLLING_INTERVAL = 15000;
@@ -467,10 +453,6 @@ async function updateRealtimeStats() {
     }
   }
 }
-
-// =========================================
-// 5. HELPER FUNCTIONS
-// =========================================
 
 function setActiveNav(targetKey) {
   const navLinks = document.querySelectorAll(
@@ -1014,7 +996,7 @@ function selectNominal(nominalId) {
   if (!nominal || nominal.price === 0) return;
 
   selectedNominal = nominal;
-  appliedCoupon = null; // Reset kupon saat ganti nominal
+  appliedCoupon = null;
 
   document.querySelectorAll(".nominal-card").forEach((card) => {
     card.classList.remove("selected", "border-primary");
@@ -1529,7 +1511,6 @@ function checkHistoryExpiration() {
   }
 }
 
-// UPDATE: Copy Text Logic
 function copyText(text, btnElement) {
   navigator.clipboard.writeText(text).then(() => {
     const tooltip = btnElement.querySelector(".copy-tooltip");
@@ -1611,12 +1592,11 @@ function toggleFaq(btn) {
     : "rotate(180deg)";
 }
 
-// UPDATE: Close Modal Fix
 function closeModal(modalId) {
   const modal = document.getElementById(`${modalId}-modal`);
   if (modal) {
     modal.classList.add("opacity-0", "pointer-events-none");
-    modal.classList.remove("active"); // Jika style lama masih ada
+    modal.classList.remove("active");
     document.body.style.overflow = "";
   }
 
@@ -1630,12 +1610,11 @@ function closeModal(modalId) {
   }
 }
 
-// UPDATE: Open Modal Fix (Menghapus class hidden/invisible)
 function openModal(modalId) {
   const modal = document.getElementById(`${modalId}-modal`);
   if (modal) {
     modal.classList.remove("opacity-0", "pointer-events-none");
-    modal.classList.add("active"); // Support legacy
+    modal.classList.add("active");
     document.body.style.overflow = "hidden";
 
     if (modalId === "tracking") {
