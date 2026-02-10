@@ -2044,15 +2044,12 @@ async function checkOrderStatus() {
   }
 }
 
-// === LIVE CHAT SYSTEM (FINAL v7 - Landscape Container & Auto-Fit Video) ===
-
 let chatInterval = null;
 let chatUserId = localStorage.getItem("snaz_chat_id");
 let lastRenderedCount = 0;
 let replyContext = null;
-let selectedFile = null;
+let selectedFiles = [];
 
-// ID Customer Tetap
 if (
   !chatUserId ||
   chatUserId.startsWith("guest_") ||
@@ -2064,9 +2061,16 @@ if (
 
 function toggleChat() {
   const modal = document.getElementById("chat-widget");
+  const btn = document.getElementById("chat-toggle-btn");
+
   if (modal.classList.contains("hidden")) {
     modal.classList.remove("hidden");
+    btn.classList.add("hidden");
     document.getElementById("chat-badge").classList.add("hidden");
+
+    const container = document.getElementById("chat-messages");
+    if (container) container.scrollTop = container.scrollHeight;
+
     fetchMessages();
     fetchAdminStatus();
     chatInterval = setInterval(() => {
@@ -2075,6 +2079,7 @@ function toggleChat() {
     }, 4000);
   } else {
     modal.classList.add("hidden");
+    btn.classList.remove("hidden");
     if (chatInterval) clearInterval(chatInterval);
   }
 }
@@ -2117,14 +2122,13 @@ async function fetchMessages(isPolling = false) {
   }
 }
 
-// FORMAT TANGGAL (Bold & Jelas)
 function formatDateHeader(dateObj) {
   const today = new Date();
   const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);
 
-  if (dateObj.toDateString() === today.toDateString()) return "HARI INI";
-  if (dateObj.toDateString() === yesterday.toDateString()) return "KEMARIN";
+  if (dateObj.toDateString() === today.toDateString()) return "Hari Ini";
+  if (dateObj.toDateString() === yesterday.toDateString()) return "Kemarin";
 
   const options = {
     weekday: "long",
@@ -2132,7 +2136,7 @@ function formatDateHeader(dateObj) {
     month: "long",
     year: "numeric",
   };
-  return dateObj.toLocaleDateString("id-ID", options).toUpperCase();
+  return dateObj.toLocaleDateString("id-ID", options);
 }
 
 function renderChatHistory(messages) {
@@ -2149,11 +2153,10 @@ function renderChatHistory(messages) {
     const msgDate = new Date(msg.time);
     const dateLabel = formatDateHeader(msgDate);
 
-    // HEADER TANGGAL: Tebal (Font-Extrabold)
     if (lastDateLabel !== dateLabel) {
       html += `
          <div class="flex justify-center my-4 sticky top-0 z-10">
-           <span class="text-[10px] font-bold text-gray-400 bg-white/90 dark:bg-gray-800/90 backdrop-blur px-3 py-0.5 rounded-full shadow-sm border border-gray-200 dark:border-gray-700">
+           <span class="text-[10px] font-bold text-gray-500 bg-white/90 dark:bg-gray-800/90 backdrop-blur px-3 py-0.5 rounded-full shadow-sm border border-gray-200 dark:border-gray-700">
              ${dateLabel}
            </span>
          </div>`;
@@ -2167,7 +2170,6 @@ function renderChatHistory(messages) {
   if (isScrolledToBottom) container.scrollTop = container.scrollHeight;
 }
 
-// === BAGIAN UTAMA UPDATE IFRAME ===
 function buildMessageHTML(msg, isMe, isSending) {
   let content = msg.content;
   let mediaUrl = null;
@@ -2189,7 +2191,6 @@ function buildMessageHTML(msg, isMe, isSending) {
     ? "bg-gradient-to-r from-red-600 to-blue-600 text-white rounded-tr-sm shadow-md"
     : "bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-tl-sm shadow-sm";
 
-  // Reply Bubble
   let replyHtml = "";
   if (msg.replyTo) {
     try {
@@ -2206,20 +2207,16 @@ function buildMessageHTML(msg, isMe, isSending) {
     } catch (e) {}
   }
 
-  // Media Handler
   let mediaHtml = "";
   if (msg.type === "image") {
     mediaHtml = `<img src="${mediaUrl}" class="w-full max-w-[200px] rounded-lg mb-1 cursor-pointer hover:brightness-90 transition-all border border-black/10" onclick="window.open('${mediaUrl}')">`;
   } else if (msg.type === "video") {
-    // UPDATE IFRAME: Container 16:9 (Landscape Fixed)
-    // Google Drive Player akan otomatis handle 'contain' (tengah & tidak terpotong)
     if (mediaUrl.includes("drive.google.com")) {
-      mediaHtml = `<div class="w-[280px] md:w-[300px] aspect-video rounded-lg overflow-hidden bg-black mb-1 relative border border-gray-300 dark:border-gray-700 shadow-sm">
+      mediaHtml = `<div class="w-full max-w-[280px] h-[200px] rounded-lg overflow-hidden bg-black mb-1 relative border border-gray-300 dark:border-gray-700 shadow-sm flex items-center justify-center">
                         <iframe src="${mediaUrl}" class="w-full h-full border-0" allow="autoplay; fullscreen"></iframe>
                       </div>`;
     } else {
-      // Local Blob (Upload Preview) - Gunakan object-contain agar tidak terpotong
-      mediaHtml = `<div class="w-[280px] md:w-[300px] aspect-video rounded-lg overflow-hidden bg-black mb-1 flex items-center justify-center border border-gray-300 dark:border-gray-700">
+      mediaHtml = `<div class="w-full max-w-[280px] h-[200px] rounded-lg overflow-hidden bg-black mb-1 flex items-center justify-center border border-gray-300 dark:border-gray-700">
                         <video src="${mediaUrl}" controls class="w-full h-full object-contain"></video>
                       </div>`;
     }
@@ -2246,7 +2243,7 @@ function buildMessageHTML(msg, isMe, isSending) {
 
   return `
         <div class="flex ${align} animate-fade-in mb-3 group">
-        <div class="flex flex-col ${isMe ? "items-end" : "items-start"} max-w-[90%] md:max-w-[80%]">
+        <div class="flex flex-col ${isMe ? "items-end" : "items-start"} max-w-[90%] md:max-w-[85%]">
             <div class="p-3 rounded-2xl ${bubbleStyle} relative min-w-[100px]" onclick="setReply('${msg.sender}', '${content || (isMedia ? "[File]" : "")}')">
             ${replyHtml}
             ${mediaHtml}
@@ -2258,126 +2255,110 @@ function buildMessageHTML(msg, isMe, isSending) {
     `;
 }
 
+
 function handleFileSelect(input) {
-  const file = input.files[0];
-  if (!file) return;
+  const files = input.files;
+  if (!files || files.length === 0) return;
 
-  const limitImg = 1 * 1024 * 1024; // 1MB
-  const limitVideo = 5 * 1024 * 1024; // 5MB
+  const limitImg = 1 * 1024 * 1024;
+  const limitVideo = 5 * 1024 * 1024;
 
-  if (file.type.startsWith("image/") || file.type === "application/pdf") {
-    if (file.size > limitImg) return alert("Ukuran file maksimal 1MB!");
-  } else if (file.type.startsWith("video/")) {
-    if (file.size > limitVideo) return alert("Ukuran video maksimal 5MB!");
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
 
-    const video = document.createElement("video");
-    video.preload = "metadata";
-    video.onloadedmetadata = function () {
-      window.URL.revokeObjectURL(video.src);
-      if (video.duration > 60) {
-        alert("Durasi video maksimal 1 menit!");
-        input.value = "";
-      } else {
-        selectedFile = file;
-        showPreview(file);
+    if (file.type.startsWith("image/") || file.type === "application/pdf") {
+      if (file.size > limitImg) {
+        alert(`File ${file.name} terlalu besar (Max 1MB)`);
+        continue;
       }
-    };
-    video.src = URL.createObjectURL(file);
-    return;
+    } else if (file.type.startsWith("video/")) {
+      if (file.size > limitVideo) {
+        alert(`Video ${file.name} terlalu besar (Max 5MB)`);
+        continue;
+      }
+    }
+    selectedFiles.push(file);
   }
 
-  selectedFile = file;
-  showPreview(file);
+  updateFilePreviews();
 }
 
-function showPreview(file) {
-  document.getElementById("chat-preview-area").classList.remove("hidden");
-  document.getElementById("file-preview").classList.remove("hidden");
-  document.getElementById("preview-filename").innerText = file.name;
+function updateFilePreviews() {
+  const container = document.getElementById("file-preview-container");
+  const area = document.getElementById("chat-preview-area");
 
-  if (file.type.startsWith("image/")) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      document.getElementById("preview-img").src = e.target.result;
-      document.getElementById("preview-img").classList.remove("hidden");
-      document.getElementById("preview-file-icon").classList.add("hidden");
-    };
-    reader.readAsDataURL(file);
+  if (selectedFiles.length > 0 || replyContext) {
+    area.classList.remove("hidden");
+    area.classList.add("flex");
   } else {
-    document.getElementById("preview-img").classList.add("hidden");
-    document.getElementById("preview-file-icon").classList.remove("hidden");
+    area.classList.add("hidden");
+    area.classList.remove("flex");
   }
+
+  if (selectedFiles.length > 0) {
+    container.classList.remove("hidden");
+    container.classList.add("flex");
+    container.innerHTML = "";
+
+    selectedFiles.forEach((file, index) => {
+      let previewContent = "";
+      if (file.type.startsWith("image/")) {
+        const url = URL.createObjectURL(file);
+        previewContent = `<img src="${url}" class="h-16 w-16 object-cover rounded-lg border border-gray-200 dark:border-gray-700">`;
+      } else {
+        previewContent = `<div class="h-16 w-16 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center border border-gray-300 dark:border-gray-600"><i class="fas fa-file-alt text-2xl text-gray-500"></i></div>`;
+      }
+
+      const itemHtml = `
+          <div class="relative flex-shrink-0 group">
+             ${previewContent}
+             <button onclick="removeFile(${index})" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs shadow hover:scale-110 transition-transform z-10">
+               <i class="fas fa-times"></i>
+             </button>
+             <p class="text-[9px] text-gray-500 dark:text-gray-400 mt-1 truncate max-w-[64px] text-center">${file.name}</p>
+          </div>
+        `;
+      container.innerHTML += itemHtml;
+    });
+  } else {
+    container.classList.add("hidden");
+    container.classList.remove("flex");
+  }
+}
+
+function removeFile(index) {
+  selectedFiles.splice(index, 1);
+  if (selectedFiles.length === 0) {
+    document.getElementById("chat-file-upload").value = "";
+  }
+  updateFilePreviews();
 }
 
 async function sendChatMessage() {
   const input = document.getElementById("chat-input");
   const text = input.value.trim();
 
-  if (!text && !selectedFile) return;
+  if (!text && selectedFiles.length === 0) return;
 
-  const tempMsg = {
-    sender: "User",
-    time: new Date(),
-    type: "text",
-    content: text,
-    replyTo: replyContext ? JSON.stringify(replyContext) : null,
-  };
+  const replyJson = replyContext ? JSON.stringify(replyContext) : null;
 
-  let fileBase64 = null;
-
-  if (selectedFile) {
-    if (selectedFile.type.startsWith("image/")) {
-      tempMsg.type = "image";
-      tempMsg.content = JSON.stringify({
-        url: URL.createObjectURL(selectedFile),
-        caption: text,
-      });
-    } else if (selectedFile.type.startsWith("video/")) {
-      tempMsg.type = "video";
-      tempMsg.content = JSON.stringify({
-        url: URL.createObjectURL(selectedFile),
-        caption: text,
-      });
-    } else {
-      tempMsg.type = "file";
-      tempMsg.content = JSON.stringify({ url: "#", caption: text });
-    }
-  }
-
-  const container = document.getElementById("chat-messages");
-  container.innerHTML += buildMessageHTML(tempMsg, true, true);
-  container.scrollTop = container.scrollHeight;
-
-  input.value = "";
-  const currentFile = selectedFile;
-  const currentReply = replyContext;
-  cancelFile();
-  cancelReply();
-
-  const replyJson = currentReply ? JSON.stringify(currentReply) : "";
-
-  if (currentFile) {
-    const reader = new FileReader();
-    reader.onload = async function (e) {
-      fileBase64 = e.target.result.split(",")[1];
-      await fetch(config.chat_script_url, {
-        method: "POST",
-        body: JSON.stringify({
-          action: "uploadFile",
-          userId: chatUserId,
-          sender: "User",
-          fileName: currentFile.name,
-          mimeType: currentFile.type,
-          fileData: fileBase64,
-          caption: text,
-          replyTo: replyJson,
-        }),
-      });
-      setTimeout(() => fetchMessages(), 1000);
+  if (text) {
+    const tempMsg = {
+      sender: "User",
+      time: new Date(),
+      type: "text",
+      content: text,
+      replyTo: replyJson,
     };
-    reader.readAsDataURL(currentFile);
-  } else {
-    await fetch(config.chat_script_url, {
+    document.getElementById("chat-messages").innerHTML += buildMessageHTML(
+      tempMsg,
+      true,
+      true,
+    );
+    document.getElementById("chat-messages").scrollTop =
+      document.getElementById("chat-messages").scrollHeight;
+
+    fetch(config.chat_script_url, {
       method: "POST",
       body: JSON.stringify({
         action: "sendMessage",
@@ -2387,13 +2368,76 @@ async function sendChatMessage() {
         replyTo: replyJson,
       }),
     });
-    setTimeout(() => fetchMessages(), 1000);
   }
+
+  if (selectedFiles.length > 0) {
+    const filesToSend = [...selectedFiles];
+
+    filesToSend.forEach((file) => {
+      let tempMsg = {
+        sender: "User",
+        time: new Date(),
+        type: "file",
+        content: "",
+        replyTo: replyJson,
+      };
+      const fileUrl = URL.createObjectURL(file);
+
+      if (file.type.startsWith("image/")) {
+        tempMsg.type = "image";
+        tempMsg.content = JSON.stringify({ url: fileUrl, caption: "" });
+      } else if (file.type.startsWith("video/")) {
+        tempMsg.type = "video";
+        tempMsg.content = JSON.stringify({ url: fileUrl, caption: "" });
+      } else {
+        tempMsg.content = JSON.stringify({ url: "#", caption: "" });
+      }
+
+      document.getElementById("chat-messages").innerHTML += buildMessageHTML(
+        tempMsg,
+        true,
+        true,
+      );
+    });
+    document.getElementById("chat-messages").scrollTop =
+      document.getElementById("chat-messages").scrollHeight;
+
+    for (const file of filesToSend) {
+      const reader = new FileReader();
+      reader.onload = async function (e) {
+        const base64 = e.target.result.split(",")[1];
+        await fetch(config.chat_script_url, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "uploadFile",
+            userId: chatUserId,
+            sender: "User",
+            fileName: file.name,
+            mimeType: file.type,
+            fileData: base64,
+            caption: "",
+            replyTo: replyJson,
+          }),
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  input.value = "";
+  selectedFiles = [];
+  replyContext = null;
+  document.getElementById("reply-preview").classList.add("hidden");
+  updateFilePreviews();
+
+  setTimeout(() => fetchMessages(), 2000);
 }
 
 function setReply(sender, text) {
   replyContext = { sender: sender, content: text };
   document.getElementById("chat-preview-area").classList.remove("hidden");
+  document.getElementById("chat-preview-area").classList.add("flex");
+
   document.getElementById("reply-preview").classList.remove("hidden");
   document.getElementById("reply-to-name").innerText = sender;
   document.getElementById("reply-to-text").innerText = text;
@@ -2401,17 +2445,11 @@ function setReply(sender, text) {
 function cancelReply() {
   replyContext = null;
   document.getElementById("reply-preview").classList.add("hidden");
-  checkHidePreviewArea();
+  updateFilePreviews();
 }
 function cancelFile() {
-  selectedFile = null;
-  document.getElementById("chat-file-upload").value = "";
-  document.getElementById("file-preview").classList.add("hidden");
-  checkHidePreviewArea();
-}
-function checkHidePreviewArea() {
-  if (!replyContext && !selectedFile)
-    document.getElementById("chat-preview-area").classList.add("hidden");
+  selectedFiles = [];
+  updateFilePreviews();
 }
 function triggerFileUpload() {
   document.getElementById("chat-file-upload").click();
