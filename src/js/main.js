@@ -4,6 +4,8 @@ const defaultConfig = {
   admin_whatsapp: "6287775314721",
   gas_url:
     "https://script.google.com/macros/s/AKfycbwiwCUuCLFSRxiOlOT_PMPiQxAV7CwuBdIw8FQkhShjmx9z0GNicIZX6xVZefSBw_1yRQ/exec",
+  chat_script_url:
+    "https://script.google.com/macros/s/AKfycbw4LWC5Q-0Zsnxf_nnxUbxz924LyUuOZgbOMSAkBn_g0H9eM8BALWDjSjBN1vnoCrOOwQ/exec",
 };
 
 const CACHE_KEY = "snazstore_products_v1";
@@ -347,7 +349,9 @@ function startAdaptivePolling(renderCallback) {
   const checkVersion = async () => {
     try {
       const timestamp = new Date().getTime();
-      const res = await fetch(`${config.gas_url}?action=getVersion&_t=${timestamp}`);
+      const res = await fetch(
+        `${config.gas_url}?action=getVersion&_t=${timestamp}`,
+      );
       const data = await res.json();
       const serverVersion = String(data.version);
       const localVersion = localStorage.getItem("data_version");
@@ -1351,7 +1355,7 @@ async function applyCoupon() {
   const msg = document.getElementById("promo-message");
   const priceContainer = document.getElementById("price-summary");
   const code = input.value.trim();
-  const lang = translations[currentLang]; 
+  const lang = translations[currentLang];
   const emailVal = document.getElementById("form-email")?.value || "";
   const waVal = document.getElementById("form-whatsapp")?.value || "";
   const gameIdVal = document.getElementById("form-game-id")?.value || "";
@@ -1359,7 +1363,7 @@ async function applyCoupon() {
   if (!code) return;
 
   msg.className = "text-xs mt-2 text-gray-500";
-  msg.textContent = currentLang === 'en' ? "Checking..." : "Mengecek..."; 
+  msg.textContent = currentLang === "en" ? "Checking..." : "Mengecek...";
 
   const disc = parseFloat(selectedNominal.discount);
   const hasDiscount = !isNaN(disc) && disc > 0;
@@ -1377,12 +1381,14 @@ async function applyCoupon() {
     email: emailVal,
     phone: waVal,
     gameId: gameIdVal,
-    lang: currentLang
+    lang: currentLang,
   });
 
   try {
     const timestamp = new Date().getTime();
-    const response = await fetch(`${config.gas_url}?${params.toString()}&_t=${timestamp}`);
+    const response = await fetch(
+      `${config.gas_url}?${params.toString()}&_t=${timestamp}`,
+    );
     const data = await response.json();
 
     if (data.valid) {
@@ -1408,7 +1414,8 @@ async function applyCoupon() {
     }
   } catch (e) {
     console.error(e);
-    msg.textContent = currentLang === 'en' ? "Error checking coupon" : "Gagal mengecek kupon";
+    msg.textContent =
+      currentLang === "en" ? "Error checking coupon" : "Gagal mengecek kupon";
   }
 }
 
@@ -2035,4 +2042,377 @@ async function checkOrderStatus() {
     resultDiv.innerHTML =
       '<div class="text-center text-red-500 py-4">Error tracking order.</div>';
   }
+}
+
+// === LIVE CHAT SYSTEM (FINAL v7 - Landscape Container & Auto-Fit Video) ===
+
+let chatInterval = null;
+let chatUserId = localStorage.getItem("snaz_chat_id");
+let lastRenderedCount = 0;
+let replyContext = null;
+let selectedFile = null;
+
+// ID Customer Tetap
+if (
+  !chatUserId ||
+  chatUserId.startsWith("guest_") ||
+  chatUserId.startsWith("cs-")
+) {
+  chatUserId = "customer_" + Math.random().toString(36).substr(2, 9);
+  localStorage.setItem("snaz_chat_id", chatUserId);
+}
+
+function toggleChat() {
+  const modal = document.getElementById("chat-widget");
+  if (modal.classList.contains("hidden")) {
+    modal.classList.remove("hidden");
+    document.getElementById("chat-badge").classList.add("hidden");
+    fetchMessages();
+    fetchAdminStatus();
+    chatInterval = setInterval(() => {
+      fetchMessages(true);
+      fetchAdminStatus();
+    }, 4000);
+  } else {
+    modal.classList.add("hidden");
+    if (chatInterval) clearInterval(chatInterval);
+  }
+}
+
+async function fetchAdminStatus() {
+  try {
+    const res = await fetch(
+      `${config.chat_script_url}?action=getAdminStatus&_t=${Date.now()}`,
+    );
+    const data = await res.json();
+    const statusEl = document.getElementById("chat-status");
+    const indicatorEl = document.getElementById("chat-indicator");
+    const lastSeenText = data.last_seen_text ? `• ${data.last_seen_text}` : "";
+
+    if (String(data.status).toUpperCase() === "ONLINE") {
+      statusEl.innerText = `Online ${lastSeenText}`;
+      indicatorEl.className =
+        "absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full animate-pulse";
+    } else {
+      statusEl.innerText = `Offline ${lastSeenText}`;
+      indicatorEl.className =
+        "absolute bottom-0 right-0 w-2.5 h-2.5 bg-gray-400 border-2 border-white rounded-full";
+    }
+  } catch (e) {}
+}
+
+async function fetchMessages(isPolling = false) {
+  try {
+    const res = await fetch(
+      `${config.chat_script_url}?action=pollMessages&userId=${chatUserId}&_t=${Date.now()}`,
+    );
+    const data = await res.json();
+
+    if (isPolling && data.messages.length === lastRenderedCount) return;
+
+    renderChatHistory(data.messages);
+    lastRenderedCount = data.messages.length;
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+// FORMAT TANGGAL (Bold & Jelas)
+function formatDateHeader(dateObj) {
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  if (dateObj.toDateString() === today.toDateString()) return "HARI INI";
+  if (dateObj.toDateString() === yesterday.toDateString()) return "KEMARIN";
+
+  const options = {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  };
+  return dateObj.toLocaleDateString("id-ID", options).toUpperCase();
+}
+
+function renderChatHistory(messages) {
+  const container = document.getElementById("chat-messages");
+  const isScrolledToBottom =
+    container.scrollHeight - container.clientHeight <=
+    container.scrollTop + 100;
+
+  let html = `<div class="flex justify-center my-4"><span class="text-[10px] text-gray-400 bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-full border border-gray-200 dark:border-gray-700">Percakapan Dienkripsi</span></div>`;
+  let lastDateLabel = null;
+
+  messages.forEach((msg) => {
+    const isMe = msg.sender === "User";
+    const msgDate = new Date(msg.time);
+    const dateLabel = formatDateHeader(msgDate);
+
+    // HEADER TANGGAL: Tebal (Font-Extrabold)
+    if (lastDateLabel !== dateLabel) {
+      html += `
+         <div class="flex justify-center my-4 sticky top-0 z-10">
+           <span class="text-[10px] font-bold text-gray-400 bg-white/90 dark:bg-gray-800/90 backdrop-blur px-3 py-0.5 rounded-full shadow-sm border border-gray-200 dark:border-gray-700">
+             ${dateLabel}
+           </span>
+         </div>`;
+      lastDateLabel = dateLabel;
+    }
+
+    html += buildMessageHTML(msg, isMe, false);
+  });
+
+  container.innerHTML = html;
+  if (isScrolledToBottom) container.scrollTop = container.scrollHeight;
+}
+
+// === BAGIAN UTAMA UPDATE IFRAME ===
+function buildMessageHTML(msg, isMe, isSending) {
+  let content = msg.content;
+  let mediaUrl = null;
+  let isMedia = msg.type !== "text";
+
+  if (isMedia) {
+    try {
+      const obj = JSON.parse(msg.content);
+      mediaUrl = obj.url;
+      content = obj.caption || "";
+    } catch (e) {
+      mediaUrl = msg.content;
+      content = "";
+    }
+  }
+
+  const align = isMe ? "justify-end" : "justify-start";
+  const bubbleStyle = isMe
+    ? "bg-gradient-to-r from-red-600 to-blue-600 text-white rounded-tr-sm shadow-md"
+    : "bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-tl-sm shadow-sm";
+
+  // Reply Bubble
+  let replyHtml = "";
+  if (msg.replyTo) {
+    try {
+      const rObj =
+        typeof msg.replyTo === "string" ? JSON.parse(msg.replyTo) : msg.replyTo;
+      const replyBorder = isMe ? "border-white/50" : "border-primary";
+      const replyBg = isMe ? "bg-black/10" : "bg-gray-100 dark:bg-gray-700";
+
+      replyHtml = `
+            <div class="mb-1 p-2 rounded ${replyBg} border-l-4 ${replyBorder} text-xs cursor-pointer opacity-90">
+                <p class="font-bold mb-0.5 text-[10px]">${rObj.sender}</p>
+                <p class="truncate max-w-[150px]">${rObj.content}</p>
+            </div>`;
+    } catch (e) {}
+  }
+
+  // Media Handler
+  let mediaHtml = "";
+  if (msg.type === "image") {
+    mediaHtml = `<img src="${mediaUrl}" class="w-full max-w-[200px] rounded-lg mb-1 cursor-pointer hover:brightness-90 transition-all border border-black/10" onclick="window.open('${mediaUrl}')">`;
+  } else if (msg.type === "video") {
+    // UPDATE IFRAME: Container 16:9 (Landscape Fixed)
+    // Google Drive Player akan otomatis handle 'contain' (tengah & tidak terpotong)
+    if (mediaUrl.includes("drive.google.com")) {
+      mediaHtml = `<div class="w-[280px] md:w-[300px] aspect-video rounded-lg overflow-hidden bg-black mb-1 relative border border-gray-300 dark:border-gray-700 shadow-sm">
+                        <iframe src="${mediaUrl}" class="w-full h-full border-0" allow="autoplay; fullscreen"></iframe>
+                      </div>`;
+    } else {
+      // Local Blob (Upload Preview) - Gunakan object-contain agar tidak terpotong
+      mediaHtml = `<div class="w-[280px] md:w-[300px] aspect-video rounded-lg overflow-hidden bg-black mb-1 flex items-center justify-center border border-gray-300 dark:border-gray-700">
+                        <video src="${mediaUrl}" controls class="w-full h-full object-contain"></video>
+                      </div>`;
+    }
+  } else if (msg.type === "file") {
+    mediaHtml = `
+        <a href="${mediaUrl}" target="_blank" class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-white/5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition-colors mb-1 border border-gray-200 dark:border-gray-600">
+            <div class="w-10 h-10 bg-white text-primary rounded-lg flex items-center justify-center shrink-0 shadow-sm"><i class="fas fa-file-alt text-lg"></i></div>
+            <div class="flex flex-col overflow-hidden">
+            <span class="text-xs font-bold truncate">File Dokumen</span>
+            <span class="text-[10px] opacity-70">Klik untuk download</span>
+            </div>
+        </a>`;
+  }
+
+  const msgDate = new Date(msg.time || Date.now());
+  const timeStr = msgDate.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  const statusText = isSending
+    ? `<span class="flex items-center gap-1 opacity-80 italic">${timeStr} • <i class="fas fa-paper-plane animate-pulse text-[10px]"></i> Sending...</span>`
+    : timeStr;
+  const timeColor = isMe ? "text-white/80" : "text-gray-400";
+
+  return `
+        <div class="flex ${align} animate-fade-in mb-3 group">
+        <div class="flex flex-col ${isMe ? "items-end" : "items-start"} max-w-[90%] md:max-w-[80%]">
+            <div class="p-3 rounded-2xl ${bubbleStyle} relative min-w-[100px]" onclick="setReply('${msg.sender}', '${content || (isMedia ? "[File]" : "")}')">
+            ${replyHtml}
+            ${mediaHtml}
+            ${content ? `<p class="text-sm leading-relaxed whitespace-pre-wrap font-sans">${content}</p>` : ""}
+            <span class="text-[10px] ${timeColor} block text-right mt-1.5 flex items-center justify-end gap-1">${statusText}</span>
+            </div>
+        </div>
+        </div>
+    `;
+}
+
+function handleFileSelect(input) {
+  const file = input.files[0];
+  if (!file) return;
+
+  const limitImg = 1 * 1024 * 1024; // 1MB
+  const limitVideo = 5 * 1024 * 1024; // 5MB
+
+  if (file.type.startsWith("image/") || file.type === "application/pdf") {
+    if (file.size > limitImg) return alert("Ukuran file maksimal 1MB!");
+  } else if (file.type.startsWith("video/")) {
+    if (file.size > limitVideo) return alert("Ukuran video maksimal 5MB!");
+
+    const video = document.createElement("video");
+    video.preload = "metadata";
+    video.onloadedmetadata = function () {
+      window.URL.revokeObjectURL(video.src);
+      if (video.duration > 60) {
+        alert("Durasi video maksimal 1 menit!");
+        input.value = "";
+      } else {
+        selectedFile = file;
+        showPreview(file);
+      }
+    };
+    video.src = URL.createObjectURL(file);
+    return;
+  }
+
+  selectedFile = file;
+  showPreview(file);
+}
+
+function showPreview(file) {
+  document.getElementById("chat-preview-area").classList.remove("hidden");
+  document.getElementById("file-preview").classList.remove("hidden");
+  document.getElementById("preview-filename").innerText = file.name;
+
+  if (file.type.startsWith("image/")) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      document.getElementById("preview-img").src = e.target.result;
+      document.getElementById("preview-img").classList.remove("hidden");
+      document.getElementById("preview-file-icon").classList.add("hidden");
+    };
+    reader.readAsDataURL(file);
+  } else {
+    document.getElementById("preview-img").classList.add("hidden");
+    document.getElementById("preview-file-icon").classList.remove("hidden");
+  }
+}
+
+async function sendChatMessage() {
+  const input = document.getElementById("chat-input");
+  const text = input.value.trim();
+
+  if (!text && !selectedFile) return;
+
+  const tempMsg = {
+    sender: "User",
+    time: new Date(),
+    type: "text",
+    content: text,
+    replyTo: replyContext ? JSON.stringify(replyContext) : null,
+  };
+
+  let fileBase64 = null;
+
+  if (selectedFile) {
+    if (selectedFile.type.startsWith("image/")) {
+      tempMsg.type = "image";
+      tempMsg.content = JSON.stringify({
+        url: URL.createObjectURL(selectedFile),
+        caption: text,
+      });
+    } else if (selectedFile.type.startsWith("video/")) {
+      tempMsg.type = "video";
+      tempMsg.content = JSON.stringify({
+        url: URL.createObjectURL(selectedFile),
+        caption: text,
+      });
+    } else {
+      tempMsg.type = "file";
+      tempMsg.content = JSON.stringify({ url: "#", caption: text });
+    }
+  }
+
+  const container = document.getElementById("chat-messages");
+  container.innerHTML += buildMessageHTML(tempMsg, true, true);
+  container.scrollTop = container.scrollHeight;
+
+  input.value = "";
+  const currentFile = selectedFile;
+  const currentReply = replyContext;
+  cancelFile();
+  cancelReply();
+
+  const replyJson = currentReply ? JSON.stringify(currentReply) : "";
+
+  if (currentFile) {
+    const reader = new FileReader();
+    reader.onload = async function (e) {
+      fileBase64 = e.target.result.split(",")[1];
+      await fetch(config.chat_script_url, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "uploadFile",
+          userId: chatUserId,
+          sender: "User",
+          fileName: currentFile.name,
+          mimeType: currentFile.type,
+          fileData: fileBase64,
+          caption: text,
+          replyTo: replyJson,
+        }),
+      });
+      setTimeout(() => fetchMessages(), 1000);
+    };
+    reader.readAsDataURL(currentFile);
+  } else {
+    await fetch(config.chat_script_url, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "sendMessage",
+        userId: chatUserId,
+        sender: "User",
+        content: text,
+        replyTo: replyJson,
+      }),
+    });
+    setTimeout(() => fetchMessages(), 1000);
+  }
+}
+
+function setReply(sender, text) {
+  replyContext = { sender: sender, content: text };
+  document.getElementById("chat-preview-area").classList.remove("hidden");
+  document.getElementById("reply-preview").classList.remove("hidden");
+  document.getElementById("reply-to-name").innerText = sender;
+  document.getElementById("reply-to-text").innerText = text;
+}
+function cancelReply() {
+  replyContext = null;
+  document.getElementById("reply-preview").classList.add("hidden");
+  checkHidePreviewArea();
+}
+function cancelFile() {
+  selectedFile = null;
+  document.getElementById("chat-file-upload").value = "";
+  document.getElementById("file-preview").classList.add("hidden");
+  checkHidePreviewArea();
+}
+function checkHidePreviewArea() {
+  if (!replyContext && !selectedFile)
+    document.getElementById("chat-preview-area").classList.add("hidden");
+}
+function triggerFileUpload() {
+  document.getElementById("chat-file-upload").click();
 }
