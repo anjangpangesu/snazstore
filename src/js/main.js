@@ -30,7 +30,7 @@ const sliders = {
 const translations = {
   id: {
     sect_why_choose:
-      "Mengapa Memilih <span class='text-primary'>SnazStore</span>?",
+      "Mengapa Memilih <span class='fusion-text-gradient font-bold'>SnazStore</span>?",
     limited_time: "Waktu Terbatas",
     starting_from: "Mulai dari IDR",
     flash_sale_price: "IDR",
@@ -154,9 +154,10 @@ const translations = {
     text_no_promo_found: "Tidak ada promo yang cocok untuk produk ini :(",
     text_failed_load_promo: "Gagal memuat promo.",
     text_click_to_check: "Klik untuk cek",
+    text_no_flash_sale: "Tidak ada Flash Sale saat ini.",
   },
   en: {
-    sect_why_choose: "Why Choose <span class='text-primary'>SnazStore</span>?",
+    sect_why_choose: "Why Choose <span class='fusion-text-gradient font-bold'>SnazStore</span>?",
     limited_time: "Limited Time",
     starting_from: "Starting from IDR",
     flash_sale_price: "IDR",
@@ -278,6 +279,7 @@ const translations = {
     text_no_promo_found: "No suitable promos found for this product :(",
     text_failed_load_promo: "Failed to load promos.",
     text_click_to_check: "Click to check",
+    text_no_flash_sale: "No Flash Sale available right now.",
   },
 };
 
@@ -511,14 +513,16 @@ function setActiveNav(targetKey) {
   );
 
   navLinks.forEach((link) => {
-    link.classList.remove("text-primary");
+    link.classList.remove("fusion-text-gradient");
+    link.classList.remove("font-bold");
   });
 
   let activated = false;
   if (targetKey) {
     navLinks.forEach((link) => {
       if (link.getAttribute("data-i18n") === targetKey) {
-        link.classList.add("text-primary");
+        link.classList.add("fusion-text-gradient");
+        link.classList.add("font-bold");
         activated = true;
       }
     });
@@ -527,7 +531,8 @@ function setActiveNav(targetKey) {
   if (!activated) {
     navLinks.forEach((link) => {
       if (link.getAttribute("href") && link.href === window.location.href) {
-        link.classList.add("text-primary");
+        link.classList.add("fusion-text-gradient");
+        link.classList.add("font-bold");
       }
     });
   }
@@ -539,11 +544,11 @@ function setupLanguage() {
 
   if (btnId && btnEn) {
     if (currentLang === "id") {
-      btnId.classList.add("font-bold", "text-primary");
-      btnEn.classList.remove("font-bold", "text-primary");
+      btnId.classList.add("font-bold", "fusion-text-gradient");
+      btnEn.classList.remove("font-bold", "fusion-text-gradient");
     } else {
-      btnEn.classList.add("font-bold", "text-primary");
-      btnId.classList.remove("font-bold", "text-primary");
+      btnEn.classList.add("font-bold", "fusion-text-gradient");
+      btnId.classList.remove("font-bold", "fusion-text-gradient");
     }
   }
   applyTranslations();
@@ -640,7 +645,7 @@ function createGameCard(product, size = "small") {
       <a href="${productPath}" class="block card-hover bg-white dark:bg-dark rounded-xl overflow-hidden cursor-pointer shadow-sm">
         <div class="relative">
           <img src="${product.image}" alt="${product.name}" class="${imageClass}" loading="lazy" onerror="this.style.background='#e5e7eb'; this.alt='Image unavailable';">
-          ${product.discount > 0 ? `<span class="absolute top-2 right-2 px-2 py-1 bg-primary text-white text-xs font-bold rounded-lg">-${product.discount}%</span>` : ""}
+          ${product.discount > 0 ? `<span class="absolute top-2 right-2 px-2 py-1 fusion-gradient text-white text-xs font-bold rounded-lg">-${product.discount}%</span>` : ""}
         </div>
         <div class="p-3">
           <h3 class="font-medium text-sm truncate text-gray-900 dark:text-white">${product.name}</h3>
@@ -653,10 +658,10 @@ function createGameCard(product, size = "small") {
       <a href="${productPath}" class="block card-hover bg-white dark:bg-dark rounded-2xl overflow-hidden cursor-pointer shadow-lg h-full">
         <div class="relative">
           <img src="${product.image}" alt="${product.name}" class="w-full h-48 md:h-56 object-cover" loading="lazy" onerror="this.style.background='#e5e7eb'; this.alt='Image unavailable';">
-          ${product.discount > 0 ? `<span class="absolute top-3 right-3 px-3 py-1 bg-primary text-white text-sm font-bold rounded-lg">-${product.discount}%</span>` : ""}
+          ${product.discount > 0 ? `<span class="absolute top-3 right-3 px-3 py-1 fusion-gradient text-white text-sm font-bold rounded-lg">-${product.discount}%</span>` : ""}
         </div>
         <div class="p-3 md:p-4">
-          <span class="text-[10px] md:text-xs font-medium text-primary uppercase">${product.category}</span>
+          <span class="text-[10px] md:text-xs font-medium fusion-text-gradient uppercase font-bold">${product.category}</span>
           <h3 class="font-heading font-semibold text-base md:text-lg mt-1 text-gray-900 dark:text-white truncate">${product.name}</h3>
           <p class="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-1 truncate">${product.developer}</p>
           <div class="flex items-center gap-1 mt-2 text-yellow-400 text-xs md:text-sm">
@@ -722,7 +727,8 @@ function renderFlashSale() {
   const isInnerPage = window.location.pathname.includes("/page/");
 
   if (displayItems.length === 0) {
-    container.innerHTML = `<div class="col-span-full text-center text-gray-500">No Flash Sale available right now.</div>`;
+    const noSaleText = translations[currentLang].text_no_flash_sale;
+    container.innerHTML = `<div class="col-span-full text-center text-gray-500">${noSaleText}</div>`;
     return;
   }
 
@@ -738,21 +744,23 @@ function renderFlashSale() {
       const finalPrice = (n.price * (100 - disc)) / 100;
 
       return `
-    <a href="${productPath}" class="block card-hover bg-gradient-to-br from-primary/5 to-secondary/5 dark:from-primary/10 dark:to-secondary/10 rounded-xl overflow-hidden cursor-pointer border border-primary/20">
-      <div class="flex items-center gap-2.5 p-2.5">
-        <div class="relative w-12 h-12 md:w-16 md:h-16 flex-shrink-0">
-            <img src="${p.image}" alt="${p.name}" class="w-full h-full rounded-lg object-cover" loading="lazy">
-            <div class="absolute -bottom-1.5 -right-1.5 w-6 h-6 bg-white dark:bg-dark rounded-full p-0.5 shadow-md flex items-center justify-center">
-                <img src="${n.icon}" class="w-5 h-5 object-contain rounded-full" onerror="this.style.display='none'">
+    <a href="${productPath}" class="block card-hover fusion-gradient rounded-xl overflow-hidden cursor-pointer border border-white/20 p-[1px]">
+      <div class="bg-white dark:bg-dark rounded-[11px] h-full">
+        <div class="flex items-center gap-2.5 p-2.5">
+          <div class="relative w-12 h-12 md:w-16 md:h-16 flex-shrink-0">
+              <img src="${p.image}" alt="${p.name}" class="w-full h-full rounded-lg object-cover" loading="lazy">
+              <div class="absolute -bottom-1.5 -right-1.5 w-6 h-6 bg-white dark:bg-dark rounded-full p-0.5 shadow-md flex items-center justify-center">
+                  <img src="${n.icon}" class="w-5 h-5 object-contain rounded-full" onerror="this.style.display='none'">
+              </div>
+          </div>
+          <div class="flex-1 min-w-0 overflow-hidden">
+            <span class="inline-block px-1.5 py-0.5 fusion-gradient text-white text-[9px] md:text-[10px] font-bold rounded mb-0.5">-${disc}%</span>
+            <h3 class="font-heading font-semibold text-[10px] md:text-sm text-gray-900 dark:text-white truncate leading-tight">${p.name}</h3>
+            <p class="text-[10px] md:text-xs text-gray-500 dark:text-gray-400 truncate">${n.name}</p>
+            <div class="mt-1 leading-none">
+              <p class="text-[9px] text-gray-400 line-through">IDR ${formatPrice(n.price)}</p>
+              <p class="text-[10px] md:text-sm font-bold mt-0.5 fusion-text-gradient">IDR ${formatPrice(finalPrice)}</p>
             </div>
-        </div>
-        <div class="flex-1 min-w-0 overflow-hidden">
-          <span class="inline-block px-1.5 py-0.5 bg-primary text-white text-[9px] md:text-[10px] font-bold rounded mb-0.5">-${disc}%</span>
-          <h3 class="font-heading font-semibold text-[10px] md:text-sm text-gray-900 dark:text-white truncate leading-tight">${p.name}</h3>
-          <p class="text-[10px] md:text-xs text-gray-500 dark:text-gray-400 truncate">${n.name}</p>
-          <div class="mt-1 leading-none">
-            <p class="text-[9px] text-gray-400 line-through">IDR ${formatPrice(n.price)}</p>
-            <p class="text-[10px] md:text-sm text-primary font-bold mt-0.5">IDR ${formatPrice(finalPrice)}</p>
           </div>
         </div>
       </div>
@@ -849,7 +857,7 @@ function renderProductFAQ() {
             (item) => `
           <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 transition-all hover:shadow-md">
             <h4 class="font-semibold text-gray-900 dark:text-white mb-2 flex items-start gap-2 leading-snug">
-              <i class="fas fa-question-circle text-primary mt-1 text-xs flex-shrink-0"></i>
+              <i class="fas fa-question-circle fusion-text-gradient mt-1 text-xs flex-shrink-0"></i>
               <span>${item.q}</span>
             </h4>
             <p class="text-sm text-gray-600 dark:text-gray-400 pl-5 leading-relaxed">${item.a}</p>
@@ -889,8 +897,8 @@ function renderNominals() {
     html += `
       <div class="col-span-full mb-6">
         <div class="flex items-center gap-3 mb-4">
-          <div class="w-10 h-10 flex items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/10 rounded-lg overflow-hidden">
-            <img src="${categoryIcon}" alt="${category}" class="w-full h-full object-cover" loading="lazy" onerror="this.src='https://via.placeholder.com/40'">
+          <div class="w-10 h-10 flex items-center justify-center fusion-gradient rounded-lg overflow-hidden p-[1px]">
+            <img src="${categoryIcon}" alt="${category}" class="w-full h-full object-cover rounded-md bg-white" loading="lazy" onerror="this.src='https://via.placeholder.com/40'">
           </div>
           <h3 class="font-heading font-semibold text-lg text-gray-900 dark:text-white">${category}</h3>
           <div class="flex-1 h-px bg-gray-200 dark:bg-gray-700 ml-2"></div>
@@ -908,7 +916,7 @@ function renderNominals() {
 
               const cardClass = isOutOfStock
                 ? "nominal-card bg-gray-100 dark:bg-gray-800 rounded-xl p-3 sm:p-4 border-2 border-transparent relative opacity-70 cursor-not-allowed grayscale"
-                : "nominal-card card-hover bg-white dark:bg-dark rounded-xl p-3 sm:p-4 cursor-pointer border-2 border-transparent hover:border-primary/50 transition-all relative";
+                : "nominal-card card-hover bg-white dark:bg-dark rounded-xl p-3 sm:p-4 cursor-pointer hover:border-transparent transition-all relative";
 
               const onClickAction = isOutOfStock
                 ? ""
@@ -916,12 +924,12 @@ function renderNominals() {
 
               return `
               <div ${onClickAction} data-nominal-id="${n.id}" class="${cardClass}">
-                ${hasDiscount && !isOutOfStock ? `<span class="absolute top-2 right-2 px-1.5 py-0.5 bg-primary text-white text-[10px] font-bold rounded">- ${disc}%</span>` : ""}
+                ${hasDiscount && !isOutOfStock ? `<span class="absolute top-2 right-2 px-1.5 py-0.5 fusion-gradient text-white text-[10px] font-bold rounded">- ${disc}%</span>` : ""}
                 ${isOutOfStock ? `<span class="absolute top-2 right-2 px-1.5 py-0.5 bg-gray-500 text-white text-[10px] font-bold rounded">${translations[currentLang].text_out_of_stock}</span>` : ""}
                 
                 <div class="flex items-center gap-3 mb-3">
-                  <div class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/10 rounded-lg flex-shrink-0 overflow-hidden">
-                    <img src="${n.icon}" alt="${n.name}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/40'">
+                  <div class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center fusion-gradient p-[1px] rounded-lg flex-shrink-0 overflow-hidden">
+                    <img src="${n.icon}" alt="${n.name}" class="w-full h-full object-cover rounded-md bg-white" onerror="this.src='https://via.placeholder.com/40'">
                   </div>
                   <div class="flex-1 min-w-0">
                     <h4 class="font-semibold text-xs sm:text-sm text-gray-900 dark:text-white leading-snug break-words">${n.name}</h4>
@@ -931,8 +939,8 @@ function renderNominals() {
                   isOutOfStock
                     ? `<p class="text-xs text-gray-400 font-bold">Unavailable</p>`
                     : hasDiscount
-                      ? `<p class="text-xs text-gray-400 line-through">IDR ${formatPrice(n.price)}</p><p class="text-primary font-bold">IDR ${formatPrice(finalPrice)}</p>`
-                      : `<p class="text-primary font-bold">IDR ${formatPrice(n.price)}</p>`
+                      ? `<p class="text-xs text-gray-400 line-through">IDR ${formatPrice(n.price)}</p><p class="font-bold fusion-text-gradient">IDR ${formatPrice(finalPrice)}</p>`
+                      : `<p class="font-bold fusion-text-gradient">IDR ${formatPrice(n.price)}</p>`
                 }
               </div>`;
             })
@@ -956,11 +964,11 @@ function renderOrderForm() {
     container.innerHTML = `
       <div>
         <label class="block text-sm font-medium mb-2 text-gray-900 dark:text-white">${lang.label_email}</label>
-        <input type="email" id="form-email" required class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-gray-900 dark:text-white" placeholder="${lang.placeholder_email}">
+        <input type="email" id="form-email" required class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-amber-500 outline-none text-gray-900 dark:text-white" placeholder="${lang.placeholder_email}">
       </div>
       <div>
         <label class="block text-sm font-medium mb-2 text-gray-900 dark:text-white">${lang.label_whatsapp}</label>
-        <input type="tel" id="form-whatsapp" required class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-gray-900 dark:text-white" placeholder="${lang.placeholder_whatsapp}">
+        <input type="tel" id="form-whatsapp" required class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-amber-500 outline-none text-gray-900 dark:text-white" placeholder="${lang.placeholder_whatsapp}">
       </div>
     `;
   } else {
@@ -996,7 +1004,7 @@ function renderOrderForm() {
             <div>
               <label class="block text-sm font-medium mb-2 text-gray-900 dark:text-white">${lang.label_server}</label>
               <div class="relative">
-                <select id="form-server" class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-gray-900 dark:text-white appearance-none cursor-pointer">
+                <select id="form-server" class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-amber-500 outline-none text-gray-900 dark:text-white appearance-none cursor-pointer">
                   <option value="" disabled selected>${lang.text_select_server}</option>
                   ${options}
                 </select>
@@ -1007,7 +1015,7 @@ function renderOrderForm() {
         serverInputHTML = `
             <div>
                 <label class="block text-sm font-medium mb-2 text-gray-900 dark:text-white">${lang.label_server}</label>
-                <input type="text" id="form-server" class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-gray-900 dark:text-white" placeholder="${lang.placeholder_server}">
+                <input type="text" id="form-server" class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-amber-500 outline-none text-gray-900 dark:text-white" placeholder="${lang.placeholder_server}">
             </div>`;
       }
     }
@@ -1020,27 +1028,37 @@ function renderOrderForm() {
       <div class="${gridClass}">
         <div class="${showServerInput ? "" : "col-span-1"}">
           <label class="block text-sm font-medium mb-2 text-gray-900 dark:text-white">${idLabel}</label>
-          <input type="text" id="form-game-id" required class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-gray-900 dark:text-white" placeholder="${lang.placeholder_game_id}">
+          <input type="text" id="form-game-id" required class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-amber-500 outline-none text-gray-900 dark:text-white" placeholder="${lang.placeholder_game_id}">
         </div>
         ${showServerInput ? serverInputHTML : ""}
       </div>
       <div>
         <label class="block text-sm font-medium mb-2 text-gray-900 dark:text-white">${lang.label_nickname}</label>
-        <input type="text" id="form-nickname" class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-gray-900 dark:text-white" placeholder="${lang.placeholder_nickname}">
+        <input type="text" id="form-nickname" class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-amber-500 outline-none text-gray-900 dark:text-white" placeholder="${lang.placeholder_nickname}">
       </div>
       <div>
         <label class="block text-sm font-medium mb-2 text-gray-900 dark:text-white">${lang.label_email}</label>
-        <input type="email" id="form-email" required class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-gray-900 dark:text-white" placeholder="${lang.placeholder_email}">
+        <input type="email" id="form-email" required class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-amber-500 outline-none text-gray-900 dark:text-white" placeholder="${lang.placeholder_email}">
       </div>
       <div>
         <label class="block text-sm font-medium mb-2 text-gray-900 dark:text-white">${lang.label_whatsapp}</label>
-        <input type="tel" id="form-whatsapp" required class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-gray-900 dark:text-white" placeholder="${lang.placeholder_whatsapp}">
+        <input type="tel" id="form-whatsapp" required class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-amber-500 outline-none text-gray-900 dark:text-white" placeholder="${lang.placeholder_whatsapp}">
       </div>
     `;
   }
 }
 
 function selectNominal(nominalId) {
+  if (selectedNominal && selectedNominal.id === nominalId) {
+    selectedNominal = null;
+    appliedCoupon = null;
+    document.querySelectorAll(".nominal-card").forEach((card) => {
+      card.classList.remove("selected");
+    });
+    updateCheckoutButton();
+    return;
+  }
+
   const nominal = currentProduct.nominals.find((n) => n.id === nominalId);
   if (!nominal || nominal.price === 0) return;
 
@@ -1048,15 +1066,13 @@ function selectNominal(nominalId) {
   appliedCoupon = null;
 
   document.querySelectorAll(".nominal-card").forEach((card) => {
-    card.classList.remove("selected", "border-primary");
-    card.classList.add("border-transparent");
+    card.classList.remove("selected");
   });
   const selectedCard = document.querySelector(
     `[data-nominal-id="${nominalId}"]`,
   );
   if (selectedCard) {
-    selectedCard.classList.add("selected", "border-primary");
-    selectedCard.classList.remove("border-transparent");
+    selectedCard.classList.add("selected");
   }
   updateCheckoutButton();
 }
@@ -1074,7 +1090,7 @@ function updateCheckoutButton() {
     btn.textContent = `${lang.btn_confirm} - IDR ${formatPrice(price)}`;
     btn.disabled = false;
     btn.className =
-      "w-full py-4 bg-primary hover:bg-red-700 text-white rounded-xl font-semibold transition-colors cursor-pointer";
+      "w-full py-4 fusion-gradient text-white rounded-xl font-semibold transition-all cursor-pointer hover:shadow-lg shadow-amber-500/20";
   } else {
     btn.textContent = lang.btn_checkout_default;
     btn.disabled = true;
@@ -1177,18 +1193,18 @@ function showCheckoutModal() {
     <div class="mt-4 mb-4">
       <div class="flex justify-between items-center mb-2">
          <label class="block text-sm font-medium text-gray-900 dark:text-white">${lang.label_promo}</label>
-         <button type="button" onclick="toggleCouponList()" class="text-xs text-primary hover:underline font-medium">
+         <button type="button" onclick="toggleCouponList()" class="text-xs fusion-text-gradient hover:underline font-medium">
            <i class="fas fa-tags mr-1"></i> ${lang.link_view_promo}
          </button>
       </div>
       
       <div id="available-coupons-area" class="hidden mb-3 space-y-2 max-h-40 overflow-y-auto custom-scrollbar p-1">
-         <div class="text-center py-2"><i class="fas fa-spinner fa-spin text-primary"></i> ${lang.text_loading_coupons}</div>
+         <div class="text-center py-2"><i class="fas fa-spinner fa-spin fusion-text-gradient"></i> ${lang.text_loading_coupons}</div>
       </div>
 
       <div class="flex gap-2">
-        <input type="text" id="promo-code-input" class="flex-1 px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-gray-900 dark:text-white uppercase" placeholder="CODE">
-        <button onclick="applyCoupon()" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-primary hover:text-white rounded-xl font-medium transition-colors">${lang.btn_apply}</button>
+        <input type="text" id="promo-code-input" class="flex-1 px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-amber-500 outline-none text-gray-900 dark:text-white uppercase" placeholder="CODE">
+        <button onclick="applyCoupon()" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 rounded-xl font-medium transition-colors">${lang.btn_apply}</button>
       </div>
       <div id="promo-message" class="text-xs mt-2"></div>
     </div>
@@ -1201,9 +1217,9 @@ function showCheckoutModal() {
     </div>
     ${accountInfoHTML}
     ${promoHTML}
-    <div class="bg-primary/10 rounded-xl p-4">
+    <div class="bg-amber-500/10 rounded-xl p-4">
       <div id="price-summary">
-        <div class="flex justify-between items-center"><span class="font-medium text-gray-900 dark:text-primary">${lang.label_total}</span><span class="text-xl font-bold text-primary">IDR ${formatPrice(price)}</span></div>
+        <div class="flex justify-between items-center"><span class="font-medium text-gray-900 dark:text-white">${lang.label_total}</span><span class="text-xl font-bold fusion-text-gradient">IDR ${formatPrice(price)}</span></div>
       </div>
     </div>`;
 
@@ -1221,7 +1237,7 @@ async function toggleCouponList() {
   if (area.classList.contains("hidden")) {
     area.classList.remove("hidden");
 
-    area.innerHTML = `<div class="text-center py-2"><i class="fas fa-spinner fa-spin text-primary"></i> ${lang.text_searching_promo}</div>`;
+    area.innerHTML = `<div class="text-center py-2"><i class="fas fa-spinner fa-spin text-amber-500"></i> ${lang.text_searching_promo}</div>`;
 
     try {
       const timestamp = new Date().getTime();
@@ -1322,19 +1338,19 @@ function formatCouponCard(c) {
   }
 
   return `
-    <div onclick="useCoupon('${c.code}')" class="coupon-card rounded-xl p-3 mb-2 cursor-pointer relative group bg-white dark:bg-gray-800 border border-dashed border-gray-300 dark:border-gray-600 hover:border-primary transition-all shadow-sm">
+    <div onclick="useCoupon('${c.code}')" class="coupon-card rounded-xl p-3 mb-2 cursor-pointer relative group bg-white dark:bg-gray-800 border border-dashed border-amber-500 hover:border-amber-600 transition-all shadow-sm">
        <div class="flex justify-between items-start">
          <div>
            <div class="font-bold text-gray-800 dark:text-white text-sm flex items-center gap-2">
              ${c.code}
              ${timeInfo}
            </div>
-           <div class="text-primary font-bold text-xs mt-0.5">${discountText}</div>
+           <div class="text-amber-600 dark:text-amber-400 font-bold text-xs mt-0.5">${discountText}</div>
            <div class="text-[10px] text-gray-500 dark:text-gray-400 mt-1">${minBuyText}</div>
          </div>
          
          <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
-             <button class="text-xs bg-primary/10 text-primary px-3 py-1.5 rounded-lg font-medium hover:bg-primary hover:text-white transition-colors">
+             <button class="text-xs bg-amber-100 text-amber-700 px-3 py-1.5 rounded-lg font-medium hover:bg-amber-200 transition-colors">
                ${lang.btn_use_coupon}
              </button>
          </div>
@@ -1402,15 +1418,15 @@ async function applyCoupon() {
       priceContainer.innerHTML = `
         <div class="flex justify-between items-center mb-1 text-sm text-gray-500"><span class="dark:text-gray-400">Subtotal</span><span>IDR ${formatPrice(basePrice)}</span></div>
         <div class="flex justify-between items-center mb-2 text-sm text-green-500 font-medium"><span>${lang.text_discount_promo} (${code})</span><span>- IDR ${formatPrice(data.discount)}</span></div>
-        <div class="border-t border-primary/20 my-2 pt-2"></div>
-        <div class="flex justify-between items-center"><span class="font-medium text-gray-900 dark:text-primary">${lang.label_total}</span><span class="text-xl font-bold text-primary">IDR ${formatPrice(finalPrice)}</span></div>
+        <div class="border-t border-amber-500/20 my-2 pt-2"></div>
+        <div class="flex justify-between items-center"><span class="font-medium text-gray-900 dark:text-white">${lang.label_total}</span><span class="text-xl font-bold fusion-text-gradient">IDR ${formatPrice(finalPrice)}</span></div>
       `;
     } else {
       appliedCoupon = null;
       msg.className = "text-xs mt-2 text-red-500";
       msg.textContent = `✕ ${data.message}`;
 
-      priceContainer.innerHTML = `<div class="flex justify-between items-center"><span class="font-medium text-gray-900 dark:text-primary">${lang.label_total}</span><span class="text-xl font-bold text-primary">IDR ${formatPrice(basePrice)}</span></div>`;
+      priceContainer.innerHTML = `<div class="flex justify-between items-center"><span class="font-medium text-gray-900 dark:text-white">${lang.label_total}</span><span class="text-xl font-bold fusion-text-gradient">IDR ${formatPrice(basePrice)}</span></div>`;
     }
   } catch (e) {
     console.error(e);
@@ -1553,8 +1569,7 @@ async function confirmOrder() {
   updateCheckoutButton();
 
   document.querySelectorAll(".nominal-card").forEach((card) => {
-    card.classList.remove("selected", "border-primary");
-    card.classList.add("border-transparent");
+    card.classList.remove("selected");
   });
 
   closeModal("checkout");
@@ -1615,20 +1630,24 @@ function updateFilterButtons(selector, active) {
       (active === "premium" && btnText.includes("premium"));
 
     if (isActive) {
-      btn.classList.add("active", "bg-primary", "text-white");
+      btn.classList.add("active", "fusion-gradient", "text-white");
       btn.classList.remove(
         "bg-gray-200",
         "dark:bg-gray-700",
-        "hover:bg-primary",
+        "hover:bg-amber-500",
         "hover:text-white",
+        "dark:hover:bg-amber-500",
+        "dark:hover:text-white"
       );
     } else {
-      btn.classList.remove("active", "bg-primary", "text-white");
+      btn.classList.remove("active", "fusion-gradient", "text-white");
       btn.classList.add(
         "bg-gray-200",
         "dark:bg-gray-700",
-        "hover:bg-primary",
+        "hover:bg-amber-500",
         "hover:text-white",
+        "dark:hover:bg-amber-500",
+        "dark:hover:text-white"
       );
     }
   });

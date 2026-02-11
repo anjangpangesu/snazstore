@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-    <link rel="icon" type="image/png" href="../../asset/img/icon-logo.png" />
-    <link rel="apple-touch-icon" href="../../asset/img/icon-logo.png" />
+    <link rel="icon" type="image/png" href="asset/img/icon-logo.png" />
+    <link rel="apple-touch-icon" href="asset/img/icon-logo.png" />
 
     <title>
       SnazStore - Top Up Game & Aplikasi Premium Termurah, Terpercaya, dan 100%
@@ -59,10 +59,7 @@
       property="twitter:description"
       content="Jual Akun Netflix, Canva, Zoom, & Top Up Game. Murah, Aman, Bergaransi. Bayar via QRIS/Bank Jago."
     />
-    <meta
-      property="twitter:image"
-      content="../../asset/img/landscape-logo.png"
-    />
+    <meta property="twitter:image" content="asset/img/landscape-logo.png" />
 
     <script type="application/ld+json">
       {
@@ -194,7 +191,7 @@
         },
       };
     </script>
-    <link rel="stylesheet" href="../../src/css/styles.css" />
+    <link rel="stylesheet" href="src/css/styles.css" />
   </head>
   <body
     class="h-full bg-gray-50 dark:bg-darker text-gray-900 dark:text-white transition-colors duration-300 lang-loading"
@@ -206,50 +203,47 @@
       >
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="flex items-center justify-between h-16">
-            <a
-              href="../../index.html"
-              class="flex items-center gap-2 cursor-pointer"
-            >
+            <a href="index.html" class="flex items-center gap-2 cursor-pointer">
               <img
-                src="../../asset/img/icon-logo.png"
+                src="asset/img/icon-logo.png"
                 alt="SnazStore Logo"
                 class="w-10 h-10 object-contain rounded-lg"
                 onerror="
                   this.onerror = null;
                   this.src = 'https://via.placeholder.com/40?text=S';
                   this.className =
-                    'w-10 h-10 hero-gradient rounded-lg flex items-center justify-center text-white font-bold';
+                    'w-10 h-10 fusion-gradient rounded-lg flex items-center justify-center text-white font-bold';
                 "
               />
               <span
                 id="logo-text"
-                class="font-heading font-bold text-xl text-primary"
+                class="font-heading font-bold text-xl fusion-text-gradient"
                 >SnazStore</span
               >
             </a>
             <div class="hidden md:flex items-center gap-8">
               <a
-                href="../../index.html"
-                class="nav-link font-medium hover:text-primary transition-colors"
+                href="index.html"
+                class="nav-link font-medium hover:text-amber-500 transition-colors"
                 data-i18n="nav_home"
                 >Beranda</a
               >
               <a
-                href="../../page/topup/topup.html"
-                class="nav-link font-medium hover:text-primary transition-colors"
+                href="page/topup/topup.html"
+                class="nav-link font-medium hover:text-amber-500 transition-colors"
                 data-i18n="nav_topup"
                 >Top Up</a
               >
               <button
                 id="btn-track-order"
-                class="nav-link font-medium hover:text-primary transition-colors bg-transparent border-0 cursor-pointer"
+                class="nav-link font-medium hover:text-amber-500 transition-colors bg-transparent border-0 cursor-pointer"
                 data-i18n="nav_track"
               >
                 Lacak Pesanan
               </button>
               <a
-                href="../../page/contact/contact.html"
-                class="nav-link font-medium hover:text-primary transition-colors"
+                href="page/contact/contact.html"
+                class="nav-link font-medium hover:text-amber-500 transition-colors"
                 data-i18n="nav_contact"
                 >Kontak</a
               >
@@ -259,7 +253,7 @@
                 <button
                   onclick="changeLanguage('id')"
                   id="lang-id"
-                  class="hover:text-primary transition-colors"
+                  class="hover:text-amber-500 transition-colors"
                 >
                   ID
                 </button>
@@ -267,7 +261,7 @@
                 <button
                   onclick="changeLanguage('en')"
                   id="lang-en"
-                  class="hover:text-primary transition-colors"
+                  class="hover:text-amber-500 transition-colors"
                 >
                   EN
                 </button>
@@ -279,7 +273,7 @@
                   id="search-input"
                   data-i18n="search_placeholder"
                   placeholder="Cari game atau aplikasi..."
-                  class="w-48 lg:w-64 px-4 py-2 pl-10 rounded-full bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-sm"
+                  class="w-48 lg:w-64 px-4 py-2 pl-10 rounded-full bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-amber-500 outline-none text-sm"
                 />
                 <i
                   class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
@@ -311,14 +305,14 @@
         >
           <div class="px-4 py-4 space-y-3">
             <a
-              href="../../index.html"
-              class="block py-2 font-medium hover:text-primary"
+              href="index.html"
+              class="block py-2 font-medium hover:text-amber-500"
               data-i18n="nav_home"
               >Beranda</a
             >
             <a
-              href="../../page/topup/topup.html"
-              class="block py-2 font-medium hover:text-primary"
+              href="page/topup/topup.html"
+              class="block py-2 font-medium hover:text-amber-500"
               data-i18n="nav_topup"
               >Top Up</a
             >
@@ -327,14 +321,14 @@
                 openModal('tracking');
                 toggleMobileMenu();
               "
-              class="block w-full text-left py-2 font-medium hover:text-primary bg-transparent border-0"
+              class="block w-full text-left py-2 font-medium hover:text-amber-500 bg-transparent border-0"
               data-i18n="nav_track"
             >
               Lacak Pesanan
             </button>
             <a
-              href="../../page/contact/contact.html"
-              class="block py-2 font-medium hover:text-primary"
+              href="page/contact/contact.html"
+              class="block py-2 font-medium hover:text-amber-500"
               data-i18n="nav_contact"
               >Kontak</a
             >
@@ -344,7 +338,7 @@
                 id="search-input-mobile"
                 data-i18n="search_placeholder"
                 placeholder="Cari produk.."
-                class="w-full px-4 py-2 pl-10 rounded-full bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-sm"
+                class="w-full px-4 py-2 pl-10 rounded-full bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-amber-500 outline-none text-sm"
               />
               <i
                 class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
@@ -366,21 +360,21 @@
             >
               <div class="slider-slide min-w-full h-full relative">
                 <img
-                  src="../../asset/img/banner-1.png"
+                  src="asset/img/banner-1.png"
                   alt="Welcome to SnazStore Banner"
                   class="w-full h-full object-cover"
                 />
               </div>
               <div class="slider-slide min-w-full h-full relative">
                 <img
-                  src="../../asset/img/banner-2.png"
+                  src="asset/img/banner-2.png"
                   alt="Top Up Game Banner"
                   class="w-full h-full object-cover"
                 />
               </div>
               <div class="slider-slide min-w-full h-full relative">
                 <img
-                  src="../../asset/img/banner-3.png"
+                  src="asset/img/banner-3.png"
                   alt="Aplikasi Premium Banner"
                   class="w-full h-full object-cover"
                 />
@@ -428,7 +422,7 @@
               class="font-heading font-bold text-2xl md:text-3xl text-center mb-12"
               data-i18n="sect_why_choose"
             >
-              Why Choose <span class="text-primary">SnazStore</span>?
+              Why Choose <span class="fusion-text-gradient">SnazStore</span>?
             </h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div
@@ -510,8 +504,8 @@
                 Produk Populer
               </h2>
               <a
-                href="../../page/topup/topup.html"
-                class="text-primary hover:text-red-700 font-medium flex items-center gap-2"
+                href="page/topup/topup.html"
+                class="fusion-text-gradient hover:underline font-medium flex items-center gap-2"
                 data-i18n="btn_view_all"
               >
                 Lihat Semua <i class="fas fa-arrow-right"></i>
@@ -572,25 +566,25 @@
             <div class="flex flex-wrap justify-center gap-3 mb-10">
               <button
                 onclick="filterGames('all')"
-                class="filter-btn active px-6 py-2 rounded-full bg-primary text-white font-medium transition-colors"
+                class="filter-btn active px-6 py-2 rounded-full fusion-gradient text-white dark:hover:bg-amber-500 dark:hover:text-white font-medium transition-colors"
               >
                 All
               </button>
               <button
                 onclick="filterGames('mobile')"
-                class="filter-btn px-6 py-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-primary hover:text-white font-medium transition-colors"
+                class="filter-btn px-6 py-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-amber-500 hover:text-white dark:hover:bg-amber-500 dark:hover:text-white font-medium transition-colors"
               >
                 Mobile
               </button>
               <button
                 onclick="filterGames('pc')"
-                class="filter-btn px-6 py-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-primary hover:text-white font-medium transition-colors"
+                class="filter-btn px-6 py-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-amber-500 hover:text-white dark:hover:bg-amber-500 dark:hover:text-white font-medium transition-colors"
               >
                 PC
               </button>
               <button
                 onclick="filterGames('premium')"
-                class="filter-btn px-6 py-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-primary hover:text-white font-medium transition-colors"
+                class="filter-btn px-6 py-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-amber-500 hover:text-white dark:hover:bg-amber-500 dark:hover:text-white font-medium transition-colors"
               >
                 Premium Apps
               </button>
@@ -601,8 +595,8 @@
             ></div>
             <div class="text-center mt-10">
               <a
-                href="../../page/topup/topup.html"
-                class="inline-block px-8 py-3 bg-primary hover:bg-red-700 text-white rounded-full font-semibold transition-colors"
+                href="page/topup/topup.html"
+                class="inline-block px-8 py-3 fusion-gradient hover:opacity-90 text-white rounded-full font-semibold transition-colors"
                 data-i18n="btn_show_more"
               >
                 Tampilkan Lebih Banyak <i class="fas fa-arrow-right ml-2"></i>
@@ -712,7 +706,7 @@
             <div>
               <div class="flex items-center gap-2 mb-4">
                 <img
-                  src="../../asset/img/icon-logo.png"
+                  src="asset/img/icon-logo.png"
                   alt="SnazStore Logo"
                   class="w-10 h-10 object-contain rounded-lg"
                   onerror="
@@ -730,7 +724,7 @@
                   href="https://www.instagram.com/snazstore_/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-primary transition-colors"
+                  class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-red-600 transition-colors"
                 >
                   <i class="fab fa-instagram"></i>
                 </a>
@@ -738,7 +732,7 @@
                   href="https://www.facebook.com/profile.php?id=61587358413891"
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-secondary transition-colors"
+                  class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-blue-600 transition-colors"
                 >
                   <i class="fab fa-facebook"></i>
                 </a>
@@ -770,7 +764,7 @@
               <ul class="space-y-3">
                 <li>
                   <a
-                    href="../../index.html"
+                    href="index.html"
                     class="text-gray-400 hover:text-white transition-colors"
                     data-i18n="nav_home"
                     >Beranda</a
@@ -778,7 +772,7 @@
                 </li>
                 <li>
                   <a
-                    href="../../page/topup/topup.html"
+                    href="page/topup/topup.html"
                     class="text-gray-400 hover:text-white transition-colors"
                     data-i18n="nav_topup"
                     >Top Up</a
@@ -786,7 +780,7 @@
                 </li>
                 <li>
                   <a
-                    href="../../page/contact/contact.html"
+                    href="page/contact/contact.html"
                     class="text-gray-400 hover:text-white transition-colors"
                     data-i18n="nav_contact"
                     >Kontak</a
@@ -804,21 +798,21 @@
               <ul class="space-y-3">
                 <li>
                   <a
-                    href="../../page/topup/topup.html?category=mobile"
+                    href="page/topup/topup.html?category=mobile"
                     class="text-gray-400 hover:text-white transition-colors"
                     >Mobile Games</a
                   >
                 </li>
                 <li>
                   <a
-                    href="../../page/topup/topup.html?category=pc"
+                    href="page/topup/topup.html?category=pc"
                     class="text-gray-400 hover:text-white transition-colors"
                     >PC Games</a
                   >
                 </li>
                 <li>
                   <a
-                    href="../../page/topup/topup.html?category=premium"
+                    href="page/topup/topup.html?category=premium"
                     class="text-gray-400 hover:text-white transition-colors"
                     >Premium Apps</a
                   >
@@ -834,7 +828,7 @@
               </h3>
               <ul class="space-y-3">
                 <li class="flex items-center gap-3">
-                  <i class="fas fa-envelope text-primary"></i>
+                  <i class="fas fa-envelope text-red-600"></i>
                   <a
                     href="mailto:anjangstore23@gmail.com?subject=Bantuan%20%26%20Pertanyaan%20Layanan%20SnazStore&body=Halo%20Admin%20SnazStore%2C%0A%0ASaya%20ingin%20bertanya%20atau%20meminta%20bantuan%20terkait%20layanan%20SnazStore.%0A%0ADetail%20pertanyaan%3A%0A%5BTulis%20pesan%20Kamu%20di%20sini%5D%0A%0ATerima%20kasih."
                     class="text-gray-400 hover:text-white transition-colors hover:underline"
@@ -867,7 +861,7 @@
         <button
           onclick="toggleChat()"
           id="chat-toggle-btn"
-          class="fixed bottom-5 right-5 w-14 h-14 bg-gradient-to-r from-red-600 to-blue-600 hover:scale-105 text-white rounded-full shadow-2xl flex items-center justify-center transition-transform z-50"
+          class="fixed bottom-5 right-5 w-14 h-14 fusion-gradient hover:scale-105 text-white rounded-full shadow-2xl flex items-center justify-center transition-transform z-50"
         >
           <i class="fas fa-comment-dots text-2xl"></i>
           <span
@@ -881,7 +875,7 @@
           class="hidden fixed inset-0 md:inset-auto md:bottom-0 md:right-0 w-full h-full md:w-[450px] md:h-[650px] md:max-h-[90vh] bg-white dark:bg-gray-900 md:rounded-t-2xl md:rounded-b-none shadow-2xl overflow-hidden transition-all duration-300 animate-fade-in-up z-[99999] flex flex-col"
         >
           <div
-            class="bg-gradient-to-r from-red-600 to-blue-600 p-4 flex justify-between items-center text-white shadow-md z-10 flex-shrink-0"
+            class="fusion-gradient p-4 flex justify-between items-center text-white shadow-md z-10 flex-shrink-0"
           >
             <div class="flex items-center gap-3">
               <div class="relative">
@@ -889,7 +883,7 @@
                   class="w-10 h-10 bg-white rounded-full p-1 flex items-center justify-center overflow-hidden shadow-lg border-2 border-white/50"
                 >
                   <img
-                    src="../../asset/img/icon-logo.png"
+                    src="asset/img/icon-logo.png"
                     class="w-full h-full object-contain"
                   />
                 </div>
@@ -925,10 +919,10 @@
           >
             <div
               id="reply-preview"
-              class="hidden p-2 flex justify-between items-center border-l-4 border-primary bg-white dark:bg-gray-900 mx-2 mt-2 rounded-r shadow-sm flex-shrink-0"
+              class="hidden p-2 flex justify-between items-center border-l-4 border-amber-500 bg-white dark:bg-gray-900 mx-2 mt-2 rounded-r shadow-sm flex-shrink-0"
             >
               <div class="text-xs overflow-hidden">
-                <p class="font-bold text-primary mb-0.5">
+                <p class="font-bold text-amber-500 mb-0.5">
                   Membalas <span id="reply-to-name">...</span>
                 </p>
                 <p
@@ -982,7 +976,7 @@
 
               <button
                 onclick="sendChatMessage()"
-                class="mb-0.5 w-10 h-10 bg-gradient-to-r from-red-600 to-blue-600 text-white rounded-full flex items-center justify-center hover:shadow-lg transform active:scale-95 transition-all flex-shrink-0 shadow-md"
+                class="mb-0.5 w-10 h-10 fusion-gradient text-white rounded-full flex items-center justify-center hover:shadow-lg transform active:scale-95 transition-all flex-shrink-0 shadow-md"
               >
                 <div class="w-full h-full flex items-center justify-center">
                   <i
@@ -1052,7 +1046,7 @@
                 <input
                   type="text"
                   id="tracking-order-id"
-                  class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-gray-900 dark:text-white placeholder-gray-400"
+                  class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-amber-500 outline-none text-gray-900 dark:text-white placeholder-gray-400"
                   data-i18n="placeholder_order_id"
                   placeholder="Masukkan Order ID (Ex: ISS/...)"
                 />
@@ -1060,7 +1054,7 @@
 
               <button
                 onclick="checkOrderStatus()"
-                class="w-full py-3.5 bg-primary hover:bg-red-700 text-white rounded-xl font-semibold transition-colors shadow-lg shadow-red-500/30"
+                class="w-full py-3.5 fusion-gradient hover:opacity-90 text-white rounded-xl font-semibold transition-colors shadow-lg"
                 data-i18n="btn_check_status"
               >
                 Check Status
@@ -1073,6 +1067,6 @@
         </div>
       </div>
     </div>
-    <script src="../../src/js/main.js"></script>
+    <script src="src/js/main.js"></script>
   </body>
 </html>

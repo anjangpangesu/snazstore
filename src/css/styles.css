@@ -9,17 +9,44 @@ body {
   font-family: "Montserrat", sans-serif;
 }
 .hero-gradient {
-  background: linear-gradient(135deg, #dc2626 0%, #2563eb 100%);
+  background: linear-gradient(135deg, #991b1b 0%, #b45309 50%, #166534 100%);
+}
+.dark .hero-gradient {
+  background: linear-gradient(135deg, #7f1d1d 0%, #d97706 50%, #14532d 100%);
+}
+.fusion-gradient {
+  background: linear-gradient(135deg, #dc2626, #d97706, #15803d);
+}
+.dark .fusion-gradient {
+  background: linear-gradient(135deg, #b91c1c, #b45309, #166534);
+}
+.fusion-text-gradient {
+  background: linear-gradient(to right, #dc2626, #d97706, #15803d);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  width: fit-content;
+  display: inline-block;
+}
+.dark .fusion-text-gradient {
+  background: linear-gradient(to right, #ef4444, #fbbf24, #22c55e);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  width: fit-content;
+  display: inline-block;
 }
 .card-hover {
   transition: all 0.3s ease;
+  border: 1px solid rgba(220, 38, 38, 0.1);
 }
 .card-hover:hover {
   transform: translateY(-8px);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  border-color: #d97706;
 }
 .slider-dot.active {
-  background-color: #dc2626;
+  background: #d97706;
 }
 .fade-in {
   animation: fadeIn 0.5s ease-in-out;
@@ -28,7 +55,7 @@ html {
   scroll-behavior: smooth;
 }
 .dark body {
-  background-color: #020617;
+  background-color: #0f172a;
 }
 body.lang-loading #app {
   opacity: 0;
@@ -40,13 +67,13 @@ body.lang-loaded #app {
   visibility: visible;
 }
 .coupon-card {
-  border: 1px dashed #DC2626;
-  background-color: #FFF5F5;
+  border: 1px dashed #d97706;
+  background-color: #fffbeb;
   transition: all 0.2s;
 }
 .dark .coupon-card {
-  border: 1px dashed #EF4444;
-  background-color: rgba(220, 38, 38, 0.1);
+  border: 1px dashed #fbbf24;
+  background-color: rgba(251, 191, 36, 0.1);
 }
 .coupon-card:hover {
   transform: translateY(-2px);
@@ -75,18 +102,31 @@ body.lang-loaded #app {
 }
 .glass-effect {
   backdrop-filter: blur(10px);
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.8);
 }
 .dark .glass-effect {
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(15, 23, 42, 0.8);
 }
 .nominal-card.selected {
-  border-color: #dc2626;
-  background: linear-gradient(
-    135deg,
-    rgba(220, 38, 38, 0.1) 0%,
-    rgba(37, 99, 235, 0.1) 100%
-  );
+  border: 2px solid #d97706;
+  background-color: rgba(217, 119, 6, 0.05);
+  position: relative;
+}
+.nominal-card.selected::after {
+  content: "✓";
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #d97706;
+  color: white;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
 }
 .page {
   display: none;
@@ -107,7 +147,7 @@ body.lang-loaded #app {
   background: #f1f1f1;
 }
 ::-webkit-scrollbar-thumb {
-  background: #dc2626;
+  background: linear-gradient(to bottom, #991b1b, #b45309, #166534);
   border-radius: 4px;
 }
 .dark ::-webkit-scrollbar-track {
