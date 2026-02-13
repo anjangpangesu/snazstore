@@ -2207,7 +2207,7 @@ function buildMessageHTML(msg, isMe, isSending) {
 
   const align = isMe ? "justify-end" : "justify-start";
   const bubbleStyle = isMe
-    ? "bg-gradient-to-r from-red-600 to-blue-600 text-white rounded-tr-sm shadow-md"
+    ? "fusion-gradient text-white rounded-tr-sm shadow-md"
     : "bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-tl-sm shadow-sm";
 
   let replyHtml = "";
@@ -2215,7 +2215,7 @@ function buildMessageHTML(msg, isMe, isSending) {
     try {
       const rObj =
         typeof msg.replyTo === "string" ? JSON.parse(msg.replyTo) : msg.replyTo;
-      const replyBorder = isMe ? "border-white/50" : "border-primary";
+      const replyBorder = isMe ? "border-white/50" : "border-fusion-gradient";
       const replyBg = isMe ? "bg-black/10" : "bg-gray-100 dark:bg-gray-700";
 
       replyHtml = `
