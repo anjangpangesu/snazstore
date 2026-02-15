@@ -156,10 +156,11 @@ const translations = {
     text_click_to_check: "Klik untuk cek",
     text_no_flash_sale: "Tidak ada Flash Sale saat ini.",
     text_coming_soon: "Segera Datang",
-    text_product_empty_label: "Produk Sedang Kosong"
+    text_product_empty_label: "Produk Sedang Kosong",
   },
   en: {
-    sect_why_choose: "Why Choose <span class='fusion-text-gradient font-bold'>SnazStore</span>?",
+    sect_why_choose:
+      "Why Choose <span class='fusion-text-gradient font-bold'>SnazStore</span>?",
     limited_time: "Limited Time",
     starting_from: "Starting from IDR",
     flash_sale_price: "IDR",
@@ -283,13 +284,23 @@ const translations = {
     text_click_to_check: "Click to check",
     text_no_flash_sale: "No Flash Sale available right now.",
     text_coming_soon: "Coming Soon",
-    text_product_empty_label: "Product is Currently Out of Stock"
+    text_product_empty_label: "Product is Currently Out of Stock",
   },
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
+  if (localStorage.getItem("darkMode") === null) {
+    localStorage.setItem("darkMode", "true");
+    document.documentElement.classList.add("dark");
+  } else if (localStorage.getItem("darkMode") === "true") {
+    document.documentElement.classList.add("dark");
+  }
+
   setupLanguage();
   checkHistoryExpiration();
+  initFallingStars();
+  initChineseLanterns();
+  initKetupatStyles();
 
   if (document.getElementById("popular-products")) {
     setActiveNav("nav_home");
@@ -631,7 +642,44 @@ function updateSlider(sliderId) {
   });
 }
 
-// Logika Render Card Produk: Normal, Coming Soon, Out of Stock
+// === HELPER UNTUK MEMBUAT ELEMEN KETUPAT ===
+function getKetupatDecorationHTML(mode) {
+  if (mode === "single-right") {
+    // Untuk Nominal & Flash Sale: Hanya 1 di kanan
+    return `
+      <div class="ketupat-decoration right-1">
+        <div class="ketupat-string"></div>
+        <div class="ketupat-body">
+          <div class="ketupat-weave"></div>
+        </div>
+        <div class="ketupat-tail-left"></div>
+        <div class="ketupat-tail-right"></div>
+      </div>
+    `;
+  } else if (mode === "double-right") {
+    // Untuk Product Cards: 2 di kanan dengan ukuran kecil
+    return `
+      <div class="ketupat-decoration small right-1">
+        <div class="ketupat-string"></div>
+        <div class="ketupat-body">
+          <div class="ketupat-weave"></div>
+        </div>
+        <div class="ketupat-tail-left"></div>
+        <div class="ketupat-tail-right"></div>
+      </div>
+      <div class="ketupat-decoration small right-2">
+        <div class="ketupat-string"></div>
+        <div class="ketupat-body">
+          <div class="ketupat-weave"></div>
+        </div>
+        <div class="ketupat-tail-left"></div>
+        <div class="ketupat-tail-right"></div>
+      </div>
+    `;
+  }
+  return "";
+}
+
 function createGameCard(product, size = "small") {
   const isSmall = size === "small";
   const imageClass = isSmall
@@ -649,7 +697,6 @@ function createGameCard(product, size = "small") {
   const hasDeveloper = product.developer && product.developer.trim() !== "";
   const hasNominals = product.nominals && product.nominals.length > 0;
 
-  // Tentukan status kartu
   let cardStatus = "active";
   if (!hasImage && !hasDeveloper && !hasNominals) {
     cardStatus = "coming_soon";
@@ -657,28 +704,28 @@ function createGameCard(product, size = "small") {
     cardStatus = "empty";
   }
 
-  // Visual untuk Coming Soon
   if (cardStatus === "coming_soon") {
     const textComingSoon = translations[currentLang].text_coming_soon;
     return `
-      <div class="block bg-gray-800 rounded-xl overflow-hidden shadow-sm h-full relative border border-gray-700 pointer-events-none select-none">
-        <div class="relative h-48 flex flex-col items-center justify-center fusion-gradient opacity-90">
-           <i class="fas fa-clock text-4xl text-white mb-2 animate-pulse"></i>
+      <div class="block ketupat-card rounded-xl overflow-hidden shadow-sm h-full relative pointer-events-none select-none">
+        ${getKetupatDecorationHTML("double-right")}
+        <div class="relative h-48 flex flex-col items-center justify-center bg-black/40 backdrop-blur-sm">
+           <i class="fas fa-clock text-4xl text-amber-300 mb-2 animate-pulse"></i>
            <span class="text-white font-bold text-sm uppercase tracking-wider">${textComingSoon}</span>
         </div>
         <div class="p-3">
-          <h3 class="font-medium text-sm truncate text-gray-300">${product.name}</h3>
-          <p class="text-xs text-gray-500 truncate">Unknown</p>
+          <h3 class="font-medium text-sm truncate text-white">${product.name}</h3>
+          <p class="text-xs text-amber-200 truncate">Unknown</p>
         </div>
       </div>
     `;
   }
 
-  // Visual untuk Out of Stock
   if (cardStatus === "empty") {
     const textEmpty = translations[currentLang].text_product_empty_label;
     return `
-      <div class="block bg-white dark:bg-dark rounded-xl overflow-hidden shadow-sm h-full relative pointer-events-none select-none group">
+      <div class="block ketupat-card rounded-xl overflow-hidden shadow-sm h-full relative pointer-events-none select-none group">
+        ${getKetupatDecorationHTML("double-right")}
         <div class="relative">
           <img src="${product.image}" alt="${product.name}" class="${imageClass} grayscale brightness-50" loading="lazy">
           <div class="absolute inset-0 flex items-center justify-center bg-black/60">
@@ -691,42 +738,42 @@ function createGameCard(product, size = "small") {
           </div>
         </div>
         <div class="p-3 opacity-60">
-          <h3 class="font-medium text-sm truncate text-gray-900 dark:text-white">${product.name}</h3>
-          <p class="text-xs text-gray-500 dark:text-gray-400 truncate">${product.developer}</p>
+          <h3 class="font-medium text-sm truncate text-white">${product.name}</h3>
+          <p class="text-xs text-amber-200 truncate">${product.developer}</p>
         </div>
       </div>
     `;
   }
 
-  // Visual Normal Card
   if (isSmall) {
     return `
-      <a href="${productPath}" class="block card-hover bg-white dark:bg-dark rounded-xl overflow-hidden cursor-pointer shadow-sm">
-        <div class="relative">
-          <img src="${product.image}" alt="${product.name}" class="${imageClass}" loading="lazy" onerror="this.style.background='#e5e7eb'; this.alt='Image unavailable';">
-          ${product.discount > 0 ? `<span class="absolute top-2 right-2 px-2 py-1 fusion-gradient text-white text-xs font-bold rounded-lg">-${product.discount}%</span>` : ""}
+      <a href="${productPath}" class="block ketupat-card rounded-xl overflow-visible cursor-pointer relative transition-transform duration-300 hover:scale-[1.02]">
+        ${getKetupatDecorationHTML("double-right")}
+        <div class="relative overflow-hidden rounded-t-xl">
+          <img src="${product.image}" alt="${product.name}" class="${imageClass}" loading="lazy" onerror="this.style.background='#0f392b'; this.alt='Image unavailable';">
+          ${product.discount > 0 ? `<span class="absolute top-2 right-2 px-2 py-1 bg-amber-500 text-white text-xs font-bold rounded-lg border border-amber-300">-${product.discount}%</span>` : ""}
         </div>
-        <div class="p-3">
-          <h3 class="font-medium text-sm truncate text-gray-900 dark:text-white">${product.name}</h3>
-          <p class="text-xs text-gray-500 dark:text-gray-400 truncate">${product.developer}</p>
+        <div class="p-3 relative z-10">
+          <h3 class="font-medium text-sm truncate text-white drop-shadow-md">${product.name}</h3>
+          <p class="text-xs text-amber-300 truncate font-medium">${product.developer}</p>
         </div>
       </a>
     `;
   } else {
-    // Large Card for Popular (Only called if status is active, filtered by renderPopularGames)
     return `
-      <a href="${productPath}" class="block card-hover bg-white dark:bg-dark rounded-2xl overflow-hidden cursor-pointer shadow-lg h-full">
-        <div class="relative">
-          <img src="${product.image}" alt="${product.name}" class="w-full h-48 md:h-56 object-cover" loading="lazy" onerror="this.style.background='#e5e7eb'; this.alt='Image unavailable';">
-          ${product.discount > 0 ? `<span class="absolute top-3 right-3 px-3 py-1 fusion-gradient text-white text-sm font-bold rounded-lg">-${product.discount}%</span>` : ""}
+      <a href="${productPath}" class="block ketupat-card rounded-2xl overflow-visible cursor-pointer h-full relative transition-transform duration-300 hover:scale-[1.02]">
+        ${getKetupatDecorationHTML("double-right")}
+        <div class="relative overflow-hidden rounded-t-2xl">
+          <img src="${product.image}" alt="${product.name}" class="w-full h-48 md:h-56 object-cover" loading="lazy" onerror="this.style.background='#0f392b'; this.alt='Image unavailable';">
+          ${product.discount > 0 ? `<span class="absolute top-3 right-3 px-3 py-1 bg-amber-500 text-white text-sm font-bold rounded-lg border border-amber-300">-${product.discount}%</span>` : ""}
         </div>
-        <div class="p-3 md:p-4">
-          <span class="text-[10px] md:text-xs font-medium fusion-text-gradient uppercase font-bold">${product.category}</span>
-          <h3 class="font-heading font-semibold text-base md:text-lg mt-1 text-gray-900 dark:text-white truncate">${product.name}</h3>
-          <p class="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-1 truncate">${product.developer}</p>
-          <div class="flex items-center gap-1 mt-2 text-yellow-400 text-xs md:text-sm">
+        <div class="p-3 md:p-4 relative z-10">
+          <span class="text-[10px] md:text-xs font-medium text-amber-300 uppercase font-bold tracking-wide">${product.category}</span>
+          <h3 class="font-heading font-semibold text-base md:text-lg mt-1 text-white truncate drop-shadow-md">${product.name}</h3>
+          <p class="text-xs md:text-sm text-amber-200 mt-1 truncate">${product.developer}</p>
+          <div class="flex items-center gap-1 mt-2 text-amber-400 text-xs md:text-sm">
             <i class="fas fa-star"></i>
-            <span class="text-gray-600 dark:text-gray-400">${rating}</span>
+            <span class="text-amber-100 font-bold">${rating}</span>
           </div>
         </div>
       </a>
@@ -737,8 +784,9 @@ function createGameCard(product, size = "small") {
 function renderPopularGames() {
   const container = document.getElementById("popular-products");
   if (!container) return;
-  // Update Filter: Produk Populer harus punya nominal
-  const popularProducts = products.filter((p) => p.popular && p.nominals && p.nominals.length > 0);
+  const popularProducts = products.filter(
+    (p) => p.popular && p.nominals && p.nominals.length > 0,
+  );
   container.innerHTML = popularProducts
     .map((p) => createGameCard(p, "large"))
     .join("");
@@ -805,22 +853,23 @@ function renderFlashSale() {
       const finalPrice = (n.price * (100 - disc)) / 100;
 
       return `
-    <a href="${productPath}" class="block card-hover fusion-gradient rounded-xl overflow-hidden cursor-pointer border border-white/20 p-[1px]">
-      <div class="bg-white dark:bg-dark rounded-[11px] h-full">
-        <div class="flex items-center gap-2.5 p-2.5">
+    <a href="${productPath}" class="block ketupat-card rounded-xl overflow-visible cursor-pointer relative transition-transform duration-300 hover:scale-[1.02]">
+      ${getKetupatDecorationHTML("single-right")}
+      <div class="h-full relative overflow-hidden rounded-xl">
+        <div class="flex items-center gap-2.5 p-2.5 relative z-10">
           <div class="relative w-12 h-12 md:w-16 md:h-16 flex-shrink-0">
-              <img src="${p.image}" alt="${p.name}" class="w-full h-full rounded-lg object-cover" loading="lazy">
-              <div class="absolute -bottom-1.5 -right-1.5 w-6 h-6 bg-white dark:bg-dark rounded-full p-0.5 shadow-md flex items-center justify-center">
+              <img src="${p.image}" alt="${p.name}" class="w-full h-full rounded-lg object-cover border border-amber-300/50" loading="lazy">
+              <div class="absolute -bottom-1.5 -right-1.5 w-6 h-6 bg-amber-100 rounded-full p-0.5 shadow-md flex items-center justify-center">
                   <img src="${n.icon}" class="w-5 h-5 object-contain rounded-full" onerror="this.style.display='none'">
               </div>
           </div>
-          <div class="flex-1 min-w-0 overflow-hidden">
-            <span class="inline-block px-1.5 py-0.5 fusion-gradient text-white text-[9px] md:text-[10px] font-bold rounded mb-0.5">-${disc}%</span>
-            <h3 class="font-heading font-semibold text-[10px] md:text-sm text-gray-900 dark:text-white truncate leading-tight">${p.name}</h3>
-            <p class="text-[10px] md:text-xs text-gray-500 dark:text-gray-400 truncate">${n.name}</p>
+          <div class="flex-1 min-w-0 overflow-hidden text-white">
+            <span class="inline-block px-1.5 py-0.5 bg-amber-500 text-white text-[9px] md:text-[10px] font-bold rounded mb-0.5 border border-amber-300">-${disc}%</span>
+            <h3 class="font-heading font-semibold text-[10px] md:text-sm text-white truncate leading-tight drop-shadow-sm">${p.name}</h3>
+            <p class="text-[10px] md:text-xs text-amber-200 truncate">${n.name}</p>
             <div class="mt-1 leading-none">
-              <p class="text-[9px] text-gray-400 line-through">IDR ${formatPrice(n.price)}</p>
-              <p class="text-[10px] md:text-sm font-bold mt-0.5 fusion-text-gradient">IDR ${formatPrice(finalPrice)}</p>
+              <p class="text-[9px] text-gray-300 line-through">IDR ${formatPrice(n.price)}</p>
+              <p class="text-[10px] md:text-sm font-bold mt-0.5 text-amber-400 drop-shadow-sm">IDR ${formatPrice(finalPrice)}</p>
             </div>
           </div>
         </div>
@@ -958,8 +1007,8 @@ function renderNominals() {
     html += `
       <div class="col-span-full mb-6">
         <div class="flex items-center gap-3 mb-4">
-          <div class="w-10 h-10 flex items-center justify-center fusion-gradient rounded-lg overflow-hidden p-[1px]">
-            <img src="${categoryIcon}" alt="${category}" class="w-full h-full object-cover rounded-md bg-white" loading="lazy" onerror="this.src='https://via.placeholder.com/40'">
+          <div class="w-10 h-10 flex items-center justify-center ketupat-bg rounded-lg overflow-hidden p-[1px] border border-amber-300/30">
+            <img src="${categoryIcon}" alt="${category}" class="w-full h-full object-cover rounded-md" loading="lazy" onerror="this.src='https://via.placeholder.com/40'">
           </div>
           <h3 class="font-heading font-semibold text-lg text-gray-900 dark:text-white">${category}</h3>
           <div class="flex-1 h-px bg-gray-200 dark:bg-gray-700 ml-2"></div>
@@ -976,8 +1025,8 @@ function renderNominals() {
                 : n.price;
 
               const cardClass = isOutOfStock
-                ? "nominal-card bg-gray-100 dark:bg-gray-800 rounded-xl p-3 sm:p-4 border-2 border-transparent relative opacity-70 cursor-not-allowed grayscale"
-                : "nominal-card card-hover bg-white dark:bg-dark rounded-xl p-3 sm:p-4 cursor-pointer hover:border-transparent transition-all relative";
+                ? "nominal-card ketupat-card opacity-70 cursor-not-allowed grayscale relative rounded-xl p-3 sm:p-4 border-2 border-transparent"
+                : "nominal-card ketupat-card cursor-pointer hover:scale-[1.02] transition-all relative rounded-xl p-3 sm:p-4 overflow-visible";
 
               const onClickAction = isOutOfStock
                 ? ""
@@ -985,24 +1034,27 @@ function renderNominals() {
 
               return `
               <div ${onClickAction} data-nominal-id="${n.id}" class="${cardClass}">
-                ${hasDiscount && !isOutOfStock ? `<span class="absolute top-2 right-2 px-1.5 py-0.5 fusion-gradient text-white text-[10px] font-bold rounded">- ${disc}%</span>` : ""}
+                ${!isOutOfStock ? getKetupatDecorationHTML("single-right") : ""}
+                ${hasDiscount && !isOutOfStock ? `<span class="absolute top-2 right-2 px-1.5 py-0.5 bg-amber-500 text-white text-[10px] font-bold rounded border border-amber-300">- ${disc}%</span>` : ""}
                 ${isOutOfStock ? `<span class="absolute top-2 right-2 px-1.5 py-0.5 bg-gray-500 text-white text-[10px] font-bold rounded">${translations[currentLang].text_out_of_stock}</span>` : ""}
                 
-                <div class="flex items-center gap-3 mb-3">
-                  <div class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center fusion-gradient p-[1px] rounded-lg flex-shrink-0 overflow-hidden">
-                    <img src="${n.icon}" alt="${n.name}" class="w-full h-full object-cover rounded-md bg-white" onerror="this.src='https://via.placeholder.com/40'">
+                <div class="flex items-center gap-3 mb-3 relative z-10">
+                  <div class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-white/20 p-[1px] rounded-lg flex-shrink-0 overflow-hidden border border-amber-400/50">
+                    <img src="${n.icon}" alt="${n.name}" class="w-full h-full object-cover rounded-md" onerror="this.src='https://via.placeholder.com/40'">
                   </div>
                   <div class="flex-1 min-w-0">
-                    <h4 class="font-semibold text-xs sm:text-sm text-gray-900 dark:text-white leading-snug break-words">${n.name}</h4>
+                    <h4 class="font-semibold text-xs sm:text-sm text-white leading-snug break-words drop-shadow-md">${n.name}</h4>
                   </div>
                 </div>
+                <div class="relative z-10">
                 ${
                   isOutOfStock
-                    ? `<p class="text-xs text-gray-400 font-bold">Unavailable</p>`
+                    ? `<p class="text-xs text-gray-300 font-bold">Unavailable</p>`
                     : hasDiscount
-                      ? `<p class="text-xs text-gray-400 line-through">IDR ${formatPrice(n.price)}</p><p class="font-bold fusion-text-gradient">IDR ${formatPrice(finalPrice)}</p>`
-                      : `<p class="font-bold fusion-text-gradient">IDR ${formatPrice(n.price)}</p>`
+                      ? `<p class="text-xs text-gray-300 line-through">IDR ${formatPrice(n.price)}</p><p class="font-bold text-amber-300 text-sm drop-shadow-sm">IDR ${formatPrice(finalPrice)}</p>`
+                      : `<p class="font-bold text-amber-300 text-sm drop-shadow-sm">IDR ${formatPrice(n.price)}</p>`
                 }
+                </div>
               </div>`;
             })
             .join("")}
@@ -1698,7 +1750,7 @@ function updateFilterButtons(selector, active) {
         "hover:bg-amber-500",
         "hover:text-white",
         "dark:hover:bg-amber-500",
-        "dark:hover:text-white"
+        "dark:hover:text-white",
       );
     } else {
       btn.classList.remove("active", "fusion-gradient", "text-white");
@@ -1708,7 +1760,7 @@ function updateFilterButtons(selector, active) {
         "hover:bg-amber-500",
         "hover:text-white",
         "dark:hover:bg-amber-500",
-        "dark:hover:text-white"
+        "dark:hover:text-white",
       );
     }
   });
@@ -2336,7 +2388,6 @@ function buildMessageHTML(msg, isMe, isSending) {
     `;
 }
 
-
 function handleFileSelect(input) {
   const files = input.files;
   if (!files || files.length === 0) return;
@@ -2534,4 +2585,350 @@ function cancelFile() {
 }
 function triggerFileUpload() {
   document.getElementById("chat-file-upload").click();
+}
+
+// === FUNGSI ANIMASI BINTANG JATUH (Falling Stars) ===
+function initFallingStars() {
+  const style = document.createElement("style");
+  style.innerHTML = `
+    .falling-star-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0; /* Di belakang Nav dan Konten */
+      overflow: hidden;
+    }
+    .falling-star {
+      position: absolute;
+      background: #ffd700; /* Warna Emas Terang */
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); /* Bentuk Bintang 5 Sudut */
+      filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.8)); /* Efek Cahaya Terang */
+      opacity: 0;
+    }
+    @keyframes starFall {
+      0% { transform: translateY(-10vh) translateX(0) scale(0.5) rotate(0deg); opacity: 0; }
+      10% { opacity: 1; } /* Muncul cepat */
+      90% { opacity: 1; }
+      100% { transform: translateY(110vh) translateX(-20px) scale(1) rotate(360deg); opacity: 0; } /* Jatuh lambat & memutar */
+    }
+  `;
+  document.head.appendChild(style);
+
+  const container = document.createElement("div");
+  container.className = "falling-star-container";
+  document.body.appendChild(container);
+
+  const starCount = 40; // Jumlah bintang
+  for (let i = 0; i < starCount; i++) {
+    const star = document.createElement("div");
+    star.className = "falling-star";
+
+    // Properti acak untuk variasi posisi dan waktu
+    const size = Math.random() * 5 + 10 + "px"; // Ukuran antara 10px - 20px (Lebih tebal)
+    const left = Math.random() * 100 + "%";
+    const duration = Math.random() * 5 + 5 + "s"; // Durasi jatuh 5s - 10s (Lebih lambat)
+    const delay = Math.random() * 5 + "s"; // Delay acak
+
+    star.style.width = size;
+    star.style.height = size;
+    star.style.left = left;
+    star.style.animation = `starFall ${duration} linear infinite ${delay}`;
+
+    container.appendChild(star);
+  }
+}
+
+// === FUNGSI BARU: LAMPION MERAH GANTUNG (Chinese Lanterns) ===
+function initChineseLanterns() {
+  const style = document.createElement("style");
+  style.innerHTML = `
+    .lantern-container-fixed {
+      position: fixed;
+      top: -10px;
+      left: 0;
+      width: 100%;
+      height: 0;
+      z-index: 40; /* Di bawah Nav (biasanya 50) tapi di atas konten */
+      pointer-events: none; /* Container tidak menghalangi klik */
+      display: flex;
+      justify-content: space-around;
+    }
+    .lantern-box {
+      position: relative;
+      width: 80px;
+      height: auto;
+      transform-origin: top center;
+      cursor: pointer;
+      pointer-events: auto; /* Lampion bisa di-klik */
+      will-change: transform; /* Optimasi GPU untuk anti-lag */
+      transform: translateZ(0); /* Hack untuk memaksa rendering layer terpisah */
+      backface-visibility: hidden; /* Tambahan optimasi */
+      animation: swingLantern 4s ease-in-out infinite alternate;
+    }
+    /* Efek Hover Visual tanpa mengubah durasi animasi agar tidak lag */
+    .lantern-box:hover .lantern-body {
+      filter: brightness(1.2) drop-shadow(0 0 15px rgba(255, 215, 0, 0.8));
+      transform: scale(1.05); 
+    }
+    
+    .lantern-string {
+      width: 3px;
+      background: #8b0000;
+      margin: 0 auto;
+      position: relative;
+    }
+    .lantern-body {
+      width: 60px;
+      height: 50px;
+      background: radial-gradient(circle, #ff4d4d 0%, #d80015 100%);
+      border-radius: 15px;
+      margin: 0 auto;
+      position: relative;
+      box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4), inset 0 0 10px rgba(0,0,0,0.2); /* Shadow lebih ringan */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: transform 0.3s ease, filter 0.3s ease; /* Transisi halus untuk hover */
+    }
+    /* Cap Emas Atas & Bawah */
+    .lantern-body::before, .lantern-body::after {
+      content: '';
+      position: absolute;
+      width: 40px;
+      height: 6px;
+      background: #ffd700;
+      border-radius: 2px;
+    }
+    .lantern-body::before { top: -4px; }
+    .lantern-body::after { bottom: -4px; }
+
+    /* Garis Tulang Lampion */
+    .lantern-rib {
+      position: absolute;
+      top: 0;
+      width: 40px;
+      height: 100%;
+      border-left: 1px solid rgba(0,0,0,0.1);
+      border-right: 1px solid rgba(0,0,0,0.1);
+      border-radius: 50%;
+    }
+
+    /* Rumbai/Tassel Bawah */
+    .lantern-tassel {
+      width: 4px;
+      height: 40px;
+      background: #d80015;
+      margin: 5px auto 0;
+      position: relative;
+    }
+    .lantern-tassel::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: -8px;
+      width: 20px;
+      height: 20px;
+      background: radial-gradient(circle, #d80015 20%, transparent 80%);
+      opacity: 0.8;
+    }
+
+    @keyframes swingLantern {
+      from { transform: rotate(-6deg); }
+      to { transform: rotate(6deg); }
+    }
+  `;
+  document.head.appendChild(style);
+
+  const container = document.createElement("div");
+  container.className = "lantern-container-fixed";
+  document.body.appendChild(container);
+
+  // Buat 6 Lampion dengan panjang tali bervariasi
+  const lanternCounts = 6;
+  for (let i = 0; i < lanternCounts; i++) {
+    const box = document.createElement("div");
+    box.className = "lantern-box";
+
+    // Variasi panjang tali (antara 50px sampai 150px)
+    const stringHeight = Math.floor(Math.random() * 90) + 90;
+
+    // Negative Delay untuk memulai animasi secara acak tanpa menunggu (Smooth Start)
+    const delay = -(Math.random() * 4) + "s";
+    box.style.animationDelay = delay;
+
+    box.innerHTML = `
+      <div class="lantern-string" style="height: ${stringHeight}px;"></div>
+      <div class="lantern-body">
+        <div class="lantern-rib"></div>
+      </div>
+      <div class="lantern-tassel"></div>
+    `;
+
+    // Interaksi Klik (Reset animasi untuk efek sentuhan)
+    box.addEventListener("click", function () {
+      // Hapus animasi sejenak
+      this.style.animation = "none";
+
+      // Force Reflow
+      void this.offsetWidth;
+
+      // Tambahkan animasi goyang lebih cepat sebentar
+      this.style.animation = "swingLantern 0.5s ease-in-out infinite alternate";
+
+      // Kembalikan ke normal setelah 1.5 detik
+      setTimeout(() => {
+        this.style.animation = `swingLantern 3s ease-in-out infinite alternate`;
+        // Pastikan delay acak tetap ada agar tidak sinkron dengan yang lain
+        this.style.animationDelay = -(Math.random() * 4) + "s";
+      }, 1500);
+    });
+
+    container.appendChild(box);
+  }
+}
+
+// === FUNGSI BARU: THEMA KETUPAT DAN DEKORASI KARTU ===
+function initKetupatStyles() {
+  const style = document.createElement("style");
+  style.innerHTML = `
+    .ketupat-card {
+      background-color: #064E3B; /* Dark Green Base */
+      background-image: repeating-linear-gradient(45deg, rgba(255,215,0,0.05) 0, rgba(255,215,0,0.05) 1px, transparent 0, transparent 10px),
+                        repeating-linear-gradient(-45deg, rgba(255,215,0,0.05) 0, rgba(255,215,0,0.05) 1px, transparent 0, transparent 10px);
+      border: 1px solid rgba(255, 215, 0, 0.3); /* Gold Border */
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      transition: all 0.3s ease;
+    }
+    .ketupat-card:hover {
+      box-shadow: 0 10px 25px -5px rgba(46, 139, 87, 0.6), 0 0 10px rgba(255, 215, 0, 0.4); /* Green & Gold Shadow */
+      border-color: rgba(255, 215, 0, 0.8);
+    }
+
+    /* Change 1: Nominal Card Selected - Only Change Border, Keep Background & Color */
+    .nominal-card.selected {
+      background-color: #064E3B !important; /* Keep original BG */
+      background-image: repeating-linear-gradient(45deg, rgba(255,215,0,0.05) 0, rgba(255,215,0,0.05) 1px, transparent 0, transparent 10px),
+                        repeating-linear-gradient(-45deg, rgba(255,215,0,0.05) 0, rgba(255,215,0,0.05) 1px, transparent 0, transparent 10px) !important;
+      color: white !important; /* Keep text color white */
+      border: 2px solid #FFD700 !important; /* Bright Gold Border */
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.5) !important;
+    }
+    
+    /* Ensure inner text retains intended colors on selection */
+    .nominal-card.selected p {
+       color: inherit !important;
+       background: none !important;
+       -webkit-text-fill-color: initial !important;
+    }
+    .nominal-card.selected .text-amber-300 {
+       color: #FCD34D !important; /* Ensure gold text stays gold */
+    }
+
+    /* Change 2: Ketupat Background Utility for Categories */
+    .ketupat-bg {
+      background-color: #064E3B;
+      background-image: repeating-linear-gradient(45deg, rgba(255,215,0,0.05) 0, rgba(255,215,0,0.05) 1px, transparent 0, transparent 10px),
+                        repeating-linear-gradient(-45deg, rgba(255,215,0,0.05) 0, rgba(255,215,0,0.05) 1px, transparent 0, transparent 10px);
+    }
+
+    /* KETUPAT DECORATION */
+    .ketupat-decoration {
+      position: absolute;
+      top: 0;
+      z-index: 20;
+      pointer-events: none;
+      transform-origin: top center;
+      animation: swayKetupat 3s ease-in-out infinite alternate;
+      will-change: transform;
+    }
+    
+    /* Default (Single) Position - Updated for Right Side Only */
+    .ketupat-decoration.right-1 { right: 5px; animation-delay: -0.5s; }
+
+    /* Small Variant (Product Cards) */
+    .ketupat-decoration.small .ketupat-body {
+        width: 18px;
+        height: 18px;
+        background-size: 4px 4px; /* Smaller weave pattern */
+        margin: -3px auto 0;
+    }
+    .ketupat-decoration.small .ketupat-string {
+        width: 1.5px; /* Thinner string for smaller ketupat */
+    }
+    /* Tail adjustment for smaller size */
+    .ketupat-decoration.small.right-1 .ketupat-tail-left,
+    .ketupat-decoration.small.right-1 .ketupat-tail-right {
+        top: 32px; /* Adjusted from 38px */
+        width: 4px;
+        height: 12px;
+    }
+    /* Tail adjustment for smaller size */
+    .ketupat-decoration.small.right-2 .ketupat-tail-left,
+    .ketupat-decoration.small.right-2 .ketupat-tail-right {
+        top: 58px; /* Adjusted from 38px */
+        width: 4px;
+        height: 12px;
+    }
+    .ketupat-decoration.small .ketupat-tail-left { left: 5px; }
+    .ketupat-decoration.small .ketupat-tail-right { right: 5px; }
+
+    /* Length Adjustment for Product Cards */
+    /* Left one (right-2) longer */
+    .ketupat-decoration.small.right-2 .ketupat-string {
+        height: 45px;
+    }
+    /* Right one (right-1) shorter */
+    .ketupat-decoration.small.right-1 .ketupat-string {
+        height: 20px;
+    }
+    /* Position adjustment */
+    .ketupat-decoration.small.right-2 { right: 28px; }
+    .ketupat-decoration.small.right-1 { right: 5px; }
+
+    .ketupat-string {
+      width: 2px;
+      height: 25px;
+      background: #FFD700; /* Gold String */
+      margin: 0 auto;
+    }
+    .ketupat-body {
+      width: 24px;
+      height: 24px;
+      background: #2E8B57; /* SeaGreen */
+      transform: rotate(45deg);
+      border: 1px solid #FFD700;
+      margin: -4px auto 0; /* Overlap string slightly */
+      position: relative;
+      /* Woven Pattern Simulation */
+      background-image: linear-gradient(45deg, rgba(0,0,0,0.1) 25%, transparent 25%, transparent 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1) 75%, transparent 75%, transparent),
+                        linear-gradient(45deg, rgba(0,0,0,0.1) 25%, transparent 25%, transparent 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1) 75%, transparent 75%, transparent);
+      background-size: 6px 6px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    }
+    .ketupat-weave {
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(90deg, transparent, transparent 3px, rgba(255,255,255,0.1) 3px, rgba(255,255,255,0.1) 4px),
+                  repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(255,255,255,0.1) 3px, rgba(255,255,255,0.1) 4px);
+    }
+    .ketupat-tail-left, .ketupat-tail-right {
+      width: 5px;
+      height: 15px;
+      background: #2E8B57;
+      position: absolute;
+      top: 44px;
+      border-radius: 0 0 2px 2px;
+    }
+    .ketupat-tail-left { left: 6px; transform: rotate(15deg); }
+    .ketupat-tail-right { right: 6px; transform: rotate(-15deg); }
+
+    @keyframes swayKetupat {
+      from { transform: rotate(-5deg); }
+      to { transform: rotate(5deg); }
+    }
+  `;
+  document.head.appendChild(style);
 }
