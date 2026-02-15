@@ -155,6 +155,8 @@ const translations = {
     text_failed_load_promo: "Gagal memuat promo.",
     text_click_to_check: "Klik untuk cek",
     text_no_flash_sale: "Tidak ada Flash Sale saat ini.",
+    text_coming_soon: "Segera Datang",
+    text_product_empty_label: "Produk Sedang Kosong"
   },
   en: {
     sect_why_choose: "Why Choose <span class='fusion-text-gradient font-bold'>SnazStore</span>?",
@@ -280,6 +282,8 @@ const translations = {
     text_failed_load_promo: "Failed to load promos.",
     text_click_to_check: "Click to check",
     text_no_flash_sale: "No Flash Sale available right now.",
+    text_coming_soon: "Coming Soon",
+    text_product_empty_label: "Product is Currently Out of Stock"
   },
 };
 
@@ -627,6 +631,7 @@ function updateSlider(sliderId) {
   });
 }
 
+// Logika Render Card Produk: Normal, Coming Soon, Out of Stock
 function createGameCard(product, size = "small") {
   const isSmall = size === "small";
   const imageClass = isSmall
@@ -640,6 +645,60 @@ function createGameCard(product, size = "small") {
   let rating = parseFloat(product.rating);
   if (isNaN(rating)) rating = 0;
 
+  const hasImage = product.image && product.image.trim() !== "";
+  const hasDeveloper = product.developer && product.developer.trim() !== "";
+  const hasNominals = product.nominals && product.nominals.length > 0;
+
+  // Tentukan status kartu
+  let cardStatus = "active";
+  if (!hasImage && !hasDeveloper && !hasNominals) {
+    cardStatus = "coming_soon";
+  } else if (hasImage && hasDeveloper && !hasNominals) {
+    cardStatus = "empty";
+  }
+
+  // Visual untuk Coming Soon
+  if (cardStatus === "coming_soon") {
+    const textComingSoon = translations[currentLang].text_coming_soon;
+    return `
+      <div class="block bg-gray-800 rounded-xl overflow-hidden shadow-sm h-full relative border border-gray-700 pointer-events-none select-none">
+        <div class="relative h-48 flex flex-col items-center justify-center fusion-gradient opacity-90">
+           <i class="fas fa-clock text-4xl text-white mb-2 animate-pulse"></i>
+           <span class="text-white font-bold text-sm uppercase tracking-wider">${textComingSoon}</span>
+        </div>
+        <div class="p-3">
+          <h3 class="font-medium text-sm truncate text-gray-300">${product.name}</h3>
+          <p class="text-xs text-gray-500 truncate">Unknown</p>
+        </div>
+      </div>
+    `;
+  }
+
+  // Visual untuk Out of Stock
+  if (cardStatus === "empty") {
+    const textEmpty = translations[currentLang].text_product_empty_label;
+    return `
+      <div class="block bg-white dark:bg-dark rounded-xl overflow-hidden shadow-sm h-full relative pointer-events-none select-none group">
+        <div class="relative">
+          <img src="${product.image}" alt="${product.name}" class="${imageClass} grayscale brightness-50" loading="lazy">
+          <div class="absolute inset-0 flex items-center justify-center bg-black/60">
+             <div class="text-center px-2">
+                <i class="fas fa-box-open text-white text-2xl mb-1"></i>
+                <p class="text-white font-bold text-xs uppercase border border-white/50 px-2 py-1 rounded bg-black/40 backdrop-blur-sm">
+                   ${textEmpty}
+                </p>
+             </div>
+          </div>
+        </div>
+        <div class="p-3 opacity-60">
+          <h3 class="font-medium text-sm truncate text-gray-900 dark:text-white">${product.name}</h3>
+          <p class="text-xs text-gray-500 dark:text-gray-400 truncate">${product.developer}</p>
+        </div>
+      </div>
+    `;
+  }
+
+  // Visual Normal Card
   if (isSmall) {
     return `
       <a href="${productPath}" class="block card-hover bg-white dark:bg-dark rounded-xl overflow-hidden cursor-pointer shadow-sm">
@@ -654,6 +713,7 @@ function createGameCard(product, size = "small") {
       </a>
     `;
   } else {
+    // Large Card for Popular (Only called if status is active, filtered by renderPopularGames)
     return `
       <a href="${productPath}" class="block card-hover bg-white dark:bg-dark rounded-2xl overflow-hidden cursor-pointer shadow-lg h-full">
         <div class="relative">
@@ -677,7 +737,8 @@ function createGameCard(product, size = "small") {
 function renderPopularGames() {
   const container = document.getElementById("popular-products");
   if (!container) return;
-  const popularProducts = products.filter((p) => p.popular);
+  // Update Filter: Produk Populer harus punya nominal
+  const popularProducts = products.filter((p) => p.popular && p.nominals && p.nominals.length > 0);
   container.innerHTML = popularProducts
     .map((p) => createGameCard(p, "large"))
     .join("");
@@ -2206,6 +2267,7 @@ function buildMessageHTML(msg, isMe, isSending) {
   }
 
   const align = isMe ? "justify-end" : "justify-start";
+  // Update Bubble Style with Fusion Gradient for User
   const bubbleStyle = isMe
     ? "fusion-gradient text-white rounded-tr-sm shadow-md"
     : "bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-tl-sm shadow-sm";
@@ -2215,7 +2277,7 @@ function buildMessageHTML(msg, isMe, isSending) {
     try {
       const rObj =
         typeof msg.replyTo === "string" ? JSON.parse(msg.replyTo) : msg.replyTo;
-      const replyBorder = isMe ? "border-white/50" : "border-fusion-gradient";
+      const replyBorder = isMe ? "border-white/50" : "border-primary";
       const replyBg = isMe ? "bg-black/10" : "bg-gray-100 dark:bg-gray-700";
 
       replyHtml = `
