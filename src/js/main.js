@@ -16,6 +16,7 @@ let products = [];
 let currentProduct = null;
 let selectedNominal = null;
 let topupDisplayCount = 15;
+let previousTopupCount = 0; // Variable to track previous count for animation
 let currentFilter = "all";
 let currentFilterTopup = "all";
 let currentLang = localStorage.getItem("site_lang") || "id";
@@ -127,11 +128,11 @@ const translations = {
     placeholder_fullname: "Masukkan nama",
     placeholder_message: "Tulis pesanmu...",
     btn_send_wa: "Kirim via WhatsApp",
-    info_title: "Info Kontak",
-    op_hours: "Jam Operasional",
-    op_desc: "Senin - Minggu: 07.00 - 22.00 WIB",
-    follow_us: "Ikuti Kami",
-    text_out_of_stock: "HABIS",
+    info_title: "Get in touch",
+    op_hours: "Operating Hours",
+    op_desc: "Mon - Sun: 07.00 - 22.00 WIB",
+    follow_us: "Follow us",
+    text_out_of_stock: "SOLD OUT",
     product_empty: "Produk sedang tidak tersedia sementara waktu.",
     label_promo: "Kode Promo",
     btn_apply: "Gunakan",
@@ -154,141 +155,14 @@ const translations = {
     text_no_promo_found: "Tidak ada promo yang cocok untuk produk ini :(",
     text_failed_load_promo: "Gagal memuat promo.",
     text_click_to_check: "Klik untuk cek",
-    text_no_flash_sale: "Tidak ada Flash Sale saat ini.",
-    text_coming_soon: "Segera Datang",
-    text_product_empty_label: "Produk Sedang Kosong",
-  },
-  en: {
-    sect_why_choose:
-      "Why Choose <span class='fusion-text-gradient font-bold'>SnazStore</span>?",
-    limited_time: "Limited Time",
-    starting_from: "Starting from IDR",
-    flash_sale_price: "IDR",
-    nav_home: "Home",
-    nav_topup: "Top Up",
-    nav_track: "Track Order",
-    nav_contact: "Contact",
-    search_placeholder: "Search games or apps...",
-    hero_title: "Instant Game Top Up",
-    hero_subtitle: "Fast, Secure & Reliable",
-    btn_topup_now: "Top Up Now",
-    hero_flash_title: "Weekly Flash Sale",
-    hero_flash_subtitle: "Up to 30% discount on selected items",
-    btn_view_deals: "View Deals",
-    hero_support_title: "24/7 Support",
-    hero_support_subtitle: "We are here to help anytime you need",
-    btn_contact_us: "Contact Us",
-    feat_fast_title: "Fast Process",
-    feat_fast_desc: "Instant delivery within 1-5 minutes after payment",
-    feat_trusted_title: "100% Trusted",
-    feat_trusted_desc: "Official SnazStore partner, secure and 100% legal",
-    feat_guarantee_title: "Money Back Guarantee",
-    feat_guarantee_desc: "Full refund if the order fails within 24 hours",
-    sec_popular: "Popular Products",
-    btn_view_all: "View All",
-    stats_games: "Total Games",
-    stats_products: "Premium Apps",
-    stats_trans: "Total Transactions",
-    sec_all_games: "All Products",
-    btn_show_more: "Show More",
-    btn_load_more: "Load More",
-    sec_faq: "Frequently Asked Questions",
-    faq_1_q: "How long does the top up take?",
-    faq_1_a:
-      "The process usually takes 1-5 minutes after payment confirmation.",
-    faq_2_q: "What payment methods are available?",
-    faq_2_a: "We accept QRIS, E-Wallets (GoPay, ShopeePay), and Bank Jago.",
-    faq_3_q: "It's been 5 minutes, order not received?",
-    faq_3_a: "Don't worry, please wait within 1x24 hours or contact our CS.",
-    faq_4_q: "Subscription ended early?",
-    faq_4_a: "Please contact our customer service for warranty claims.",
-    back_to_topup: "Back to Top Up",
-    label_nominal: "Select Nominal",
-    label_account: "Account Information",
-    prod_faq_title: "How to Order & Info",
-    prod_faq_1_q: "How to place an order?",
-    prod_faq_1_a:
-      "Enter Account Data > Select Nominal > Enter Contact > Click Order Now > Make Payment.",
-    prod_faq_2_q: "Is this service available 24/7?",
-    prod_faq_2_a: "Yes, our system operates automatically 24 hours non-stop.",
-    prod_faq_3_q: "Need help?",
-    prod_faq_3_a: "Contact our WhatsApp Admin if you face any issues.",
-    label_game_id: "Game ID",
-    label_account_id: "Account ID",
-    label_server: "Server",
-    label_nickname: "Nickname",
-    label_email: "Email",
-    label_whatsapp: "WhatsApp Number",
-    text_select_server: "Select Server",
-    placeholder_game_id: "Enter ID",
-    placeholder_server: "Enter Server",
-    placeholder_nickname: "Enter Nickname (Optional)",
-    placeholder_email: "Enter valid email",
-    placeholder_whatsapp: "Example: 087775314721",
-    btn_checkout_default: "Select a nominal first",
-    modal_summary: "Order Summary",
-    label_total: "Total Price",
-    btn_recheck: "Recheck Data",
-    btn_confirm: "Order Now",
-    modal_track_title: "Track Order",
-    label_order_id: "Order ID",
-    placeholder_order_id: "Enter Order ID (Ex: ISS/...)",
-    label_product: "Product",
-    label_status: "Status",
-    label_account_info: "Account",
-    btn_check_status: "Check Status",
-    status_pending: "Pending Payment",
-    status_process: "Processing",
-    status_success: "Completed",
-    status_canceled: "Canceled",
-    footer_desc:
-      "Trusted premium game & app top-up partner. Fast, secure, and 100% legal.",
-    quick_links: "Quick Links",
-    categories: "Categories",
-    contact_us: "Contact Us",
-    rights: "All rights reserved.",
-    contact_title: "Contact Us",
-    contact_subtitle: "We're here to help you 24/7",
-    form_title: "Send us a message",
-    label_fullname: "Full Name",
-    label_message: "Message",
-    placeholder_fullname: "Enter your name",
-    placeholder_message: "How can we help you?",
-    btn_send_wa: "Send via WhatsApp",
-    info_title: "Get in touch",
-    op_hours: "Operating Hours",
-    op_desc: "Mon - Sun: 07.00 - 22.00 WIB",
-    follow_us: "Follow us",
-    text_out_of_stock: "SOLD OUT",
-    product_empty: "Product is currently unavailable.",
-    label_promo: "Promo Code",
-    btn_apply: "Apply",
-    text_discount_promo: "Promo Discount",
-    text_history_title: "Recent Order History",
-    label_order_data: "ORDER DATA",
-    text_copied: "Copied!",
-    label_start_date: "Start",
-    label_expiry_date: "Ends",
-    link_view_promo: "View Available Promos",
-    text_valid_until: "Valid until",
-    text_hours: "Hours",
-    text_discount_off: "OFF",
-    text_discount_disc: "Discount",
-    text_min_purchase: "Min. Purchase",
-    text_no_min_purchase: "No Minimum Purchase",
-    btn_use_coupon: "Use",
-    text_loading_coupons: "Loading coupons...",
-    text_searching_promo: "Searching for best promos...",
-    text_no_promo_found: "No suitable promos found for this product :(",
-    text_failed_load_promo: "Failed to load promos.",
-    text_click_to_check: "Click to check",
     text_no_flash_sale: "No Flash Sale available right now.",
     text_coming_soon: "Coming Soon",
-    text_product_empty_label: "Product is Currently Out of Stock",
+    text_product_empty_label: "Produk Sedang Kosong"
   },
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
+  // SET DEFAULT TO DARK MODE
   if (localStorage.getItem("darkMode") === null) {
     localStorage.setItem("darkMode", "true");
     document.documentElement.classList.add("dark");
@@ -298,9 +172,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   setupLanguage();
   checkHistoryExpiration();
-  initFallingStars();
+  initFallingStars(); 
   initChineseLanterns();
-  initKetupatStyles();
+  initKetupatStyles(); 
 
   if (document.getElementById("popular-products")) {
     setActiveNav("nav_home");
@@ -644,8 +518,7 @@ function updateSlider(sliderId) {
 
 // === HELPER UNTUK MEMBUAT ELEMEN KETUPAT ===
 function getKetupatDecorationHTML(mode) {
-  if (mode === "single-right") {
-    // Untuk Nominal & Flash Sale: Hanya 1 di kanan
+  if (mode === 'single-right') {
     return `
       <div class="ketupat-decoration right-1">
         <div class="ketupat-string"></div>
@@ -656,8 +529,7 @@ function getKetupatDecorationHTML(mode) {
         <div class="ketupat-tail-right"></div>
       </div>
     `;
-  } else if (mode === "double-right") {
-    // Untuk Product Cards: 2 di kanan dengan ukuran kecil
+  } else if (mode === 'double-right') {
     return `
       <div class="ketupat-decoration small right-1">
         <div class="ketupat-string"></div>
@@ -677,10 +549,10 @@ function getKetupatDecorationHTML(mode) {
       </div>
     `;
   }
-  return "";
+  return '';
 }
 
-function createGameCard(product, size = "small") {
+function createGameCard(product, size = "small", animationDelay = 0) {
   const isSmall = size === "small";
   const imageClass = isSmall
     ? "w-full h-48 object-cover"
@@ -704,11 +576,13 @@ function createGameCard(product, size = "small") {
     cardStatus = "empty";
   }
 
+  const animationStyle = animationDelay > 0 ? `style="animation: fadeInUp 0.5s ease forwards; opacity: 0; animation-delay: ${animationDelay}s"` : '';
+
   if (cardStatus === "coming_soon") {
     const textComingSoon = translations[currentLang].text_coming_soon;
     return `
-      <div class="block ketupat-card rounded-xl overflow-hidden shadow-sm h-full relative pointer-events-none select-none">
-        ${getKetupatDecorationHTML("double-right")}
+      <div class="block ketupat-card rounded-xl overflow-hidden shadow-sm h-full relative pointer-events-none select-none" ${animationStyle}>
+        ${getKetupatDecorationHTML('double-right')}
         <div class="relative h-48 flex flex-col items-center justify-center bg-black/40 backdrop-blur-sm">
            <i class="fas fa-clock text-4xl text-amber-300 mb-2 animate-pulse"></i>
            <span class="text-white font-bold text-sm uppercase tracking-wider">${textComingSoon}</span>
@@ -724,8 +598,8 @@ function createGameCard(product, size = "small") {
   if (cardStatus === "empty") {
     const textEmpty = translations[currentLang].text_product_empty_label;
     return `
-      <div class="block ketupat-card rounded-xl overflow-hidden shadow-sm h-full relative pointer-events-none select-none group">
-        ${getKetupatDecorationHTML("double-right")}
+      <div class="block ketupat-card rounded-xl overflow-hidden shadow-sm h-full relative pointer-events-none select-none group" ${animationStyle}>
+        ${getKetupatDecorationHTML('double-right')}
         <div class="relative">
           <img src="${product.image}" alt="${product.name}" class="${imageClass} grayscale brightness-50" loading="lazy">
           <div class="absolute inset-0 flex items-center justify-center bg-black/60">
@@ -747,8 +621,8 @@ function createGameCard(product, size = "small") {
 
   if (isSmall) {
     return `
-      <a href="${productPath}" class="block ketupat-card rounded-xl overflow-visible cursor-pointer relative transition-transform duration-300 hover:scale-[1.02]">
-        ${getKetupatDecorationHTML("double-right")}
+      <a href="${productPath}" class="block ketupat-card rounded-xl overflow-visible cursor-pointer relative transition-transform duration-300 hover:scale-[1.02]" ${animationStyle}>
+        ${getKetupatDecorationHTML('double-right')}
         <div class="relative overflow-hidden rounded-t-xl">
           <img src="${product.image}" alt="${product.name}" class="${imageClass}" loading="lazy" onerror="this.style.background='#0f392b'; this.alt='Image unavailable';">
           ${product.discount > 0 ? `<span class="absolute top-2 right-2 px-2 py-1 bg-amber-500 text-white text-xs font-bold rounded-lg border border-amber-300">-${product.discount}%</span>` : ""}
@@ -761,8 +635,8 @@ function createGameCard(product, size = "small") {
     `;
   } else {
     return `
-      <a href="${productPath}" class="block ketupat-card rounded-2xl overflow-visible cursor-pointer h-full relative transition-transform duration-300 hover:scale-[1.02]">
-        ${getKetupatDecorationHTML("double-right")}
+      <a href="${productPath}" class="block ketupat-card rounded-2xl overflow-visible cursor-pointer h-full relative transition-transform duration-300 hover:scale-[1.02]" ${animationStyle}>
+        ${getKetupatDecorationHTML('double-right')}
         <div class="relative overflow-hidden rounded-t-2xl">
           <img src="${product.image}" alt="${product.name}" class="w-full h-48 md:h-56 object-cover" loading="lazy" onerror="this.style.background='#0f392b'; this.alt='Image unavailable';">
           ${product.discount > 0 ? `<span class="absolute top-3 right-3 px-3 py-1 bg-amber-500 text-white text-sm font-bold rounded-lg border border-amber-300">-${product.discount}%</span>` : ""}
@@ -784,9 +658,7 @@ function createGameCard(product, size = "small") {
 function renderPopularGames() {
   const container = document.getElementById("popular-products");
   if (!container) return;
-  const popularProducts = products.filter(
-    (p) => p.popular && p.nominals && p.nominals.length > 0,
-  );
+  const popularProducts = products.filter((p) => p.popular && p.nominals && p.nominals.length > 0);
   container.innerHTML = popularProducts
     .map((p) => createGameCard(p, "large"))
     .join("");
@@ -803,16 +675,28 @@ function renderAllGames(page) {
     filter === "all" ? products : products.filter((p) => p.category === filter);
   const displayed = filtered.slice(0, count);
 
+  let startIndex = 0;
+  if (page === "topup" && previousTopupCount > 0 && previousTopupCount < count) {
+      startIndex = previousTopupCount;
+  }
+
   container.innerHTML = displayed
-    .map((p) => createGameCard(p, "small"))
+    .map((p, index) => {
+        let delay = 0;
+        if (index >= startIndex && startIndex > 0) {
+            delay = (index - startIndex) * 0.1; 
+        }
+        return createGameCard(p, "small", delay);
+    })
     .join("");
 
   if (page === "topup") {
-    const loadMoreContainer = document.getElementById("load-more-container");
-    if (loadMoreContainer) {
-      loadMoreContainer.style.display =
-        displayed.length >= filtered.length ? "none" : "block";
-    }
+      previousTopupCount = count;
+      const loadMoreContainer = document.getElementById("load-more-container");
+      if (loadMoreContainer) {
+        loadMoreContainer.style.display =
+          displayed.length >= filtered.length ? "none" : "block";
+      }
   }
 }
 
@@ -854,7 +738,7 @@ function renderFlashSale() {
 
       return `
     <a href="${productPath}" class="block ketupat-card rounded-xl overflow-visible cursor-pointer relative transition-transform duration-300 hover:scale-[1.02]">
-      ${getKetupatDecorationHTML("single-right")}
+      ${getKetupatDecorationHTML('single-right')}
       <div class="h-full relative overflow-hidden rounded-xl">
         <div class="flex items-center gap-2.5 p-2.5 relative z-10">
           <div class="relative w-12 h-12 md:w-16 md:h-16 flex-shrink-0">
@@ -1034,7 +918,7 @@ function renderNominals() {
 
               return `
               <div ${onClickAction} data-nominal-id="${n.id}" class="${cardClass}">
-                ${!isOutOfStock ? getKetupatDecorationHTML("single-right") : ""}
+                ${!isOutOfStock ? getKetupatDecorationHTML('single-right') : ''}
                 ${hasDiscount && !isOutOfStock ? `<span class="absolute top-2 right-2 px-1.5 py-0.5 bg-amber-500 text-white text-[10px] font-bold rounded border border-amber-300">- ${disc}%</span>` : ""}
                 ${isOutOfStock ? `<span class="absolute top-2 right-2 px-1.5 py-0.5 bg-gray-500 text-white text-[10px] font-bold rounded">${translations[currentLang].text_out_of_stock}</span>` : ""}
                 
@@ -1750,7 +1634,7 @@ function updateFilterButtons(selector, active) {
         "hover:bg-amber-500",
         "hover:text-white",
         "dark:hover:bg-amber-500",
-        "dark:hover:text-white",
+        "dark:hover:text-white"
       );
     } else {
       btn.classList.remove("active", "fusion-gradient", "text-white");
@@ -1760,7 +1644,7 @@ function updateFilterButtons(selector, active) {
         "hover:bg-amber-500",
         "hover:text-white",
         "dark:hover:bg-amber-500",
-        "dark:hover:text-white",
+        "dark:hover:text-white"
       );
     }
   });
@@ -1989,15 +1873,20 @@ function setupSearch(inputId, resultsId) {
     searchInput.addEventListener("input", (e) => {
       const query = e.target.value.toLowerCase().trim();
       if (query.length > 0) {
-        const filtered = products.filter(
-          (p) =>
-            p.name.toLowerCase().includes(query) ||
-            p.category.toLowerCase().includes(query) ||
-            p.developer.toLowerCase().includes(query),
-        );
+        // FILTER: Search berdasarkan Nama/Kategori/Dev DAN Harus Punya Stok (Nominal)
+        const filtered = products.filter((p) => {
+            const matchesQuery =
+                p.name.toLowerCase().includes(query) ||
+                p.category.toLowerCase().includes(query) ||
+                p.developer.toLowerCase().includes(query);
+            // Produk "Segera Datang" atau "Kosong" tidak punya nominal
+            const hasStock = p.nominals && p.nominals.length > 0;
+            return matchesQuery && hasStock;
+        });
+
+        // Tampilkan HASIL TANPA LIMIT
         if (filtered.length > 0) {
           searchResults.innerHTML = filtered
-            .slice(0, 6)
             .map(
               (p) => `
             <div onclick="navigateToProduct('${p.id}')" class="flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors border-b dark:border-gray-700 last:border-b-0">
@@ -2388,6 +2277,7 @@ function buildMessageHTML(msg, isMe, isSending) {
     `;
 }
 
+
 function handleFileSelect(input) {
   const files = input.files;
   if (!files || files.length === 0) return;
@@ -2621,13 +2511,13 @@ function initFallingStars() {
   container.className = "falling-star-container";
   document.body.appendChild(container);
 
-  const starCount = 40; // Jumlah bintang
+  const starCount = 20; // Jumlah bintang optimal untuk performa
   for (let i = 0; i < starCount; i++) {
     const star = document.createElement("div");
     star.className = "falling-star";
-
+    
     // Properti acak untuk variasi posisi dan waktu
-    const size = Math.random() * 5 + 10 + "px"; // Ukuran antara 10px - 20px (Lebih tebal)
+    const size = Math.random() * 10 + 10 + "px"; // Ukuran antara 10px - 20px (Lebih tebal)
     const left = Math.random() * 100 + "%";
     const duration = Math.random() * 5 + 5 + "s"; // Durasi jatuh 5s - 10s (Lebih lambat)
     const delay = Math.random() * 5 + "s"; // Delay acak
@@ -2636,7 +2526,7 @@ function initFallingStars() {
     star.style.height = size;
     star.style.left = left;
     star.style.animation = `starFall ${duration} linear infinite ${delay}`;
-
+    
     container.appendChild(star);
   }
 }
@@ -2739,6 +2629,18 @@ function initChineseLanterns() {
       from { transform: rotate(-6deg); }
       to { transform: rotate(6deg); }
     }
+
+    /* RESPONSIVE MOBILE */
+    @media (max-width: 768px) {
+      .lantern-box { width: 50px; }
+      .lantern-body { width: 35px; height: 30px; border-radius: 8px; }
+      .lantern-body::before, .lantern-body::after { width: 25px; height: 4px; }
+      .lantern-body::before { top: -3px; }
+      .lantern-body::after { bottom: -3px; }
+      .lantern-rib { width: 25px; }
+      .lantern-tassel { height: 25px; width: 3px; }
+      .lantern-string { width: 2px; }
+    }
   `;
   document.head.appendChild(style);
 
@@ -2746,17 +2648,24 @@ function initChineseLanterns() {
   container.className = "lantern-container-fixed";
   document.body.appendChild(container);
 
-  // Buat 6 Lampion dengan panjang tali bervariasi
-  const lanternCounts = 6;
+  // Logika responsif untuk jumlah lampion
+  const isMobile = window.innerWidth < 768;
+  const lanternCounts = isMobile ? 4 : 6;
+
   for (let i = 0; i < lanternCounts; i++) {
     const box = document.createElement("div");
     box.className = "lantern-box";
-
-    // Variasi panjang tali (antara 50px sampai 150px)
-    const stringHeight = Math.floor(Math.random() * 90) + 90;
-
+    
+    // Variasi panjang tali berdasarkan device
+    let stringHeight;
+    if (isMobile) {
+        stringHeight = Math.floor(Math.random() * 60) + 50; // Mobile: 50-110px
+    } else {
+        stringHeight = Math.floor(Math.random() * 80) + 80; // Desktop: 80-160px
+    }
+    
     // Negative Delay untuk memulai animasi secara acak tanpa menunggu (Smooth Start)
-    const delay = -(Math.random() * 4) + "s";
+    const delay = -(Math.random() * 4) + "s"; 
     box.style.animationDelay = delay;
 
     box.innerHTML = `
@@ -2768,16 +2677,16 @@ function initChineseLanterns() {
     `;
 
     // Interaksi Klik (Reset animasi untuk efek sentuhan)
-    box.addEventListener("click", function () {
+    box.addEventListener("click", function() {
       // Hapus animasi sejenak
       this.style.animation = "none";
-
+      
       // Force Reflow
-      void this.offsetWidth;
-
+      void this.offsetWidth; 
+      
       // Tambahkan animasi goyang lebih cepat sebentar
       this.style.animation = "swingLantern 0.5s ease-in-out infinite alternate";
-
+      
       // Kembalikan ke normal setelah 1.5 detik
       setTimeout(() => {
         this.style.animation = `swingLantern 3s ease-in-out infinite alternate`;
@@ -2861,16 +2770,15 @@ function initKetupatStyles() {
     /* Tail adjustment for smaller size */
     .ketupat-decoration.small.right-1 .ketupat-tail-left,
     .ketupat-decoration.small.right-1 .ketupat-tail-right {
-        top: 32px; /* Adjusted from 38px */
+        top: 35px; /* Adjusted from 38px */
         width: 4px;
-        height: 12px;
+        height: 10px;
     }
-    /* Tail adjustment for smaller size */
     .ketupat-decoration.small.right-2 .ketupat-tail-left,
     .ketupat-decoration.small.right-2 .ketupat-tail-right {
-        top: 58px; /* Adjusted from 38px */
+        top: 59px; /* Adjusted from 38px */
         width: 4px;
-        height: 12px;
+        height: 10px;
     }
     .ketupat-decoration.small .ketupat-tail-left { left: 5px; }
     .ketupat-decoration.small .ketupat-tail-right { right: 5px; }
@@ -2915,7 +2823,7 @@ function initKetupatStyles() {
                   repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(255,255,255,0.1) 3px, rgba(255,255,255,0.1) 4px);
     }
     .ketupat-tail-left, .ketupat-tail-right {
-      width: 5px;
+      width: 6px;
       height: 15px;
       background: #2E8B57;
       position: absolute;
@@ -2928,6 +2836,17 @@ function initKetupatStyles() {
     @keyframes swayKetupat {
       from { transform: rotate(-5deg); }
       to { transform: rotate(5deg); }
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translate3d(0, 20px, 0);
+        }
+        to {
+            opacity: 1;
+            transform: translate3d(0, 0, 0);
+        }
     }
   `;
   document.head.appendChild(style);
