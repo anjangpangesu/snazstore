@@ -16,7 +16,7 @@ let products = [];
 let currentProduct = null;
 let selectedNominal = null;
 let topupDisplayCount = 15;
-let previousTopupCount = 0; // Variable to track previous count for animation
+let previousTopupCount = 0; 
 let currentFilter = "all";
 let currentFilterTopup = "all";
 let currentLang = localStorage.getItem("site_lang") || "id";
@@ -55,12 +55,12 @@ const translations = {
     feat_trusted_desc: "Partner resmi SnazStore, aman dan 100% legal",
     feat_guarantee_title: "Garansi Uang Kembali",
     feat_guarantee_desc: "Refund penuh jika pesanan gagal dalam 24 jam",
-    sec_popular: "Produk <span class='fusion-text-gradient font-bold'>Populer</span>",
+    sec_popular: "Produk Populer",
     btn_view_all: "Lihat Semua",
     stats_games: "Total Games",
     stats_products: "Aplikasi Premium",
     stats_trans: "Total Transaksi",
-    sec_all_games: "Semua <span class='fusion-text-gradient font-bold'>Produk</span>",
+    sec_all_games: "Semua Produk",
     btn_show_more: "Tampilkan Lebih Banyak",
     btn_load_more: "Muat Lebih Banyak",
     sec_faq: "Pertanyaan Umum",
@@ -95,9 +95,9 @@ const translations = {
     text_select_server: "Pilih Server",
     placeholder_game_id: "Masukkan ID",
     placeholder_server: "Masukkan Server",
-    placeholder_nickname: "Masukkan Nickname (Opsional)",
+    placeholder_nickname: "Masukkan Nickname",
     placeholder_email: "Masukkan email aktif",
-    placeholder_whatsapp: "Contoh: 087775314721",
+    placeholder_whatsapp: "Contoh: 6287775314721",
     btn_checkout_default: "Pilih nominal dulu",
     modal_summary: "Ringkasan Pesanan",
     label_total: "Total Harga",
@@ -157,7 +157,14 @@ const translations = {
     text_click_to_check: "Klik untuk cek",
     text_no_flash_sale: "Tidak ada Flash Sale saat ini.",
     text_coming_soon: "Segera Datang",
-    text_product_empty_label: "Produk Sedang Kosong"
+    text_product_empty_label: "Produk Sedang Kosong",
+    err_email: "Email wajib menggunakan @gmail.com",
+    err_whatsapp_prefix: "Nomor WhatsApp wajib diawali 62",
+    err_whatsapp_number: "Nomor WhatsApp hanya boleh angka",
+    err_game_id: "ID Game wajib diisi",
+    err_server_id: "Server ID wajib berupa angka",
+    err_nickname: "Nickname wajib diisi",
+    err_form_check: "Mohon periksa kembali form anda"
   },
   en: {
     sect_why_choose: "Why Choose <span class='fusion-text-gradient font-bold'>SnazStore</span>?",
@@ -222,9 +229,9 @@ const translations = {
     text_select_server: "Select Server",
     placeholder_game_id: "Enter ID",
     placeholder_server: "Enter Server",
-    placeholder_nickname: "Enter Nickname (Optional)",
+    placeholder_nickname: "Enter Nickname",
     placeholder_email: "Enter valid email",
-    placeholder_whatsapp: "Example: 087775314721",
+    placeholder_whatsapp: "Example: 6287775314721",
     btn_checkout_default: "Select a nominal first",
     modal_summary: "Order Summary",
     label_total: "Total Price",
@@ -284,12 +291,18 @@ const translations = {
     text_click_to_check: "Click to check",
     text_no_flash_sale: "No Flash Sale available right now.",
     text_coming_soon: "Coming Soon",
-    text_product_empty_label: "Product is Currently Out of Stock"
+    text_product_empty_label: "Product is Currently Out of Stock",
+    err_email: "Email must end with @gmail.com",
+    err_whatsapp_prefix: "WhatsApp number must start with 62",
+    err_whatsapp_number: "WhatsApp number must be digits only",
+    err_game_id: "Game ID is required",
+    err_server_id: "Server ID must be a number",
+    err_nickname: "Nickname is required",
+    err_form_check: "Please check your form again"
   },
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
-  // SET DEFAULT TO DARK MODE
   if (localStorage.getItem("darkMode") === null) {
     localStorage.setItem("darkMode", "true");
     document.documentElement.classList.add("dark");
@@ -930,6 +943,7 @@ function renderProductDetail() {
 
   renderProductFAQ();
   renderOrderForm();
+  setupRealtimeValidation(); // Initialize form validation
 
   const containerNominal = document.getElementById("nominal-grid");
   if (!currentProduct.nominals || currentProduct.nominals.length === 0) {
@@ -951,6 +965,67 @@ function renderProductDetail() {
   } else {
     selectedNominal = null;
     updateCheckoutButton();
+  }
+}
+
+// === FUNGSI BARU: VALIDASI FORM REALTIME ===
+function setupRealtimeValidation() {
+  const inputs = document.querySelectorAll(
+    '#form-email, #form-whatsapp, #form-game-id, #form-server, #form-nickname'
+  );
+
+  inputs.forEach(input => {
+    // Validasi saat mengetik (input)
+    input.addEventListener('input', function() {
+      validateFormInput(this);
+    });
+    // Validasi saat pindah kolom (blur)
+    input.addEventListener('blur', function() {
+      validateFormInput(this);
+    });
+  });
+}
+
+function validateFormInput(input) {
+  const lang = translations[currentLang];
+  const id = input.id;
+  const value = input.value.trim();
+  let errorMsg = "";
+  
+  if (id === 'form-email') {
+    if (value && !value.endsWith('@gmail.com')) {
+      errorMsg = lang.err_email;
+    }
+  } else if (id === 'form-whatsapp') {
+    if (value) {
+      if (!/^\d+$/.test(value)) {
+        errorMsg = lang.err_whatsapp_number;
+      } else if (!value.startsWith('62')) {
+        errorMsg = lang.err_whatsapp_prefix;
+      }
+    }
+  } else if (id === 'form-game-id' && !value) {
+     // Optional: Validate on blur if empty for required fields
+  } else if (id === 'form-server') {
+     if (input.tagName === 'INPUT' && value && !/^\d+$/.test(value)) {
+        errorMsg = lang.err_server_id;
+     }
+  }
+
+  // Menampilkan Error di <p> bawah input
+  // Asumsi struktur HTML: input -> p.text-red-500
+  const errorEl = input.nextElementSibling;
+  if (errorEl && errorEl.tagName === 'P') {
+    if (errorMsg) {
+      errorEl.textContent = errorMsg;
+      errorEl.classList.remove('hidden');
+      input.classList.add('border-red-500', 'focus:ring-red-500');
+      input.classList.remove('border-0', 'focus:ring-amber-500');
+    } else {
+      errorEl.classList.add('hidden');
+      input.classList.remove('border-red-500', 'focus:ring-red-500');
+      input.classList.add('border-0', 'focus:ring-amber-500');
+    }
   }
 }
 
@@ -1029,25 +1104,26 @@ function renderNominals() {
             .map((n) => {
               const disc = parseFloat(n.discount);
               const hasDiscount = !isNaN(disc) && disc > 0;
-              const isOutOfStock = n.price === 0;
+              // VALIDASI: Item hanya aktif jika punya Harga > 0 dan Gambar (Icon)
+              const isUnavailable = !n.price || n.price === 0 || !n.icon || n.icon.trim() === "";
 
-              const finalPrice = hasDiscount
+              const finalPrice = hasDiscount && !isUnavailable
                 ? (n.price * (100 - disc)) / 100
                 : n.price;
 
-              const cardClass = isOutOfStock
+              const cardClass = isUnavailable
                 ? "nominal-card ketupat-card opacity-70 cursor-not-allowed grayscale relative rounded-xl p-3 sm:p-4 border-2 border-transparent"
                 : "nominal-card ketupat-card cursor-pointer hover:scale-[1.02] transition-all relative rounded-xl p-3 sm:p-4 overflow-visible";
 
-              const onClickAction = isOutOfStock
+              const onClickAction = isUnavailable
                 ? ""
                 : `onclick="selectNominal('${n.id}')"`;
 
               return `
               <div ${onClickAction} data-nominal-id="${n.id}" class="${cardClass}">
-                ${!isOutOfStock ? getKetupatDecorationHTML('single-right') : ''}
-                ${hasDiscount && !isOutOfStock ? `<span class="absolute top-2 right-2 px-1.5 py-0.5 bg-amber-500 text-white text-[10px] font-bold rounded border border-amber-300">- ${disc}%</span>` : ""}
-                ${isOutOfStock ? `<span class="absolute top-2 right-2 px-1.5 py-0.5 bg-gray-500 text-white text-[10px] font-bold rounded">${translations[currentLang].text_out_of_stock}</span>` : ""}
+                ${!isUnavailable ? getKetupatDecorationHTML('single-right') : ''}
+                ${hasDiscount && !isUnavailable ? `<span class="absolute top-2 right-2 px-1.5 py-0.5 bg-amber-500 text-white text-[10px] font-bold rounded border border-amber-300">- ${disc}%</span>` : ""}
+                ${isUnavailable ? `<span class="absolute top-2 right-2 px-1.5 py-0.5 bg-gray-500 text-white text-[10px] font-bold rounded">${translations[currentLang].text_out_of_stock}</span>` : ""}
                 
                 <div class="flex items-center gap-3 mb-3 relative z-10">
                   <div class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-white/20 p-[1px] rounded-lg flex-shrink-0 overflow-hidden border border-amber-400/50">
@@ -1059,8 +1135,8 @@ function renderNominals() {
                 </div>
                 <div class="relative z-10">
                 ${
-                  isOutOfStock
-                    ? `<p class="text-xs text-gray-300 font-bold">Unavailable</p>`
+                  isUnavailable
+                    ? `<p class="text-xs text-gray-300 font-bold">Coming Soon</p>`
                     : hasDiscount
                       ? `<p class="text-xs text-gray-300 line-through">IDR ${formatPrice(n.price)}</p><p class="font-bold text-amber-300 text-sm drop-shadow-sm">IDR ${formatPrice(finalPrice)}</p>`
                       : `<p class="font-bold text-amber-300 text-sm drop-shadow-sm">IDR ${formatPrice(n.price)}</p>`
@@ -1084,15 +1160,18 @@ function renderOrderForm() {
     (currentProduct.form_type &&
       currentProduct.form_type.toLowerCase() === "voucher");
 
+  // VALIDASI FORM: Menambahkan jarak antar kolom (mb-5) dan pesan error
   if (isVoucher) {
     container.innerHTML = `
-      <div>
+      <div class="mb-5">
         <label class="block text-sm font-medium mb-2 text-gray-900 dark:text-white">${lang.label_email}</label>
         <input type="email" id="form-email" required class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-amber-500 outline-none text-gray-900 dark:text-white" placeholder="${lang.placeholder_email}">
+        <p id="error-email" class="text-red-500 text-xs mt-1 hidden"></p>
       </div>
-      <div>
+      <div class="mb-5">
         <label class="block text-sm font-medium mb-2 text-gray-900 dark:text-white">${lang.label_whatsapp}</label>
         <input type="tel" id="form-whatsapp" required class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-amber-500 outline-none text-gray-900 dark:text-white" placeholder="${lang.placeholder_whatsapp}">
+        <p id="error-whatsapp" class="text-red-500 text-xs mt-1 hidden"></p>
       </div>
     `;
   } else {
@@ -1119,16 +1198,17 @@ function renderOrderForm() {
     let serverInputHTML = "";
     if (showServerInput) {
       if (isDropdown) {
-        const serverList = currentProduct.server_type.split(",");
+        // CLEANUP: Menghapus opsi kosong akibat trailing comma
+        const serverList = currentProduct.server_type.split(",").map(s => s.trim()).filter(s => s !== "");
         const options = serverList
-          .map((s) => `<option value="${s.trim()}">${s.trim()}</option>`)
+          .map((s) => `<option value="${s}">${s}</option>`)
           .join("");
 
         serverInputHTML = `
-            <div>
+            <div class="mb-5">
               <label class="block text-sm font-medium mb-2 text-gray-900 dark:text-white">${lang.label_server}</label>
               <div class="relative">
-                <select id="form-server" class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-amber-500 outline-none text-gray-900 dark:text-white appearance-none cursor-pointer">
+                <select id="form-server" required class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-amber-500 outline-none text-gray-900 dark:text-white appearance-none cursor-pointer">
                   <option value="" disabled selected>${lang.text_select_server}</option>
                   ${options}
                 </select>
@@ -1137,36 +1217,41 @@ function renderOrderForm() {
             </div>`;
       } else {
         serverInputHTML = `
-            <div>
+            <div class="mb-5">
                 <label class="block text-sm font-medium mb-2 text-gray-900 dark:text-white">${lang.label_server}</label>
-                <input type="text" id="form-server" class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-amber-500 outline-none text-gray-900 dark:text-white" placeholder="${lang.placeholder_server}">
+                <input type="text" id="form-server" required class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-amber-500 outline-none text-gray-900 dark:text-white" placeholder="${lang.placeholder_server}">
+                <p id="error-server" class="text-red-500 text-xs mt-1 hidden"></p>
             </div>`;
       }
     }
 
     const gridClass = showServerInput
-      ? "grid grid-cols-2 gap-4"
-      : "grid grid-cols-1 gap-4";
+      ? "grid grid-cols-2 gap-4 mb-5"
+      : "grid grid-cols-1 gap-4 mb-5";
 
     container.innerHTML = `
       <div class="${gridClass}">
         <div class="${showServerInput ? "" : "col-span-1"}">
           <label class="block text-sm font-medium mb-2 text-gray-900 dark:text-white">${idLabel}</label>
           <input type="text" id="form-game-id" required class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-amber-500 outline-none text-gray-900 dark:text-white" placeholder="${lang.placeholder_game_id}">
+          <p id="error-game-id" class="text-red-500 text-xs mt-1 hidden"></p>
         </div>
-        ${showServerInput ? serverInputHTML : ""}
+        ${showServerInput ? serverInputHTML.replace('mb-5', '') : ""} 
       </div>
-      <div>
+      <div class="mb-5">
         <label class="block text-sm font-medium mb-2 text-gray-900 dark:text-white">${lang.label_nickname}</label>
-        <input type="text" id="form-nickname" class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-amber-500 outline-none text-gray-900 dark:text-white" placeholder="${lang.placeholder_nickname}">
+        <input type="text" id="form-nickname" required class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-amber-500 outline-none text-gray-900 dark:text-white" placeholder="${lang.placeholder_nickname}">
+        <p id="error-nickname" class="text-red-500 text-xs mt-1 hidden"></p>
       </div>
-      <div>
+      <div class="mb-5">
         <label class="block text-sm font-medium mb-2 text-gray-900 dark:text-white">${lang.label_email}</label>
         <input type="email" id="form-email" required class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-amber-500 outline-none text-gray-900 dark:text-white" placeholder="${lang.placeholder_email}">
+        <p id="error-email" class="text-red-500 text-xs mt-1 hidden"></p>
       </div>
-      <div>
+      <div class="mb-5">
         <label class="block text-sm font-medium mb-2 text-gray-900 dark:text-white">${lang.label_whatsapp}</label>
         <input type="tel" id="form-whatsapp" required class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-amber-500 outline-none text-gray-900 dark:text-white" placeholder="${lang.placeholder_whatsapp}">
+        <p id="error-whatsapp" class="text-red-500 text-xs mt-1 hidden"></p>
       </div>
     `;
   }
@@ -1184,7 +1269,8 @@ function selectNominal(nominalId) {
   }
 
   const nominal = currentProduct.nominals.find((n) => n.id === nominalId);
-  if (!nominal || nominal.price === 0) return;
+  // Validasi tambahan: Jika harga 0 atau gambar kosong, hentikan fungsi
+  if (!nominal || !nominal.price || nominal.price === 0 || !nominal.icon) return;
 
   selectedNominal = nominal;
   appliedCoupon = null;
@@ -1254,30 +1340,73 @@ function showCheckoutModal() {
     return;
   }
   const formData = getFormData();
+  const serverInput = document.getElementById("form-server");
+  const isServerRequired = !!serverInput;
+  let isValid = true;
+
+  // Reset Pesan Error
+  document.querySelectorAll("[id^='error-']").forEach(el => {
+    el.textContent = ""; 
+    el.classList.add("hidden");
+  });
+
+  // Validasi Email: Wajib @gmail.com
+  if (!formData.email || !formData.email.endsWith("@gmail.com")) {
+      const err = document.getElementById("error-email");
+      if(err) {
+        err.textContent = lang.err_email;
+        err.classList.remove("hidden");
+      }
+      isValid = false;
+  }
+
+  // Validasi WhatsApp: Wajib angka dan dimulai 62
+  if (!formData.whatsapp || !/^\d+$/.test(formData.whatsapp) || !formData.whatsapp.startsWith("62")) {
+      const err = document.getElementById("error-whatsapp");
+      if(err) {
+        // Tampilkan pesan error spesifik
+        if (!/^\d+$/.test(formData.whatsapp)) err.textContent = lang.err_whatsapp_number;
+        else err.textContent = lang.err_whatsapp_prefix;
+        
+        err.classList.remove("hidden");
+      }
+      isValid = false;
+  }
 
   const isVoucher =
     (currentProduct.type && currentProduct.type.toLowerCase() === "voucher") ||
     (currentProduct.form_type &&
       currentProduct.form_type.toLowerCase() === "voucher");
 
-  if (isVoucher) {
-    if (!formData.email || !formData.whatsapp) {
-      showToast("Please fill all required fields", "error");
-      return;
-    }
-  } else {
-    const serverInput = document.getElementById("form-server");
-    const isServerRequired = !!serverInput;
+  if (!isVoucher) {
+      if (!formData.gameId) {
+          const err = document.getElementById("error-game-id");
+          if(err) { err.textContent = lang.err_game_id; err.classList.remove("hidden"); }
+          isValid = false;
+      }
+      if (!formData.nickname) {
+          const err = document.getElementById("error-nickname");
+          if(err) { err.textContent = lang.err_nickname; err.classList.remove("hidden"); }
+          isValid = false;
+      }
+      // Validasi Server Input Manual: Wajib Angka
+      if (isServerRequired && serverInput.tagName === "INPUT") {
+          if (!formData.server || !/^\d+$/.test(formData.server)) {
+              const err = document.getElementById("error-server");
+              if(err) {
+                 err.textContent = lang.err_server_id;
+                 err.classList.remove("hidden");
+              }
+              isValid = false;
+          }
+      } else if (isServerRequired && !formData.server) {
+          isValid = false;
+      }
+  }
 
-    if (
-      !formData.gameId ||
-      !formData.email ||
-      !formData.whatsapp ||
-      (isServerRequired && !formData.server)
-    ) {
-      showToast("Please fill all required fields", "error");
+  if (!isValid) {
+      showToast(lang.err_form_check, "error");
       return;
-    }
   }
 
   const disc = parseFloat(selectedNominal.discount);
@@ -1306,7 +1435,7 @@ function showCheckoutModal() {
       <div class="bg-gray-100 dark:bg-gray-800 rounded-xl p-4 space-y-3">
         <div class="flex justify-between"><span class="text-sm text-gray-500 dark:text-gray-400">${idLabel}</span><span class="font-medium text-gray-900 dark:text-white">${formData.gameId}</span></div>
         ${serverDisplay}
-        ${formData.nickname ? `<div class="flex justify-between"><span class="text-sm text-gray-500 dark:text-gray-400">${lang.label_nickname}</span><span class="font-medium text-gray-900 dark:text-white">${formData.nickname}</span></div>` : ""}
+        <div class="flex justify-between"><span class="text-sm text-gray-500 dark:text-gray-400">${lang.label_nickname}</span><span class="font-medium text-gray-900 dark:text-white">${formData.nickname}</span></div>
         <div class="border-t border-gray-200 dark:border-gray-700 my-2 pt-2"></div>
         <div class="mb-3"><p class="text-sm text-gray-500 dark:text-gray-400 mb-1">${lang.label_email}</p><p class="font-medium text-gray-900 dark:text-white break-all">${formData.email}</p></div>
         <div><p class="text-sm text-gray-500 dark:text-gray-400 mb-1">${lang.label_whatsapp}</p><p class="font-medium text-gray-900 dark:text-white">${formData.whatsapp}</p></div>
@@ -1887,12 +2016,13 @@ function showToast(message, type = "success") {
   if (!toast) {
     toast = document.createElement("div");
     toast.id = "toast";
+    // Change: moved to top center (left-1/2 -translate-x-1/2) to avoid overlapping chat
     toast.className =
-      "fixed top-4 right-4 z-50 hidden transition-all duration-300 transform translate-y-[-20px] opacity-0";
+      "fixed top-4 left-1/2 transform -translate-x-1/2 z-50 hidden transition-all duration-300 -translate-y-full opacity-0";
     toast.innerHTML = `
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 p-4 flex items-center gap-3">
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 p-4 flex items-center gap-3 min-w-[300px]">
         <div id="toast-icon" class="text-xl"></div>
-        <p id="toast-message" class="text-sm font-medium text-gray-800 dark:text-white"></p>
+        <p id="toast-message" class="text-sm font-medium text-gray-800 dark:text-white flex-1"></p>
       </div>
     `;
     document.body.appendChild(toast);
@@ -1913,12 +2043,14 @@ function showToast(message, type = "success") {
       : "fas fa-exclamation-circle text-red-500";
 
   toast.classList.remove("hidden");
+  
+  // Trigger animation (slide down)
   setTimeout(() => {
-    toast.classList.remove("translate-y-[-20px]", "opacity-0");
+    toast.classList.remove("-translate-y-full", "opacity-0");
   }, 10);
 
   setTimeout(() => {
-    toast.classList.add("translate-y-[-20px]", "opacity-0");
+    toast.classList.add("-translate-y-full", "opacity-0");
     setTimeout(() => toast.classList.add("hidden"), 300);
   }, 3000);
 }
@@ -1996,19 +2128,50 @@ function setupSearch(inputId, resultsId) {
   const searchInput = document.getElementById(inputId);
   const searchResults = document.getElementById(resultsId);
 
+  // Daftar Singkatan Game Populer
+  const abbreviations = {
+      "ml": "Mobile Legends",
+      "mlbb": "Mobile Legends",
+      "ff": "Free Fire",
+      "pubg": "PUBG Mobile",
+      "pubgm": "PUBG Mobile",
+      "gi": "Genshin Impact",
+      "hok": "Honor of Kings",
+      "valo": "Valorant",
+      "coc": "Clash of Clans",
+      "hi": "Honkai Impact",
+      "hsr": "Honkai Star Rail",
+      "zzz": "Zenless Zone Zero",
+      "cod": "Call of Duty",
+      "codm": "Call of Duty Mobile",
+      "aov": "Arena of Valor",
+      "lol": "League of Legends"
+  };
+
   if (searchInput && searchResults) {
     searchInput.addEventListener("input", (e) => {
       const query = e.target.value.toLowerCase().trim();
       if (query.length > 0) {
         // FILTER: Search berdasarkan Nama/Kategori/Dev DAN Harus Punya Stok (Nominal)
         const filtered = products.filter((p) => {
+            const hasStock = p.nominals && p.nominals.length > 0;
+            if (!hasStock) return false;
+
+            // 1. Cek Nama/Kategori/Dev Biasa
             const matchesQuery =
                 p.name.toLowerCase().includes(query) ||
                 p.category.toLowerCase().includes(query) ||
                 p.developer.toLowerCase().includes(query);
-            // Produk "Segera Datang" atau "Kosong" tidak punya nominal
-            const hasStock = p.nominals && p.nominals.length > 0;
-            return matchesQuery && hasStock;
+
+            // 2. Cek Akronim Dinamis (Contoh: "Mobile Legends" -> "ml")
+            const acronym = p.name.split(' ').map(w => w[0]).join('').toLowerCase();
+            const matchesAcronym = acronym.includes(query);
+
+            // 3. Cek Mapping Manual (Contoh: "mlbb" -> "Mobile Legends")
+            const mappedName = abbreviations[query];
+            const matchesMapping = mappedName && p.name.toLowerCase().includes(mappedName.toLowerCase());
+
+            return matchesQuery || matchesAcronym || matchesMapping;
         });
 
         // Tampilkan HASIL TANPA LIMIT
