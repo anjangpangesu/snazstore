@@ -8,20 +8,22 @@ body {
 .font-heading {
   font-family: "Montserrat", sans-serif;
 }
+
+/* KOMENTAR: Pembaruan warna gradien menggunakan Warna Utama (FD5B0E), Warna Kedua (005FBC), dan Warna Ketiga (FC141D) */
 .hero-gradient {
-  background: linear-gradient(135deg, #991b1b 0%, #b45309 50%, #166534 100%);
+  background: linear-gradient(135deg, #FC141D 0%, #FD5B0E 50%, #005FBC 100%);
 }
 .dark .hero-gradient {
-  background: linear-gradient(135deg, #7f1d1d 0%, #d97706 50%, #14532d 100%);
+  background: linear-gradient(135deg, #D01016 0%, #D04A0B 50%, #004A94 100%);
 }
 .fusion-gradient {
-  background: linear-gradient(135deg, #dc2626, #d97706, #15803d);
+  background: linear-gradient(135deg, #FC141D, #FD5B0E, #005FBC);
 }
 .dark .fusion-gradient {
-  background: linear-gradient(135deg, #b91c1c, #b45309, #166534);
+  background: linear-gradient(135deg, #D01016, #D04A0B, #004A94);
 }
 .fusion-text-gradient {
-  background: linear-gradient(to right, #dc2626, #d97706, #15803d);
+  background: linear-gradient(to right, #FC141D, #FD5B0E, #005FBC);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -29,7 +31,7 @@ body {
   display: inline-block;
 }
 .dark .fusion-text-gradient {
-  background: linear-gradient(to right, #ef4444, #fbbf24, #22c55e);
+  background: linear-gradient(to right, #FC141D, #FD5B0E, #005FBC);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -38,15 +40,15 @@ body {
 }
 .card-hover {
   transition: all 0.3s ease;
-  border: 1px solid rgba(220, 38, 38, 0.1);
+  border: 1px solid rgba(253, 91, 14, 0.1);
 }
 .card-hover:hover {
   transform: translateY(-8px);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-  border-color: #d97706;
+  border-color: #FD5B0E;
 }
 .slider-dot.active {
-  background: #d97706;
+  background: #FD5B0E;
 }
 .fade-in {
   animation: fadeIn 0.5s ease-in-out;
@@ -67,13 +69,13 @@ body.lang-loaded #app {
   visibility: visible;
 }
 .coupon-card {
-  border: 1px dashed #d97706;
-  background-color: #fffbeb;
+  border: 1px dashed #FD5B0E;
+  background-color: rgba(253, 91, 14, 0.05);
   transition: all 0.2s;
 }
 .dark .coupon-card {
-  border: 1px dashed #fbbf24;
-  background-color: rgba(251, 191, 36, 0.1);
+  border: 1px dashed #FD5B0E;
+  background-color: rgba(253, 91, 14, 0.1);
 }
 .coupon-card:hover {
   transform: translateY(-2px);
@@ -108,8 +110,8 @@ body.lang-loaded #app {
   background: rgba(15, 23, 42, 0.8);
 }
 .nominal-card.selected {
-  border: 2px solid #d97706;
-  background-color: rgba(217, 119, 6, 0.05);
+  border: 2px solid #FD5B0E;
+  background-color: rgba(253, 91, 14, 0.05);
   position: relative;
 }
 .nominal-card.selected::after {
@@ -117,7 +119,7 @@ body.lang-loaded #app {
   position: absolute;
   top: -8px;
   right: -8px;
-  background: #d97706;
+  background: #FD5B0E;
   color: white;
   width: 20px;
   height: 20px;
@@ -147,7 +149,7 @@ body.lang-loaded #app {
   background: #f1f1f1;
 }
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, #991b1b, #b45309, #166534);
+  background: linear-gradient(to bottom, #FC141D, #FD5B0E, #005FBC);
   border-radius: 4px;
 }
 .dark ::-webkit-scrollbar-track {

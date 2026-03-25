@@ -16,7 +16,7 @@ let products = [];
 let currentProduct = null;
 let selectedNominal = null;
 let topupDisplayCount = 15;
-let previousTopupCount = 0; 
+let previousTopupCount = 0;
 let currentFilter = "all";
 let currentFilterTopup = "all";
 let currentLang = localStorage.getItem("site_lang") || "id";
@@ -152,7 +152,7 @@ const translations = {
     btn_use_coupon: "Pakai",
     text_loading_coupons: "Memuat promo...",
     text_searching_promo: "Mencari promo terbaik...",
-    text_no_promo_found: "Tidak ada promo yang cocok untuk produk ini :(",
+    text_no_promo_found: "Tidak ada promo yang cocok untuk produk ini",
     text_failed_load_promo: "Gagal memuat promo.",
     text_click_to_check: "Klik untuk cek",
     text_no_flash_sale: "Tidak ada Flash Sale saat ini.",
@@ -164,10 +164,11 @@ const translations = {
     err_game_id: "ID Game wajib diisi",
     err_server_id: "Server ID wajib berupa angka",
     err_nickname: "Nickname wajib diisi",
-    err_form_check: "Mohon periksa kembali form anda"
+    err_form_check: "Mohon periksa kembali form anda",
   },
   en: {
-    sect_why_choose: "Why Choose <span class='fusion-text-gradient font-bold'>SnazStore</span>?",
+    sect_why_choose:
+      "Why Choose <span class='fusion-text-gradient font-bold'>SnazStore</span>?",
     limited_time: "Limited Time",
     starting_from: "Starting from IDR",
     flash_sale_price: "IDR",
@@ -286,7 +287,7 @@ const translations = {
     btn_use_coupon: "Use",
     text_loading_coupons: "Loading coupons...",
     text_searching_promo: "Searching for best promos...",
-    text_no_promo_found: "No suitable promos found for this product :(",
+    text_no_promo_found: "No suitable promos found for this product",
     text_failed_load_promo: "Failed to load promos.",
     text_click_to_check: "Click to check",
     text_no_flash_sale: "No Flash Sale available right now.",
@@ -298,7 +299,7 @@ const translations = {
     err_game_id: "Game ID is required",
     err_server_id: "Server ID must be a number",
     err_nickname: "Nickname is required",
-    err_form_check: "Please check your form again"
+    err_form_check: "Please check your form again",
   },
 };
 
@@ -312,9 +313,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   setupLanguage();
   checkHistoryExpiration();
-  initFallingStars(); 
-  initChineseLanterns();
-  initKetupatStyles(); 
 
   if (document.getElementById("popular-products")) {
     setActiveNav("nav_home");
@@ -656,42 +654,7 @@ function updateSlider(sliderId) {
   });
 }
 
-// === HELPER UNTUK MEMBUAT ELEMEN KETUPAT ===
-function getKetupatDecorationHTML(mode) {
-  if (mode === 'single-right') {
-    return `
-      <div class="ketupat-decoration right-1">
-        <div class="ketupat-string"></div>
-        <div class="ketupat-body">
-          <div class="ketupat-weave"></div>
-        </div>
-        <div class="ketupat-tail-left"></div>
-        <div class="ketupat-tail-right"></div>
-      </div>
-    `;
-  } else if (mode === 'double-right') {
-    return `
-      <div class="ketupat-decoration small right-1">
-        <div class="ketupat-string"></div>
-        <div class="ketupat-body">
-          <div class="ketupat-weave"></div>
-        </div>
-        <div class="ketupat-tail-left"></div>
-        <div class="ketupat-tail-right"></div>
-      </div>
-      <div class="ketupat-decoration small right-2">
-        <div class="ketupat-string"></div>
-        <div class="ketupat-body">
-          <div class="ketupat-weave"></div>
-        </div>
-        <div class="ketupat-tail-left"></div>
-        <div class="ketupat-tail-right"></div>
-      </div>
-    `;
-  }
-  return '';
-}
-
+/* KOMENTAR: Menambahkan properti data-i18n="text_coming_soon" dan data-i18n="text_product_empty_label" pada teks dinamis di dalam cardHtml agar terdeteksi oleh sistem terjemahan saat pengguna mengganti bahasa */
 function createGameCard(product, size = "small", animationDelay = 0) {
   const isSmall = size === "small";
   const imageClass = isSmall
@@ -705,100 +668,144 @@ function createGameCard(product, size = "small", animationDelay = 0) {
   let rating = parseFloat(product.rating);
   if (isNaN(rating)) rating = 0;
 
-  const hasImage = product.image && product.image.trim() !== "";
-  const hasDeveloper = product.developer && product.developer.trim() !== "";
-  const hasNominals = product.nominals && product.nominals.length > 0;
+  const hasImage =
+    product.image &&
+    String(product.image).trim() !== "" &&
+    !product.image.endsWith("undefined");
+  const desc =
+    product.description_id ||
+    product.description_en ||
+    product.description ||
+    "";
+  const hasDesc = String(desc).trim() !== "" && String(desc).trim() !== "-";
+
+  const validNominals = (product.nominals || []).filter(
+    (n) => n.name && n.price && parseFloat(n.price) > 0,
+  );
+  const hasValidNominals = validNominals.length > 0;
 
   let cardStatus = "active";
-  if (!hasImage && !hasDeveloper && !hasNominals) {
-    cardStatus = "coming_soon";
-  } else if (hasImage && hasDeveloper && !hasNominals) {
-    cardStatus = "empty";
+
+  if (!hasValidNominals) {
+    if (!hasImage && !hasDesc) {
+      cardStatus = "coming_soon_no_image";
+    } else if (hasImage && !hasDesc) {
+      cardStatus = "coming_soon_with_image";
+    } else {
+      cardStatus = "out_of_stock";
+    }
   }
 
-  const animationStyle = animationDelay > 0 ? `style="animation: fadeInUp 0.5s ease forwards; opacity: 0; animation-delay: ${animationDelay}s"` : '';
+  const animationStyle =
+    animationDelay > 0
+      ? `style="animation: fadeIn 0.5s ease forwards; opacity: 0; animation-delay: ${animationDelay}s"`
+      : "";
+  const textComingSoon = translations[currentLang].text_coming_soon;
+  const textOutOfStock = translations[currentLang].text_product_empty_label;
 
-  if (cardStatus === "coming_soon") {
-    const textComingSoon = translations[currentLang].text_coming_soon;
-    return `
-      <div class="block ketupat-card rounded-xl overflow-hidden shadow-sm h-full relative pointer-events-none select-none" ${animationStyle}>
-        ${getKetupatDecorationHTML('double-right')}
-        <div class="relative h-48 flex flex-col items-center justify-center bg-black/40 backdrop-blur-sm">
-           <i class="fas fa-clock text-4xl text-amber-300 mb-2 animate-pulse"></i>
-           <span class="text-white font-bold text-sm uppercase tracking-wider">${textComingSoon}</span>
+  let cardHtml = "";
+
+  if (cardStatus === "coming_soon_no_image") {
+    cardHtml = `
+      <div class="block bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md border border-gray-100 dark:border-gray-800 h-full relative pointer-events-none select-none">
+        <div class="relative ${isSmall ? "h-48" : "h-48 md:h-56"} flex flex-col items-center justify-center bg-gray-200 dark:bg-gray-700">
+           <div class="absolute inset-0 flex items-center justify-center bg-black/40">
+             <div class="text-center px-2">
+                <i class="fas fa-clock text-white text-2xl mb-1 animate-pulse"></i>
+                <p class="text-white font-bold text-xs uppercase border border-white/50 px-2 py-1 rounded bg-black/40 backdrop-blur-sm" data-i18n="text_coming_soon">
+                   ${textComingSoon}
+                </p>
+             </div>
+           </div>
         </div>
-        <div class="p-3">
-          <h3 class="font-medium text-sm truncate text-white">${product.name}</h3>
-          <p class="text-xs text-amber-200 truncate">Unknown</p>
+        <div class="p-3 opacity-60">
+          <h3 class="font-medium text-sm truncate text-gray-900 dark:text-white">${product.name}</h3>
+          <p class="text-xs text-gray-500 truncate">${product.developer || "-"}</p>
         </div>
       </div>
     `;
-  }
-
-  if (cardStatus === "empty") {
-    const textEmpty = translations[currentLang].text_product_empty_label;
-    return `
-      <div class="block ketupat-card rounded-xl overflow-hidden shadow-sm h-full relative pointer-events-none select-none group" ${animationStyle}>
-        ${getKetupatDecorationHTML('double-right')}
-        <div class="relative">
-          <img src="${product.image}" alt="${product.name}" class="${imageClass} grayscale brightness-50" loading="lazy">
+  } else if (cardStatus === "coming_soon_with_image") {
+    cardHtml = `
+      <div class="block bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md border border-gray-100 dark:border-gray-800 h-full relative pointer-events-none select-none group">
+        <div class="relative overflow-hidden rounded-t-xl">
+          <img src="${product.image}" alt="${product.name}" class="${imageClass} grayscale brightness-50 object-cover" loading="lazy" onerror="this.style.background='#f3f4f6'; this.alt='Image unavailable';">
           <div class="absolute inset-0 flex items-center justify-center bg-black/60">
              <div class="text-center px-2">
-                <i class="fas fa-box-open text-white text-2xl mb-1"></i>
-                <p class="text-white font-bold text-xs uppercase border border-white/50 px-2 py-1 rounded bg-black/40 backdrop-blur-sm">
-                   ${textEmpty}
+                <i class="fas fa-clock text-white text-2xl mb-1 animate-pulse"></i>
+                <p class="text-white font-bold text-xs uppercase border border-white/50 px-2 py-1 rounded bg-black/40 backdrop-blur-sm" data-i18n="text_coming_soon">
+                   ${textComingSoon}
                 </p>
              </div>
           </div>
         </div>
         <div class="p-3 opacity-60">
-          <h3 class="font-medium text-sm truncate text-white">${product.name}</h3>
-          <p class="text-xs text-amber-200 truncate">${product.developer}</p>
+          <h3 class="font-medium text-sm truncate text-gray-900 dark:text-white">${product.name}</h3>
+          <p class="text-xs text-gray-500 truncate">${product.developer || "-"}</p>
         </div>
       </div>
     `;
-  }
-
-  if (isSmall) {
-    return `
-      <a href="${productPath}" class="block ketupat-card rounded-xl overflow-visible cursor-pointer relative transition-transform duration-300 hover:scale-[1.02]" ${animationStyle}>
-        ${getKetupatDecorationHTML('double-right')}
+  } else if (cardStatus === "out_of_stock") {
+    cardHtml = `
+      <div class="block bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md border border-gray-100 dark:border-gray-800 h-full relative pointer-events-none select-none group">
         <div class="relative overflow-hidden rounded-t-xl">
-          <img src="${product.image}" alt="${product.name}" class="${imageClass}" loading="lazy" onerror="this.style.background='#0f392b'; this.alt='Image unavailable';">
-          ${product.discount > 0 ? `<span class="absolute top-2 right-2 px-2 py-1 bg-amber-500 text-white text-xs font-bold rounded-lg border border-amber-300">-${product.discount}%</span>` : ""}
+          <img src="${product.image}" alt="${product.name}" class="${imageClass} grayscale brightness-50 object-cover" loading="lazy" onerror="this.style.background='#f3f4f6'; this.alt='Image unavailable';">
+          <div class="absolute inset-0 flex items-center justify-center bg-black/60">
+             <div class="text-center px-2 w-full">
+                <i class="fas fa-box-open text-white text-2xl mb-1 opacity-80"></i>
+                <p class="text-white font-bold text-[10px] md:text-xs uppercase border border-white/50 px-2 py-1 rounded bg-black/40 backdrop-blur-sm mx-auto w-fit max-w-[90%] text-center" data-i18n="text_product_empty_label">
+                   ${textOutOfStock}
+                </p>
+             </div>
+          </div>
+        </div>
+        <div class="p-3 opacity-60">
+          <h3 class="font-medium text-sm truncate text-gray-900 dark:text-white">${product.name}</h3>
+          <p class="text-xs text-gray-500 truncate">${product.developer || "-"}</p>
+        </div>
+      </div>
+    `;
+  } else if (isSmall) {
+    cardHtml = `
+      <a href="${productPath}" class="block h-full bg-white dark:bg-gray-800 rounded-xl overflow-visible cursor-pointer relative transition-transform duration-300 hover:scale-[1.02] shadow-md border border-gray-100 dark:border-gray-800">
+        <div class="relative overflow-hidden rounded-t-xl">
+          <img src="${product.image}" alt="${product.name}" class="${imageClass}" loading="lazy" onerror="this.style.background='#f3f4f6'; this.alt='Image unavailable';">
+          ${product.discount > 0 ? `<span class="absolute top-2 right-2 px-2 py-1 bg-primary text-white text-xs font-bold rounded-lg border border-white/20">-${product.discount}%</span>` : ""}
         </div>
         <div class="p-3 relative z-10">
-          <h3 class="font-medium text-sm truncate text-white drop-shadow-md">${product.name}</h3>
-          <p class="text-xs text-amber-300 truncate font-medium">${product.developer}</p>
+          <h3 class="font-medium text-sm truncate text-gray-900 dark:text-white">${product.name}</h3>
+          <p class="text-xs text-primary truncate font-medium">${product.developer || "-"}</p>
         </div>
       </a>
     `;
   } else {
-    return `
-      <a href="${productPath}" class="block ketupat-card rounded-2xl overflow-visible cursor-pointer h-full relative transition-transform duration-300 hover:scale-[1.02]" ${animationStyle}>
-        ${getKetupatDecorationHTML('double-right')}
+    cardHtml = `
+      <a href="${productPath}" class="block h-full bg-white dark:bg-gray-800 rounded-2xl overflow-visible cursor-pointer relative transition-transform duration-300 hover:scale-[1.02] shadow-md border border-gray-100 dark:border-gray-800">
         <div class="relative overflow-hidden rounded-t-2xl">
-          <img src="${product.image}" alt="${product.name}" class="w-full h-48 md:h-56 object-cover" loading="lazy" onerror="this.style.background='#0f392b'; this.alt='Image unavailable';">
-          ${product.discount > 0 ? `<span class="absolute top-3 right-3 px-3 py-1 bg-amber-500 text-white text-sm font-bold rounded-lg border border-amber-300">-${product.discount}%</span>` : ""}
+          <img src="${product.image}" alt="${product.name}" class="w-full h-48 md:h-56 object-cover" loading="lazy" onerror="this.style.background='#f3f4f6'; this.alt='Image unavailable';">
+          ${product.discount > 0 ? `<span class="absolute top-3 right-3 px-3 py-1 bg-primary text-white text-sm font-bold rounded-lg border border-white/20">-${product.discount}%</span>` : ""}
         </div>
         <div class="p-3 md:p-4 relative z-10">
-          <span class="text-[10px] md:text-xs font-medium text-amber-300 uppercase font-bold tracking-wide">${product.category}</span>
-          <h3 class="font-heading font-semibold text-base md:text-lg mt-1 text-white truncate drop-shadow-md">${product.name}</h3>
-          <p class="text-xs md:text-sm text-amber-200 mt-1 truncate">${product.developer}</p>
-          <div class="flex items-center gap-1 mt-2 text-amber-400 text-xs md:text-sm">
+          <span class="text-[10px] md:text-xs font-medium text-primary uppercase font-bold tracking-wide">${product.category}</span>
+          <h3 class="font-heading font-semibold text-base md:text-lg mt-1 text-gray-900 dark:text-white truncate">${product.name}</h3>
+          <p class="text-xs md:text-sm text-gray-500 mt-1 truncate">${product.developer || "-"}</p>
+          <div class="flex items-center gap-1 mt-2 text-primary text-xs md:text-sm">
             <i class="fas fa-star"></i>
-            <span class="text-amber-100 font-bold">${rating}</span>
+            <span class="text-gray-600 dark:text-gray-300 font-bold">${rating}</span>
           </div>
         </div>
       </a>
     `;
   }
+
+  return `<div class="h-full" ${animationStyle}>${cardHtml}</div>`;
 }
 
 function renderPopularGames() {
   const container = document.getElementById("popular-products");
   if (!container) return;
-  const popularProducts = products.filter((p) => p.popular && p.nominals && p.nominals.length > 0);
+  const popularProducts = products.filter(
+    (p) => p.popular && p.nominals && p.nominals.length > 0,
+  );
   container.innerHTML = popularProducts
     .map((p) => createGameCard(p, "large"))
     .join("");
@@ -816,27 +823,31 @@ function renderAllGames(page) {
   const displayed = filtered.slice(0, count);
 
   let startIndex = 0;
-  if (page === "topup" && previousTopupCount > 0 && previousTopupCount < count) {
-      startIndex = previousTopupCount;
+  if (
+    page === "topup" &&
+    previousTopupCount > 0 &&
+    previousTopupCount < count
+  ) {
+    startIndex = previousTopupCount;
   }
 
   container.innerHTML = displayed
     .map((p, index) => {
-        let delay = 0;
-        if (index >= startIndex && startIndex > 0) {
-            delay = (index - startIndex) * 0.1; 
-        }
-        return createGameCard(p, "small", delay);
+      let delay = 0;
+      if (index >= startIndex && startIndex > 0) {
+        delay = (index - startIndex) * 0.1;
+      }
+      return createGameCard(p, "small", delay);
     })
     .join("");
 
   if (page === "topup") {
-      previousTopupCount = count;
-      const loadMoreContainer = document.getElementById("load-more-container");
-      if (loadMoreContainer) {
-        loadMoreContainer.style.display =
-          displayed.length >= filtered.length ? "none" : "block";
-      }
+    previousTopupCount = count;
+    const loadMoreContainer = document.getElementById("load-more-container");
+    if (loadMoreContainer) {
+      loadMoreContainer.style.display =
+        displayed.length >= filtered.length ? "none" : "block";
+    }
   }
 }
 
@@ -877,23 +888,22 @@ function renderFlashSale() {
       const finalPrice = (n.price * (100 - disc)) / 100;
 
       return `
-    <a href="${productPath}" class="block ketupat-card rounded-xl overflow-visible cursor-pointer relative transition-transform duration-300 hover:scale-[1.02]">
-      ${getKetupatDecorationHTML('single-right')}
+    <a href="${productPath}" class="block bg-white dark:bg-gray-800 rounded-xl overflow-visible cursor-pointer relative transition-transform duration-300 hover:scale-[1.02] shadow-sm border border-gray-100 dark:border-gray-700">
       <div class="h-full relative overflow-hidden rounded-xl">
         <div class="flex items-center gap-2.5 p-2.5 relative z-10">
           <div class="relative w-12 h-12 md:w-16 md:h-16 flex-shrink-0">
-              <img src="${p.image}" alt="${p.name}" class="w-full h-full rounded-lg object-cover border border-amber-300/50" loading="lazy">
-              <div class="absolute -bottom-1.5 -right-1.5 w-6 h-6 bg-amber-100 rounded-full p-0.5 shadow-md flex items-center justify-center">
+              <img src="${p.image}" alt="${p.name}" class="w-full h-full rounded-lg object-cover border border-gray-200 dark:border-gray-600" loading="lazy">
+              <div class="absolute -bottom-1.5 -right-1.5 w-6 h-6 bg-white dark:bg-gray-900 rounded-full p-0.5 shadow-md flex items-center justify-center">
                   <img src="${n.icon}" class="w-5 h-5 object-contain rounded-full" onerror="this.style.display='none'">
               </div>
           </div>
-          <div class="flex-1 min-w-0 overflow-hidden text-white">
-            <span class="inline-block px-1.5 py-0.5 bg-amber-500 text-white text-[9px] md:text-[10px] font-bold rounded mb-0.5 border border-amber-300">-${disc}%</span>
-            <h3 class="font-heading font-semibold text-[10px] md:text-sm text-white truncate leading-tight drop-shadow-sm">${p.name}</h3>
-            <p class="text-[10px] md:text-xs text-amber-200 truncate">${n.name}</p>
+          <div class="flex-1 min-w-0 overflow-hidden text-gray-900 dark:text-white">
+            <span class="inline-block px-1.5 py-0.5 bg-primary text-white text-[9px] md:text-[10px] font-bold rounded mb-0.5 border border-white/20">-${disc}%</span>
+            <h3 class="font-heading font-semibold text-[10px] md:text-sm text-gray-900 dark:text-white truncate leading-tight">${p.name}</h3>
+            <p class="text-[10px] md:text-xs text-gray-500 truncate">${n.name}</p>
             <div class="mt-1 leading-none">
-              <p class="text-[9px] text-gray-300 line-through">IDR ${formatPrice(n.price)}</p>
-              <p class="text-[10px] md:text-sm font-bold mt-0.5 text-amber-400 drop-shadow-sm">IDR ${formatPrice(finalPrice)}</p>
+              <p class="text-[9px] text-gray-400 line-through">IDR ${formatPrice(n.price)}</p>
+              <p class="text-[10px] md:text-sm font-bold mt-0.5 text-primary">IDR ${formatPrice(finalPrice)}</p>
             </div>
           </div>
         </div>
@@ -913,6 +923,8 @@ function renderProductDetail() {
   document.getElementById("product-category").textContent =
     currentProduct.category.charAt(0).toUpperCase() +
     currentProduct.category.slice(1);
+  document.getElementById("product-category").className =
+    "inline-block px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium mb-2";
   document.getElementById("product-developer").innerHTML =
     `<i class="fas fa-building mr-2"></i>${currentProduct.developer}`;
 
@@ -927,13 +939,14 @@ function renderProductDetail() {
   let rating = parseFloat(currentProduct.rating);
   if (isNaN(rating)) rating = 0;
   const percentage = (rating / 5) * 100;
+
   ratingContainer.innerHTML = `
     <div class="flex items-center gap-1">
       <div class="relative inline-flex">
         <div class="flex text-gray-300 dark:text-gray-600">
           <i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i>
         </div>
-        <div class="absolute top-0 left-0 flex text-yellow-400 overflow-hidden" style="width: ${percentage}%;">
+        <div class="absolute top-0 left-0 flex text-primary overflow-hidden" style="width: ${percentage}%;">
           <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
         </div>
       </div>
@@ -943,44 +956,59 @@ function renderProductDetail() {
 
   renderProductFAQ();
   renderOrderForm();
-  setupRealtimeValidation(); // Initialize form validation
+  setupRealtimeValidation();
 
   const containerNominal = document.getElementById("nominal-grid");
-  if (!currentProduct.nominals || currentProduct.nominals.length === 0) {
+
+  const validNominals = (currentProduct.nominals || []).filter(
+    (n) => n.name && n.price && parseFloat(n.price) > 0,
+  );
+  const hasValidNominals = validNominals.length > 0;
+
+  if (!hasValidNominals) {
+    /* KOMENTAR: Menambahkan data-i18n pada tampilan produk kosong di dalam halaman produk */
     containerNominal.innerHTML = `
-      <div class="col-span-full py-10 text-center text-gray-500 dark:text-gray-400">
-        <i class="fas fa-box-open text-4xl mb-3 block opacity-50"></i>
-        <p>${translations[currentLang].product_empty}</p>
+      <div class="col-span-full py-16 flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700">
+        <i class="fas fa-box-open text-5xl mb-4 text-gray-400 dark:text-gray-500"></i>
+        <p class="font-bold text-xl text-gray-700 dark:text-gray-300" data-i18n="text_product_empty_label">${translations[currentLang].text_product_empty_label}</p>
+        <p class="text-sm mt-2">${currentLang === "id" ? "Silakan kembali lagi nanti." : "Please check back later."}</p>
       </div>`;
+
+    selectedNominal = null;
+    updateCheckoutButton();
+    const btn = document.getElementById("checkout-btn");
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = translations[currentLang].text_product_empty_label;
+      btn.className =
+        "w-full py-4 bg-gray-300 dark:bg-gray-700 text-gray-500 rounded-xl font-semibold cursor-not-allowed";
+    }
   } else {
     renderNominals();
   }
 
   const urlParams = new URLSearchParams(window.location.search);
   const autoSelectId = urlParams.get("nominal");
-  if (autoSelectId) {
+  if (autoSelectId && hasValidNominals) {
     setTimeout(() => {
       selectNominal(autoSelectId);
     }, 100);
-  } else {
+  } else if (!autoSelectId && hasValidNominals) {
     selectedNominal = null;
     updateCheckoutButton();
   }
 }
 
-// === FUNGSI BARU: VALIDASI FORM REALTIME ===
 function setupRealtimeValidation() {
   const inputs = document.querySelectorAll(
-    '#form-email, #form-whatsapp, #form-game-id, #form-server, #form-nickname'
+    "#form-email, #form-whatsapp, #form-game-id, #form-server, #form-nickname",
   );
 
-  inputs.forEach(input => {
-    // Validasi saat mengetik (input)
-    input.addEventListener('input', function() {
+  inputs.forEach((input) => {
+    input.addEventListener("input", function () {
       validateFormInput(this);
     });
-    // Validasi saat pindah kolom (blur)
-    input.addEventListener('blur', function() {
+    input.addEventListener("blur", function () {
       validateFormInput(this);
     });
   });
@@ -991,40 +1019,37 @@ function validateFormInput(input) {
   const id = input.id;
   const value = input.value.trim();
   let errorMsg = "";
-  
-  if (id === 'form-email') {
-    if (value && !value.endsWith('@gmail.com')) {
+
+  if (id === "form-email") {
+    if (value && !value.endsWith("@gmail.com")) {
       errorMsg = lang.err_email;
     }
-  } else if (id === 'form-whatsapp') {
+  } else if (id === "form-whatsapp") {
     if (value) {
       if (!/^\d+$/.test(value)) {
         errorMsg = lang.err_whatsapp_number;
-      } else if (!value.startsWith('62')) {
+      } else if (!value.startsWith("62")) {
         errorMsg = lang.err_whatsapp_prefix;
       }
     }
-  } else if (id === 'form-game-id' && !value) {
-     // Optional: Validate on blur if empty for required fields
-  } else if (id === 'form-server') {
-     if (input.tagName === 'INPUT' && value && !/^\d+$/.test(value)) {
-        errorMsg = lang.err_server_id;
-     }
+  } else if (id === "form-game-id" && !value) {
+  } else if (id === "form-server") {
+    if (input.tagName === "INPUT" && value && !/^\d+$/.test(value)) {
+      errorMsg = lang.err_server_id;
+    }
   }
 
-  // Menampilkan Error di <p> bawah input
-  // Asumsi struktur HTML: input -> p.text-red-500
   const errorEl = input.nextElementSibling;
-  if (errorEl && errorEl.tagName === 'P') {
+  if (errorEl && errorEl.tagName === "P") {
     if (errorMsg) {
       errorEl.textContent = errorMsg;
-      errorEl.classList.remove('hidden');
-      input.classList.add('border-red-500', 'focus:ring-red-500');
-      input.classList.remove('border-0', 'focus:ring-amber-500');
+      errorEl.classList.remove("hidden");
+      input.classList.add("border-red-500", "focus:ring-red-500");
+      input.classList.remove("border-0", "focus:ring-primary");
     } else {
-      errorEl.classList.add('hidden');
-      input.classList.remove('border-red-500', 'focus:ring-red-500');
-      input.classList.add('border-0', 'focus:ring-amber-500');
+      errorEl.classList.add("hidden");
+      input.classList.remove("border-red-500", "focus:ring-red-500");
+      input.classList.add("border-0", "focus:ring-primary");
     }
   }
 }
@@ -1090,10 +1115,11 @@ function renderNominals() {
   Object.keys(groupedNominals).forEach((category) => {
     const nominals = groupedNominals[category];
     const categoryIcon = nominals[0].icon;
+
     html += `
       <div class="col-span-full mb-6">
         <div class="flex items-center gap-3 mb-4">
-          <div class="w-10 h-10 flex items-center justify-center ketupat-bg rounded-lg overflow-hidden p-[1px] border border-amber-300/30">
+          <div class="w-10 h-10 flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden p-[1px] border border-gray-200 dark:border-gray-700">
             <img src="${categoryIcon}" alt="${category}" class="w-full h-full object-cover rounded-md" loading="lazy" onerror="this.src='https://via.placeholder.com/40'">
           </div>
           <h3 class="font-heading font-semibold text-lg text-gray-900 dark:text-white">${category}</h3>
@@ -1104,42 +1130,43 @@ function renderNominals() {
             .map((n) => {
               const disc = parseFloat(n.discount);
               const hasDiscount = !isNaN(disc) && disc > 0;
-              // VALIDASI: Item hanya aktif jika punya Harga > 0 dan Gambar (Icon)
-              const isUnavailable = !n.price || n.price === 0 || !n.icon || n.icon.trim() === "";
+              const isUnavailable =
+                !n.price || n.price === 0 || !n.icon || n.icon.trim() === "";
 
-              const finalPrice = hasDiscount && !isUnavailable
-                ? (n.price * (100 - disc)) / 100
-                : n.price;
+              const finalPrice =
+                hasDiscount && !isUnavailable
+                  ? (n.price * (100 - disc)) / 100
+                  : n.price;
 
               const cardClass = isUnavailable
-                ? "nominal-card ketupat-card opacity-70 cursor-not-allowed grayscale relative rounded-xl p-3 sm:p-4 border-2 border-transparent"
-                : "nominal-card ketupat-card cursor-pointer hover:scale-[1.02] transition-all relative rounded-xl p-3 sm:p-4 overflow-visible";
+                ? "nominal-card bg-gray-50 dark:bg-gray-800 opacity-70 cursor-not-allowed grayscale relative rounded-xl p-3 sm:p-4 border border-gray-200 dark:border-gray-700"
+                : "nominal-card bg-white dark:bg-gray-800 cursor-pointer hover:scale-[1.02] transition-all relative rounded-xl p-3 sm:p-4 border border-gray-200 dark:border-gray-700 overflow-visible shadow-sm hover:border-primary dark:hover:border-primary";
 
               const onClickAction = isUnavailable
                 ? ""
                 : `onclick="selectNominal('${n.id}')"`;
 
+              /* KOMENTAR: Menambahkan data-i18n pada status badge nominal yang tidak tersedia (out of stock & coming soon) */
               return `
               <div ${onClickAction} data-nominal-id="${n.id}" class="${cardClass}">
-                ${!isUnavailable ? getKetupatDecorationHTML('single-right') : ''}
-                ${hasDiscount && !isUnavailable ? `<span class="absolute top-2 right-2 px-1.5 py-0.5 bg-amber-500 text-white text-[10px] font-bold rounded border border-amber-300">- ${disc}%</span>` : ""}
-                ${isUnavailable ? `<span class="absolute top-2 right-2 px-1.5 py-0.5 bg-gray-500 text-white text-[10px] font-bold rounded">${translations[currentLang].text_out_of_stock}</span>` : ""}
+                ${hasDiscount && !isUnavailable ? `<span class="absolute top-2 right-2 px-1.5 py-0.5 bg-primary text-white text-[10px] font-bold rounded border border-white/20">- ${disc}%</span>` : ""}
+                ${isUnavailable ? `<span class="absolute top-2 right-2 px-1.5 py-0.5 bg-gray-500 text-white text-[10px] font-bold rounded" data-i18n="text_out_of_stock">${translations[currentLang].text_out_of_stock}</span>` : ""}
                 
                 <div class="flex items-center gap-3 mb-3 relative z-10">
-                  <div class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-white/20 p-[1px] rounded-lg flex-shrink-0 overflow-hidden border border-amber-400/50">
+                  <div class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-gray-100 dark:bg-gray-700 p-[1px] rounded-lg flex-shrink-0 overflow-hidden border border-gray-200 dark:border-gray-600">
                     <img src="${n.icon}" alt="${n.name}" class="w-full h-full object-cover rounded-md" onerror="this.src='https://via.placeholder.com/40'">
                   </div>
                   <div class="flex-1 min-w-0">
-                    <h4 class="font-semibold text-xs sm:text-sm text-white leading-snug break-words drop-shadow-md">${n.name}</h4>
+                    <h4 class="font-semibold text-xs sm:text-sm text-gray-900 dark:text-white leading-snug break-words">${n.name}</h4>
                   </div>
                 </div>
                 <div class="relative z-10">
                 ${
                   isUnavailable
-                    ? `<p class="text-xs text-gray-300 font-bold">Coming Soon</p>`
+                    ? `<p class="text-xs text-gray-500 font-bold" data-i18n="text_coming_soon">${translations[currentLang].text_coming_soon}</p>`
                     : hasDiscount
-                      ? `<p class="text-xs text-gray-300 line-through">IDR ${formatPrice(n.price)}</p><p class="font-bold text-amber-300 text-sm drop-shadow-sm">IDR ${formatPrice(finalPrice)}</p>`
-                      : `<p class="font-bold text-amber-300 text-sm drop-shadow-sm">IDR ${formatPrice(n.price)}</p>`
+                      ? `<p class="text-xs text-gray-400 line-through">IDR ${formatPrice(n.price)}</p><p class="font-bold text-primary text-sm">IDR ${formatPrice(finalPrice)}</p>`
+                      : `<p class="font-bold text-primary text-sm">IDR ${formatPrice(n.price)}</p>`
                 }
                 </div>
               </div>`;
@@ -1160,17 +1187,16 @@ function renderOrderForm() {
     (currentProduct.form_type &&
       currentProduct.form_type.toLowerCase() === "voucher");
 
-  // VALIDASI FORM: Menambahkan jarak antar kolom (mb-5) dan pesan error
   if (isVoucher) {
     container.innerHTML = `
       <div class="mb-5">
         <label class="block text-sm font-medium mb-2 text-gray-900 dark:text-white">${lang.label_email}</label>
-        <input type="email" id="form-email" required class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-amber-500 outline-none text-gray-900 dark:text-white" placeholder="${lang.placeholder_email}">
+        <input type="email" id="form-email" required class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-gray-900 dark:text-white" placeholder="${lang.placeholder_email}">
         <p id="error-email" class="text-red-500 text-xs mt-1 hidden"></p>
       </div>
       <div class="mb-5">
         <label class="block text-sm font-medium mb-2 text-gray-900 dark:text-white">${lang.label_whatsapp}</label>
-        <input type="tel" id="form-whatsapp" required class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-amber-500 outline-none text-gray-900 dark:text-white" placeholder="${lang.placeholder_whatsapp}">
+        <input type="tel" id="form-whatsapp" required class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-gray-900 dark:text-white" placeholder="${lang.placeholder_whatsapp}">
         <p id="error-whatsapp" class="text-red-500 text-xs mt-1 hidden"></p>
       </div>
     `;
@@ -1198,8 +1224,10 @@ function renderOrderForm() {
     let serverInputHTML = "";
     if (showServerInput) {
       if (isDropdown) {
-        // CLEANUP: Menghapus opsi kosong akibat trailing comma
-        const serverList = currentProduct.server_type.split(",").map(s => s.trim()).filter(s => s !== "");
+        const serverList = currentProduct.server_type
+          .split(",")
+          .map((s) => s.trim())
+          .filter((s) => s !== "");
         const options = serverList
           .map((s) => `<option value="${s}">${s}</option>`)
           .join("");
@@ -1208,7 +1236,7 @@ function renderOrderForm() {
             <div class="mb-5">
               <label class="block text-sm font-medium mb-2 text-gray-900 dark:text-white">${lang.label_server}</label>
               <div class="relative">
-                <select id="form-server" required class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-amber-500 outline-none text-gray-900 dark:text-white appearance-none cursor-pointer">
+                <select id="form-server" required class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-gray-900 dark:text-white appearance-none cursor-pointer">
                   <option value="" disabled selected>${lang.text_select_server}</option>
                   ${options}
                 </select>
@@ -1219,7 +1247,7 @@ function renderOrderForm() {
         serverInputHTML = `
             <div class="mb-5">
                 <label class="block text-sm font-medium mb-2 text-gray-900 dark:text-white">${lang.label_server}</label>
-                <input type="text" id="form-server" required class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-amber-500 outline-none text-gray-900 dark:text-white" placeholder="${lang.placeholder_server}">
+                <input type="text" id="form-server" required class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-gray-900 dark:text-white" placeholder="${lang.placeholder_server}">
                 <p id="error-server" class="text-red-500 text-xs mt-1 hidden"></p>
             </div>`;
       }
@@ -1233,24 +1261,24 @@ function renderOrderForm() {
       <div class="${gridClass}">
         <div class="${showServerInput ? "" : "col-span-1"}">
           <label class="block text-sm font-medium mb-2 text-gray-900 dark:text-white">${idLabel}</label>
-          <input type="text" id="form-game-id" required class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-amber-500 outline-none text-gray-900 dark:text-white" placeholder="${lang.placeholder_game_id}">
+          <input type="text" id="form-game-id" required class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-gray-900 dark:text-white" placeholder="${lang.placeholder_game_id}">
           <p id="error-game-id" class="text-red-500 text-xs mt-1 hidden"></p>
         </div>
-        ${showServerInput ? serverInputHTML.replace('mb-5', '') : ""} 
+        ${showServerInput ? serverInputHTML.replace("mb-5", "") : ""} 
       </div>
       <div class="mb-5">
         <label class="block text-sm font-medium mb-2 text-gray-900 dark:text-white">${lang.label_nickname}</label>
-        <input type="text" id="form-nickname" required class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-amber-500 outline-none text-gray-900 dark:text-white" placeholder="${lang.placeholder_nickname}">
+        <input type="text" id="form-nickname" required class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-gray-900 dark:text-white" placeholder="${lang.placeholder_nickname}">
         <p id="error-nickname" class="text-red-500 text-xs mt-1 hidden"></p>
       </div>
       <div class="mb-5">
         <label class="block text-sm font-medium mb-2 text-gray-900 dark:text-white">${lang.label_email}</label>
-        <input type="email" id="form-email" required class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-amber-500 outline-none text-gray-900 dark:text-white" placeholder="${lang.placeholder_email}">
+        <input type="email" id="form-email" required class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-gray-900 dark:text-white" placeholder="${lang.placeholder_email}">
         <p id="error-email" class="text-red-500 text-xs mt-1 hidden"></p>
       </div>
       <div class="mb-5">
         <label class="block text-sm font-medium mb-2 text-gray-900 dark:text-white">${lang.label_whatsapp}</label>
-        <input type="tel" id="form-whatsapp" required class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-amber-500 outline-none text-gray-900 dark:text-white" placeholder="${lang.placeholder_whatsapp}">
+        <input type="tel" id="form-whatsapp" required class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-gray-900 dark:text-white" placeholder="${lang.placeholder_whatsapp}">
         <p id="error-whatsapp" class="text-red-500 text-xs mt-1 hidden"></p>
       </div>
     `;
@@ -1269,8 +1297,8 @@ function selectNominal(nominalId) {
   }
 
   const nominal = currentProduct.nominals.find((n) => n.id === nominalId);
-  // Validasi tambahan: Jika harga 0 atau gambar kosong, hentikan fungsi
-  if (!nominal || !nominal.price || nominal.price === 0 || !nominal.icon) return;
+  if (!nominal || !nominal.price || nominal.price === 0 || !nominal.icon)
+    return;
 
   selectedNominal = nominal;
   appliedCoupon = null;
@@ -1300,7 +1328,7 @@ function updateCheckoutButton() {
     btn.textContent = `${lang.btn_confirm} - IDR ${formatPrice(price)}`;
     btn.disabled = false;
     btn.className =
-      "w-full py-4 fusion-gradient text-white rounded-xl font-semibold transition-all cursor-pointer hover:shadow-lg shadow-amber-500/20";
+      "w-full py-4 fusion-gradient text-white rounded-xl font-semibold transition-all cursor-pointer hover:shadow-lg shadow-primary/20";
   } else {
     btn.textContent = lang.btn_checkout_default;
     btn.disabled = true;
@@ -1344,33 +1372,34 @@ function showCheckoutModal() {
   const isServerRequired = !!serverInput;
   let isValid = true;
 
-  // Reset Pesan Error
-  document.querySelectorAll("[id^='error-']").forEach(el => {
-    el.textContent = ""; 
+  document.querySelectorAll("[id^='error-']").forEach((el) => {
+    el.textContent = "";
     el.classList.add("hidden");
   });
 
-  // Validasi Email: Wajib @gmail.com
   if (!formData.email || !formData.email.endsWith("@gmail.com")) {
-      const err = document.getElementById("error-email");
-      if(err) {
-        err.textContent = lang.err_email;
-        err.classList.remove("hidden");
-      }
-      isValid = false;
+    const err = document.getElementById("error-email");
+    if (err) {
+      err.textContent = lang.err_email;
+      err.classList.remove("hidden");
+    }
+    isValid = false;
   }
 
-  // Validasi WhatsApp: Wajib angka dan dimulai 62
-  if (!formData.whatsapp || !/^\d+$/.test(formData.whatsapp) || !formData.whatsapp.startsWith("62")) {
-      const err = document.getElementById("error-whatsapp");
-      if(err) {
-        // Tampilkan pesan error spesifik
-        if (!/^\d+$/.test(formData.whatsapp)) err.textContent = lang.err_whatsapp_number;
-        else err.textContent = lang.err_whatsapp_prefix;
-        
-        err.classList.remove("hidden");
-      }
-      isValid = false;
+  if (
+    !formData.whatsapp ||
+    !/^\d+$/.test(formData.whatsapp) ||
+    !formData.whatsapp.startsWith("62")
+  ) {
+    const err = document.getElementById("error-whatsapp");
+    if (err) {
+      if (!/^\d+$/.test(formData.whatsapp))
+        err.textContent = lang.err_whatsapp_number;
+      else err.textContent = lang.err_whatsapp_prefix;
+
+      err.classList.remove("hidden");
+    }
+    isValid = false;
   }
 
   const isVoucher =
@@ -1379,34 +1408,39 @@ function showCheckoutModal() {
       currentProduct.form_type.toLowerCase() === "voucher");
 
   if (!isVoucher) {
-      if (!formData.gameId) {
-          const err = document.getElementById("error-game-id");
-          if(err) { err.textContent = lang.err_game_id; err.classList.remove("hidden"); }
-          isValid = false;
+    if (!formData.gameId) {
+      const err = document.getElementById("error-game-id");
+      if (err) {
+        err.textContent = lang.err_game_id;
+        err.classList.remove("hidden");
       }
-      if (!formData.nickname) {
-          const err = document.getElementById("error-nickname");
-          if(err) { err.textContent = lang.err_nickname; err.classList.remove("hidden"); }
-          isValid = false;
+      isValid = false;
+    }
+    if (!formData.nickname) {
+      const err = document.getElementById("error-nickname");
+      if (err) {
+        err.textContent = lang.err_nickname;
+        err.classList.remove("hidden");
       }
-      // Validasi Server Input Manual: Wajib Angka
-      if (isServerRequired && serverInput.tagName === "INPUT") {
-          if (!formData.server || !/^\d+$/.test(formData.server)) {
-              const err = document.getElementById("error-server");
-              if(err) {
-                 err.textContent = lang.err_server_id;
-                 err.classList.remove("hidden");
-              }
-              isValid = false;
-          }
-      } else if (isServerRequired && !formData.server) {
-          isValid = false;
+      isValid = false;
+    }
+    if (isServerRequired && serverInput.tagName === "INPUT") {
+      if (!formData.server || !/^\d+$/.test(formData.server)) {
+        const err = document.getElementById("error-server");
+        if (err) {
+          err.textContent = lang.err_server_id;
+          err.classList.remove("hidden");
+        }
+        isValid = false;
       }
+    } else if (isServerRequired && !formData.server) {
+      isValid = false;
+    }
   }
 
   if (!isValid) {
-      showToast(lang.err_form_check, "error");
-      return;
+    showToast(lang.err_form_check, "error");
+    return;
   }
 
   const disc = parseFloat(selectedNominal.discount);
@@ -1456,7 +1490,7 @@ function showCheckoutModal() {
       </div>
 
       <div class="flex gap-2">
-        <input type="text" id="promo-code-input" class="flex-1 px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-amber-500 outline-none text-gray-900 dark:text-white uppercase" placeholder="CODE">
+        <input type="text" id="promo-code-input" class="flex-1 px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-gray-900 dark:text-white uppercase" placeholder="CODE">
         <button onclick="applyCoupon()" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 rounded-xl font-medium transition-colors">${lang.btn_apply}</button>
       </div>
       <div id="promo-message" class="text-xs mt-2"></div>
@@ -1470,7 +1504,7 @@ function showCheckoutModal() {
     </div>
     ${accountInfoHTML}
     ${promoHTML}
-    <div class="bg-amber-500/10 rounded-xl p-4">
+    <div class="bg-primary/10 rounded-xl p-4">
       <div id="price-summary">
         <div class="flex justify-between items-center"><span class="font-medium text-gray-900 dark:text-white">${lang.label_total}</span><span class="text-xl font-bold fusion-text-gradient">IDR ${formatPrice(price)}</span></div>
       </div>
@@ -1490,7 +1524,7 @@ async function toggleCouponList() {
   if (area.classList.contains("hidden")) {
     area.classList.remove("hidden");
 
-    area.innerHTML = `<div class="text-center py-2"><i class="fas fa-spinner fa-spin text-amber-500"></i> ${lang.text_searching_promo}</div>`;
+    area.innerHTML = `<div class="text-center py-2"><i class="fas fa-spinner fa-spin text-primary"></i> ${lang.text_searching_promo}</div>`;
 
     try {
       const timestamp = new Date().getTime();
@@ -1591,19 +1625,19 @@ function formatCouponCard(c) {
   }
 
   return `
-    <div onclick="useCoupon('${c.code}')" class="coupon-card rounded-xl p-3 mb-2 cursor-pointer relative group bg-white dark:bg-gray-800 border border-dashed border-amber-500 hover:border-amber-600 transition-all shadow-sm">
+    <div onclick="useCoupon('${c.code}')" class="coupon-card rounded-xl p-3 mb-2 cursor-pointer relative group bg-white dark:bg-gray-800 border border-dashed border-primary hover:border-red-600 transition-all shadow-sm">
        <div class="flex justify-between items-start">
          <div>
            <div class="font-bold text-gray-800 dark:text-white text-sm flex items-center gap-2">
              ${c.code}
              ${timeInfo}
            </div>
-           <div class="text-amber-600 dark:text-amber-400 font-bold text-xs mt-0.5">${discountText}</div>
+           <div class="text-primary dark:text-primary font-bold text-xs mt-0.5">${discountText}</div>
            <div class="text-[10px] text-gray-500 dark:text-gray-400 mt-1">${minBuyText}</div>
          </div>
          
          <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
-             <button class="text-xs bg-amber-100 text-amber-700 px-3 py-1.5 rounded-lg font-medium hover:bg-amber-200 transition-colors">
+             <button class="text-xs bg-primary/10 text-primary px-3 py-1.5 rounded-lg font-medium hover:bg-primary/20 transition-colors">
                ${lang.btn_use_coupon}
              </button>
          </div>
@@ -1671,7 +1705,7 @@ async function applyCoupon() {
       priceContainer.innerHTML = `
         <div class="flex justify-between items-center mb-1 text-sm text-gray-500"><span class="dark:text-gray-400">Subtotal</span><span>IDR ${formatPrice(basePrice)}</span></div>
         <div class="flex justify-between items-center mb-2 text-sm text-green-500 font-medium"><span>${lang.text_discount_promo} (${code})</span><span>- IDR ${formatPrice(data.discount)}</span></div>
-        <div class="border-t border-amber-500/20 my-2 pt-2"></div>
+        <div class="border-t border-primary/20 my-2 pt-2"></div>
         <div class="flex justify-between items-center"><span class="font-medium text-gray-900 dark:text-white">${lang.label_total}</span><span class="text-xl font-bold fusion-text-gradient">IDR ${formatPrice(finalPrice)}</span></div>
       `;
     } else {
@@ -1887,20 +1921,20 @@ function updateFilterButtons(selector, active) {
       btn.classList.remove(
         "bg-gray-200",
         "dark:bg-gray-700",
-        "hover:bg-amber-500",
+        "hover:bg-primary",
         "hover:text-white",
-        "dark:hover:bg-amber-500",
-        "dark:hover:text-white"
+        "dark:hover:bg-primary",
+        "dark:hover:text-white",
       );
     } else {
       btn.classList.remove("active", "fusion-gradient", "text-white");
       btn.classList.add(
         "bg-gray-200",
         "dark:bg-gray-700",
-        "hover:bg-amber-500",
+        "hover:bg-primary",
         "hover:text-white",
-        "dark:hover:bg-amber-500",
-        "dark:hover:text-white"
+        "dark:hover:bg-primary",
+        "dark:hover:text-white",
       );
     }
   });
@@ -2016,7 +2050,6 @@ function showToast(message, type = "success") {
   if (!toast) {
     toast = document.createElement("div");
     toast.id = "toast";
-    // Change: moved to top center (left-1/2 -translate-x-1/2) to avoid overlapping chat
     toast.className =
       "fixed top-4 left-1/2 transform -translate-x-1/2 z-50 hidden transition-all duration-300 -translate-y-full opacity-0";
     toast.innerHTML = `
@@ -2043,8 +2076,7 @@ function showToast(message, type = "success") {
       : "fas fa-exclamation-circle text-red-500";
 
   toast.classList.remove("hidden");
-  
-  // Trigger animation (slide down)
+
   setTimeout(() => {
     toast.classList.remove("-translate-y-full", "opacity-0");
   }, 10);
@@ -2128,53 +2160,53 @@ function setupSearch(inputId, resultsId) {
   const searchInput = document.getElementById(inputId);
   const searchResults = document.getElementById(resultsId);
 
-  // Daftar Singkatan Game Populer
   const abbreviations = {
-      "ml": "Mobile Legends",
-      "mlbb": "Mobile Legends",
-      "ff": "Free Fire",
-      "pubg": "PUBG Mobile",
-      "pubgm": "PUBG Mobile",
-      "gi": "Genshin Impact",
-      "hok": "Honor of Kings",
-      "valo": "Valorant",
-      "coc": "Clash of Clans",
-      "hi": "Honkai Impact",
-      "hsr": "Honkai Star Rail",
-      "zzz": "Zenless Zone Zero",
-      "cod": "Call of Duty",
-      "codm": "Call of Duty Mobile",
-      "aov": "Arena of Valor",
-      "lol": "League of Legends"
+    ml: "Mobile Legends",
+    mlbb: "Mobile Legends",
+    ff: "Free Fire",
+    pubg: "PUBG Mobile",
+    pubgm: "PUBG Mobile",
+    gi: "Genshin Impact",
+    hok: "Honor of Kings",
+    valo: "Valorant",
+    coc: "Clash of Clans",
+    hi: "Honkai Impact",
+    hsr: "Honkai Star Rail",
+    zzz: "Zenless Zone Zero",
+    cod: "Call of Duty",
+    codm: "Call of Duty Mobile",
+    aov: "Arena of Valor",
+    lol: "League of Legends",
   };
 
   if (searchInput && searchResults) {
     searchInput.addEventListener("input", (e) => {
       const query = e.target.value.toLowerCase().trim();
       if (query.length > 0) {
-        // FILTER: Search berdasarkan Nama/Kategori/Dev DAN Harus Punya Stok (Nominal)
         const filtered = products.filter((p) => {
-            const hasStock = p.nominals && p.nominals.length > 0;
-            if (!hasStock) return false;
+          const hasStock = p.nominals && p.nominals.length > 0;
+          if (!hasStock) return false;
 
-            // 1. Cek Nama/Kategori/Dev Biasa
-            const matchesQuery =
-                p.name.toLowerCase().includes(query) ||
-                p.category.toLowerCase().includes(query) ||
-                p.developer.toLowerCase().includes(query);
+          const matchesQuery =
+            p.name.toLowerCase().includes(query) ||
+            p.category.toLowerCase().includes(query) ||
+            p.developer.toLowerCase().includes(query);
 
-            // 2. Cek Akronim Dinamis (Contoh: "Mobile Legends" -> "ml")
-            const acronym = p.name.split(' ').map(w => w[0]).join('').toLowerCase();
-            const matchesAcronym = acronym.includes(query);
+          const acronym = p.name
+            .split(" ")
+            .map((w) => w[0])
+            .join("")
+            .toLowerCase();
+          const matchesAcronym = acronym.includes(query);
 
-            // 3. Cek Mapping Manual (Contoh: "mlbb" -> "Mobile Legends")
-            const mappedName = abbreviations[query];
-            const matchesMapping = mappedName && p.name.toLowerCase().includes(mappedName.toLowerCase());
+          const mappedName = abbreviations[query];
+          const matchesMapping =
+            mappedName &&
+            p.name.toLowerCase().includes(mappedName.toLowerCase());
 
-            return matchesQuery || matchesAcronym || matchesMapping;
+          return matchesQuery || matchesAcronym || matchesMapping;
         });
 
-        // Tampilkan HASIL TANPA LIMIT
         if (filtered.length > 0) {
           searchResults.innerHTML = filtered
             .map(
@@ -2244,7 +2276,6 @@ async function checkOrderStatus() {
       `${config.gas_url}?action=trackOrder&orderId=${orderId}&_t=${timestamp}`,
     );
     const data = await response.json();
-    const lang = translations[currentLang];
 
     if (data.found) {
       let statusColor = "text-gray-500";
@@ -2498,7 +2529,7 @@ function buildMessageHTML(msg, isMe, isSending) {
   }
 
   const align = isMe ? "justify-end" : "justify-start";
-  // Update Bubble Style with Fusion Gradient for User
+
   const bubbleStyle = isMe
     ? "fusion-gradient text-white rounded-tr-sm shadow-md"
     : "bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-tl-sm shadow-sm";
@@ -2566,7 +2597,6 @@ function buildMessageHTML(msg, isMe, isSending) {
         </div>
     `;
 }
-
 
 function handleFileSelect(input) {
   const files = input.files;
@@ -2765,379 +2795,4 @@ function cancelFile() {
 }
 function triggerFileUpload() {
   document.getElementById("chat-file-upload").click();
-}
-
-// === FUNGSI ANIMASI BINTANG JATUH (Falling Stars) ===
-function initFallingStars() {
-  const style = document.createElement("style");
-  style.innerHTML = `
-    .falling-star-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 0; /* Di belakang Nav dan Konten */
-      overflow: hidden;
-    }
-    .falling-star {
-      position: absolute;
-      background: #ffd700; /* Warna Emas Terang */
-      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); /* Bentuk Bintang 5 Sudut */
-      filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.8)); /* Efek Cahaya Terang */
-      opacity: 0;
-    }
-    @keyframes starFall {
-      0% { transform: translateY(-10vh) translateX(0) scale(0.5) rotate(0deg); opacity: 0; }
-      10% { opacity: 1; } /* Muncul cepat */
-      90% { opacity: 1; }
-      100% { transform: translateY(110vh) translateX(-20px) scale(1) rotate(360deg); opacity: 0; } /* Jatuh lambat & memutar */
-    }
-  `;
-  document.head.appendChild(style);
-
-  const container = document.createElement("div");
-  container.className = "falling-star-container";
-  document.body.appendChild(container);
-
-  const starCount = 20; // Jumlah bintang optimal untuk performa
-  for (let i = 0; i < starCount; i++) {
-    const star = document.createElement("div");
-    star.className = "falling-star";
-    
-    // Properti acak untuk variasi posisi dan waktu
-    const size = Math.random() * 10 + 10 + "px"; // Ukuran antara 10px - 20px (Lebih tebal)
-    const left = Math.random() * 100 + "%";
-    const duration = Math.random() * 5 + 5 + "s"; // Durasi jatuh 5s - 10s (Lebih lambat)
-    const delay = Math.random() * 5 + "s"; // Delay acak
-
-    star.style.width = size;
-    star.style.height = size;
-    star.style.left = left;
-    star.style.animation = `starFall ${duration} linear infinite ${delay}`;
-    
-    container.appendChild(star);
-  }
-}
-
-// === FUNGSI BARU: LAMPION MERAH GANTUNG (Chinese Lanterns) ===
-function initChineseLanterns() {
-  const style = document.createElement("style");
-  style.innerHTML = `
-    .lantern-container-fixed {
-      position: fixed;
-      top: -10px;
-      left: 0;
-      width: 100%;
-      height: 0;
-      z-index: 40; /* Di bawah Nav (biasanya 50) tapi di atas konten */
-      pointer-events: none; /* Container tidak menghalangi klik */
-      display: flex;
-      justify-content: space-around;
-    }
-    .lantern-box {
-      position: relative;
-      width: 80px;
-      height: auto;
-      transform-origin: top center;
-      cursor: pointer;
-      pointer-events: auto; /* Lampion bisa di-klik */
-      will-change: transform; /* Optimasi GPU untuk anti-lag */
-      transform: translateZ(0); /* Hack untuk memaksa rendering layer terpisah */
-      backface-visibility: hidden; /* Tambahan optimasi */
-      animation: swingLantern 4s ease-in-out infinite alternate;
-    }
-    /* Efek Hover Visual tanpa mengubah durasi animasi agar tidak lag */
-    .lantern-box:hover .lantern-body {
-      filter: brightness(1.2) drop-shadow(0 0 15px rgba(255, 215, 0, 0.8));
-      transform: scale(1.05); 
-    }
-    
-    .lantern-string {
-      width: 3px;
-      background: #8b0000;
-      margin: 0 auto;
-      position: relative;
-    }
-    .lantern-body {
-      width: 60px;
-      height: 50px;
-      background: radial-gradient(circle, #ff4d4d 0%, #d80015 100%);
-      border-radius: 15px;
-      margin: 0 auto;
-      position: relative;
-      box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4), inset 0 0 10px rgba(0,0,0,0.2); /* Shadow lebih ringan */
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      transition: transform 0.3s ease, filter 0.3s ease; /* Transisi halus untuk hover */
-    }
-    /* Cap Emas Atas & Bawah */
-    .lantern-body::before, .lantern-body::after {
-      content: '';
-      position: absolute;
-      width: 40px;
-      height: 6px;
-      background: #ffd700;
-      border-radius: 2px;
-    }
-    .lantern-body::before { top: -4px; }
-    .lantern-body::after { bottom: -4px; }
-
-    /* Garis Tulang Lampion */
-    .lantern-rib {
-      position: absolute;
-      top: 0;
-      width: 40px;
-      height: 100%;
-      border-left: 1px solid rgba(0,0,0,0.1);
-      border-right: 1px solid rgba(0,0,0,0.1);
-      border-radius: 50%;
-    }
-
-    /* Rumbai/Tassel Bawah */
-    .lantern-tassel {
-      width: 4px;
-      height: 40px;
-      background: #d80015;
-      margin: 5px auto 0;
-      position: relative;
-    }
-    .lantern-tassel::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: -8px;
-      width: 20px;
-      height: 20px;
-      background: radial-gradient(circle, #d80015 20%, transparent 80%);
-      opacity: 0.8;
-    }
-
-    @keyframes swingLantern {
-      from { transform: rotate(-6deg); }
-      to { transform: rotate(6deg); }
-    }
-
-    /* RESPONSIVE MOBILE */
-    @media (max-width: 768px) {
-      .lantern-box { width: 50px; }
-      .lantern-body { width: 35px; height: 30px; border-radius: 8px; }
-      .lantern-body::before, .lantern-body::after { width: 25px; height: 4px; }
-      .lantern-body::before { top: -3px; }
-      .lantern-body::after { bottom: -3px; }
-      .lantern-rib { width: 25px; }
-      .lantern-tassel { height: 25px; width: 3px; }
-      .lantern-string { width: 2px; }
-    }
-  `;
-  document.head.appendChild(style);
-
-  const container = document.createElement("div");
-  container.className = "lantern-container-fixed";
-  document.body.appendChild(container);
-
-  // Logika responsif untuk jumlah lampion
-  const isMobile = window.innerWidth < 768;
-  const lanternCounts = isMobile ? 4 : 6;
-
-  for (let i = 0; i < lanternCounts; i++) {
-    const box = document.createElement("div");
-    box.className = "lantern-box";
-    
-    // Variasi panjang tali berdasarkan device
-    let stringHeight;
-    if (isMobile) {
-        stringHeight = Math.floor(Math.random() * 60) + 50; // Mobile: 50-110px
-    } else {
-        stringHeight = Math.floor(Math.random() * 80) + 80; // Desktop: 80-160px
-    }
-    
-    // Negative Delay untuk memulai animasi secara acak tanpa menunggu (Smooth Start)
-    const delay = -(Math.random() * 4) + "s"; 
-    box.style.animationDelay = delay;
-
-    box.innerHTML = `
-      <div class="lantern-string" style="height: ${stringHeight}px;"></div>
-      <div class="lantern-body">
-        <div class="lantern-rib"></div>
-      </div>
-      <div class="lantern-tassel"></div>
-    `;
-
-    // Interaksi Klik (Reset animasi untuk efek sentuhan)
-    box.addEventListener("click", function() {
-      // Hapus animasi sejenak
-      this.style.animation = "none";
-      
-      // Force Reflow
-      void this.offsetWidth; 
-      
-      // Tambahkan animasi goyang lebih cepat sebentar
-      this.style.animation = "swingLantern 0.5s ease-in-out infinite alternate";
-      
-      // Kembalikan ke normal setelah 1.5 detik
-      setTimeout(() => {
-        this.style.animation = `swingLantern 3s ease-in-out infinite alternate`;
-        // Pastikan delay acak tetap ada agar tidak sinkron dengan yang lain
-        this.style.animationDelay = -(Math.random() * 4) + "s";
-      }, 1500);
-    });
-
-    container.appendChild(box);
-  }
-}
-
-// === FUNGSI BARU: THEMA KETUPAT DAN DEKORASI KARTU ===
-function initKetupatStyles() {
-  const style = document.createElement("style");
-  style.innerHTML = `
-    .ketupat-card {
-      background-color: #064E3B; /* Dark Green Base */
-      background-image: repeating-linear-gradient(45deg, rgba(255,215,0,0.05) 0, rgba(255,215,0,0.05) 1px, transparent 0, transparent 10px),
-                        repeating-linear-gradient(-45deg, rgba(255,215,0,0.05) 0, rgba(255,215,0,0.05) 1px, transparent 0, transparent 10px);
-      border: 1px solid rgba(255, 215, 0, 0.3); /* Gold Border */
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-      transition: all 0.3s ease;
-    }
-    .ketupat-card:hover {
-      box-shadow: 0 10px 25px -5px rgba(46, 139, 87, 0.6), 0 0 10px rgba(255, 215, 0, 0.4); /* Green & Gold Shadow */
-      border-color: rgba(255, 215, 0, 0.8);
-    }
-
-    /* Change 1: Nominal Card Selected - Only Change Border, Keep Background & Color */
-    .nominal-card.selected {
-      background-color: #064E3B !important; /* Keep original BG */
-      background-image: repeating-linear-gradient(45deg, rgba(255,215,0,0.05) 0, rgba(255,215,0,0.05) 1px, transparent 0, transparent 10px),
-                        repeating-linear-gradient(-45deg, rgba(255,215,0,0.05) 0, rgba(255,215,0,0.05) 1px, transparent 0, transparent 10px) !important;
-      color: white !important; /* Keep text color white */
-      border: 2px solid #FFD700 !important; /* Bright Gold Border */
-      box-shadow: 0 0 15px rgba(255, 215, 0, 0.5) !important;
-    }
-    
-    /* Ensure inner text retains intended colors on selection */
-    .nominal-card.selected p {
-       color: inherit !important;
-       background: none !important;
-       -webkit-text-fill-color: initial !important;
-    }
-    .nominal-card.selected .text-amber-300 {
-       color: #FCD34D !important; /* Ensure gold text stays gold */
-    }
-
-    /* Change 2: Ketupat Background Utility for Categories */
-    .ketupat-bg {
-      background-color: #064E3B;
-      background-image: repeating-linear-gradient(45deg, rgba(255,215,0,0.05) 0, rgba(255,215,0,0.05) 1px, transparent 0, transparent 10px),
-                        repeating-linear-gradient(-45deg, rgba(255,215,0,0.05) 0, rgba(255,215,0,0.05) 1px, transparent 0, transparent 10px);
-    }
-
-    /* KETUPAT DECORATION */
-    .ketupat-decoration {
-      position: absolute;
-      top: 0;
-      z-index: 20;
-      pointer-events: none;
-      transform-origin: top center;
-      animation: swayKetupat 3s ease-in-out infinite alternate;
-      will-change: transform;
-    }
-    
-    /* Default (Single) Position - Updated for Right Side Only */
-    .ketupat-decoration.right-1 { right: 5px; animation-delay: -0.5s; }
-
-    /* Small Variant (Product Cards) */
-    .ketupat-decoration.small .ketupat-body {
-        width: 18px;
-        height: 18px;
-        background-size: 4px 4px; /* Smaller weave pattern */
-        margin: -3px auto 0;
-    }
-    .ketupat-decoration.small .ketupat-string {
-        width: 1.5px; /* Thinner string for smaller ketupat */
-    }
-    /* Tail adjustment for smaller size */
-    .ketupat-decoration.small.right-1 .ketupat-tail-left,
-    .ketupat-decoration.small.right-1 .ketupat-tail-right {
-        top: 35px; /* Adjusted from 38px */
-        width: 4px;
-        height: 10px;
-    }
-    .ketupat-decoration.small.right-2 .ketupat-tail-left,
-    .ketupat-decoration.small.right-2 .ketupat-tail-right {
-        top: 59px; /* Adjusted from 38px */
-        width: 4px;
-        height: 10px;
-    }
-    .ketupat-decoration.small .ketupat-tail-left { left: 5px; }
-    .ketupat-decoration.small .ketupat-tail-right { right: 5px; }
-
-    /* Length Adjustment for Product Cards */
-    /* Left one (right-2) longer */
-    .ketupat-decoration.small.right-2 .ketupat-string {
-        height: 45px;
-    }
-    /* Right one (right-1) shorter */
-    .ketupat-decoration.small.right-1 .ketupat-string {
-        height: 20px;
-    }
-    /* Position adjustment */
-    .ketupat-decoration.small.right-2 { right: 28px; }
-    .ketupat-decoration.small.right-1 { right: 5px; }
-
-    .ketupat-string {
-      width: 2px;
-      height: 25px;
-      background: #FFD700; /* Gold String */
-      margin: 0 auto;
-    }
-    .ketupat-body {
-      width: 24px;
-      height: 24px;
-      background: #2E8B57; /* SeaGreen */
-      transform: rotate(45deg);
-      border: 1px solid #FFD700;
-      margin: -4px auto 0; /* Overlap string slightly */
-      position: relative;
-      /* Woven Pattern Simulation */
-      background-image: linear-gradient(45deg, rgba(0,0,0,0.1) 25%, transparent 25%, transparent 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1) 75%, transparent 75%, transparent),
-                        linear-gradient(45deg, rgba(0,0,0,0.1) 25%, transparent 25%, transparent 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1) 75%, transparent 75%, transparent);
-      background-size: 6px 6px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-    }
-    .ketupat-weave {
-      width: 100%;
-      height: 100%;
-      background: repeating-linear-gradient(90deg, transparent, transparent 3px, rgba(255,255,255,0.1) 3px, rgba(255,255,255,0.1) 4px),
-                  repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(255,255,255,0.1) 3px, rgba(255,255,255,0.1) 4px);
-    }
-    .ketupat-tail-left, .ketupat-tail-right {
-      width: 6px;
-      height: 15px;
-      background: #2E8B57;
-      position: absolute;
-      top: 44px;
-      border-radius: 0 0 2px 2px;
-    }
-    .ketupat-tail-left { left: 6px; transform: rotate(15deg); }
-    .ketupat-tail-right { right: 6px; transform: rotate(-15deg); }
-
-    @keyframes swayKetupat {
-      from { transform: rotate(-5deg); }
-      to { transform: rotate(5deg); }
-    }
-    
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translate3d(0, 20px, 0);
-        }
-        to {
-            opacity: 1;
-            transform: translate3d(0, 0, 0);
-        }
-    }
-  `;
-  document.head.appendChild(style);
 }

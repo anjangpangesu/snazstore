@@ -182,8 +182,9 @@
               roboto: ["Roboto", "sans-serif"],
             },
             colors: {
-              primary: "#DC2626",
-              secondary: "#2563EB",
+              primary: "#FD5B0E",
+              secondary: "#005FBC",
+              tertiary: "#FC141D",
               dark: "#0F172A",
               darker: "#020617",
             },
@@ -224,26 +225,26 @@
             <div class="hidden md:flex items-center gap-8">
               <a
                 href="index.html"
-                class="nav-link font-medium hover:text-amber-500 transition-colors"
+                class="nav-link font-medium hover:text-primary transition-colors"
                 data-i18n="nav_home"
                 >Beranda</a
               >
               <a
                 href="page/topup/topup.html"
-                class="nav-link font-medium hover:text-amber-500 transition-colors"
+                class="nav-link font-medium hover:text-primary transition-colors"
                 data-i18n="nav_topup"
                 >Top Up</a
               >
               <button
                 id="btn-track-order"
-                class="nav-link font-medium hover:text-amber-500 transition-colors bg-transparent border-0 cursor-pointer"
+                class="nav-link font-medium hover:text-primary transition-colors bg-transparent border-0 cursor-pointer"
                 data-i18n="nav_track"
               >
                 Lacak Pesanan
               </button>
               <a
                 href="page/contact/contact.html"
-                class="nav-link font-medium hover:text-amber-500 transition-colors"
+                class="nav-link font-medium hover:text-primary transition-colors"
                 data-i18n="nav_contact"
                 >Kontak</a
               >
@@ -253,7 +254,7 @@
                 <button
                   onclick="changeLanguage('id')"
                   id="lang-id"
-                  class="hover:text-amber-500 transition-colors"
+                  class="hover:text-primary transition-colors"
                 >
                   ID
                 </button>
@@ -261,7 +262,7 @@
                 <button
                   onclick="changeLanguage('en')"
                   id="lang-en"
-                  class="hover:text-amber-500 transition-colors"
+                  class="hover:text-primary transition-colors"
                 >
                   EN
                 </button>
@@ -306,13 +307,13 @@
           <div class="px-4 py-4 space-y-3">
             <a
               href="index.html"
-              class="block py-2 font-medium hover:text-amber-500"
+              class="block py-2 font-medium hover:text-primary"
               data-i18n="nav_home"
               >Beranda</a
             >
             <a
               href="page/topup/topup.html"
-              class="block py-2 font-medium hover:text-amber-500"
+              class="block py-2 font-medium hover:text-primary"
               data-i18n="nav_topup"
               >Top Up</a
             >
@@ -321,14 +322,14 @@
                 openModal('tracking');
                 toggleMobileMenu();
               "
-              class="block w-full text-left py-2 font-medium hover:text-amber-500 bg-transparent border-0"
+              class="block w-full text-left py-2 font-medium hover:text-primary bg-transparent border-0"
               data-i18n="nav_track"
             >
               Lacak Pesanan
             </button>
             <a
               href="page/contact/contact.html"
-              class="block py-2 font-medium hover:text-amber-500"
+              class="block py-2 font-medium hover:text-primary"
               data-i18n="nav_contact"
               >Kontak</a
             >
@@ -563,28 +564,30 @@
             >
               Semua Produk
             </h2>
-            <div class="flex flex-nowrap justify-center gap-2 mb-6 overflow-x-auto pb-2">
+            <div
+              class="flex flex-nowrap justify-center gap-2 mb-6 overflow-x-auto pb-2"
+            >
               <button
                 onclick="filterGames('all')"
-                class="filter-btn active px-5 py-2 md:px-6 md:py-2 text-xs md:text-base whitespace-nowrap rounded-full fusion-gradient text-white dark:hover:bg-amber-500 dark:hover:text-white font-medium transition-colors"
+                class="filter-btn active px-5 py-2 md:px-6 md:py-2 text-xs md:text-base whitespace-nowrap rounded-full fusion-gradient text-white dark:hover:bg-primary dark:hover:text-white font-medium transition-colors"
               >
                 All
               </button>
               <button
                 onclick="filterGames('mobile')"
-                class="filter-btn px-5 py-2 md:px-6 md:py-2 text-xs md:text-base whitespace-nowrap rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-amber-500 hover:text-white dark:hover:bg-amber-500 dark:hover:text-white font-medium transition-colors"
+                class="filter-btn px-5 py-2 md:px-6 md:py-2 text-xs md:text-base whitespace-nowrap rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-primary hover:text-white dark:hover:bg-primary dark:hover:text-white font-medium transition-colors"
               >
                 Mobile
               </button>
               <button
                 onclick="filterGames('pc')"
-                class="filter-btn px-5 py-2 md:px-6 md:py-2 text-xs md:text-base whitespace-nowrap rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-amber-500 hover:text-white dark:hover:bg-amber-500 dark:hover:text-white font-medium transition-colors"
+                class="filter-btn px-5 py-2 md:px-6 md:py-2 text-xs md:text-base whitespace-nowrap rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-primary hover:text-white dark:hover:bg-primary dark:hover:text-white font-medium transition-colors"
               >
                 PC
               </button>
               <button
                 onclick="filterGames('premium')"
-                class="filter-btn px-5 py-2 md:px-6 md:py-2 text-xs md:text-base whitespace-nowrap rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-amber-500 hover:text-white dark:hover:bg-amber-500 dark:hover:text-white font-medium transition-colors"
+                class="filter-btn px-5 py-2 md:px-6 md:py-2 text-xs md:text-base whitespace-nowrap rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-primary hover:text-white dark:hover:bg-primary dark:hover:text-white font-medium transition-colors"
               >
                 Premium Apps
               </button>
@@ -922,7 +925,7 @@
               class="hidden p-2 flex justify-between items-center border-l-4 border-amber-500 bg-white dark:bg-gray-900 mx-2 mt-2 rounded-r shadow-sm flex-shrink-0"
             >
               <div class="text-xs overflow-hidden">
-                <p class="font-bold text-amber-500 mb-0.5">
+                <p class="font-bold text-primary mb-0.5">
                   Membalas <span id="reply-to-name">...</span>
                 </p>
                 <p
