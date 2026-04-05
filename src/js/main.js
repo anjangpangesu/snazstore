@@ -2390,7 +2390,7 @@ async function checkOrderStatus() {
       resultDiv.innerHTML = `
         <div class="bg-gray-100 dark:bg-gray-800 rounded-xl p-4 mt-4">
           <div class="flex justify-between mb-2"><span class="text-sm text-gray-500">${lang.label_order_id}</span><span class="text-sm md:text-base font-medium dark:text-white">${data.orderId}</span></div>
-          <div class="flex justify-between mb-2"><span class="text-sm text-gray-500">${lang.label_product}</span><span class="text-sm md:text-base font-medium dark:text-white">${data.product} - ${data.nominal}</span></div>
+          <div class="flex justify-between mb-2"><span class="text-sm text-gray-500 flex-shrink-0">${lang.label_product}</span><span class="text-sm md:text-base font-medium dark:text-white text-right ml-4 break-words">${data.product} - ${data.nominal}</span></div>
           ${additionalInfoHTML}
           <div class="flex justify-between mb-2 items-center"><span class="text-sm text-gray-500">${lang.label_status}</span><span class="font-bold ${statusColor} text-sm md:text-base">${displayStatus}</span></div>
           ${voucherHTML}
