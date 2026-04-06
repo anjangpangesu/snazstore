@@ -9,6 +9,8 @@ const defaultConfig = {
 };
 
 const CACHE_KEY = "snazstore_products_v1";
+/* KOMENTAR: Kunci cache lokal untuk data ulasan pelanggan */
+const REVIEWS_CACHE_KEY = "snazstore_reviews_v1";
 const HISTORY_KEY = "snazstore_order_history";
 
 let config = { ...defaultConfig };
@@ -410,7 +412,16 @@ function startAdaptivePolling(renderCallback) {
         console.log("New version found:", serverVersion);
         localStorage.setItem("data_version", serverVersion);
         localStorage.removeItem(CACHE_KEY);
+        localStorage.removeItem(REVIEWS_CACHE_KEY);
+        
         loadProductsWithCache(renderCallback);
+        loadReviews(() => {
+            if (document.getElementById("popular-products")) {
+               renderHomeReviews();
+               updateOverallRating();
+            }
+            if (document.getElementById("product-hero")) updateProductReviewStats();
+        });
       }
     } catch (e) {
       console.error("Version check failed", e);
@@ -482,17 +493,42 @@ async function loadProductsWithCache(renderCallback) {
   }
 }
 
+/* KOMENTAR: Penerapan Stale-While-Revalidate untuk sistem cache ulasan pelanggan. UI akan dimuat dengan instan jika cache tersedia, dan akan diperbarui di latar belakang jika terdapat data baru dari server. */
 async function loadReviews(callback) {
+  const cachedData = localStorage.getItem(REVIEWS_CACHE_KEY);
+  let hasCache = false;
+
+  if (cachedData) {
+    try {
+      reviews = JSON.parse(cachedData);
+      isReviewsLoaded = true;
+      if (callback) callback();
+      hasCache = true;
+    } catch (e) {
+      localStorage.removeItem(REVIEWS_CACHE_KEY);
+    }
+  }
+
   try {
      const timestamp = new Date().getTime();
      const response = await fetch(`${config.gas_url}?action=getReviews&_t=${timestamp}`);
-     reviews = await response.json();
-     isReviewsLoaded = true;
-     if (callback) callback();
+     const freshReviews = await response.json();
+
+     const freshDataStr = JSON.stringify(freshReviews);
+     const currentDataStr = JSON.stringify(reviews);
+
+     if (freshDataStr !== currentDataStr || !hasCache) {
+         reviews = freshReviews;
+         localStorage.setItem(REVIEWS_CACHE_KEY, freshDataStr);
+         isReviewsLoaded = true;
+         if (callback) callback();
+     }
   } catch (e) {
-     console.error("Failed to fetch reviews", e);
-     isReviewsLoaded = true; 
-     if (callback) callback();
+     console.error("Failed to fetch fresh reviews", e);
+     if (!hasCache) {
+        isReviewsLoaded = true;
+        if (callback) callback();
+     }
   }
 }
 
@@ -533,7 +569,6 @@ function renderSkeletons() {
   });
 }
 
-/* KOMENTAR: Menghitung dan merender rata-rata rating toko secara keseluruhan pada halaman beranda */
 function updateOverallRating() {
   const el = document.getElementById("avg-rating");
   if (!el) return;
@@ -1117,7 +1152,6 @@ function renderHomeReviews() {
   container.innerHTML = displayReviews.map(r => createReviewCardHTML(r, true)).join("");
 }
 
-/* KOMENTAR: Menambahkan logika untuk menampilkan antarmuka balasan admin apabila properti adminReply tidak kosong */
 function createReviewCardHTML(r, isHome = false) {
   const stars = Array(5).fill(0).map((_, i) => `<i class="fas fa-star ${i < r.rating ? 'text-primary' : 'text-gray-300 dark:text-gray-600'} text-[10px]"></i>`).join("");
   const dateStr = r.date ? new Date(r.date).toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year: 'numeric'}) : '';
@@ -1131,11 +1165,12 @@ function createReviewCardHTML(r, isHome = false) {
   }
 
   let adminReplyHTML = "";
+  /* KOMENTAR: Pengkondisian agar balasan admin hanya tampil jika bukan di beranda dan data balasan memang ada */
   if (!isHome && r.adminReply && String(r.adminReply).trim() !== "") {
      adminReplyHTML = `
      <div class="mt-4 pt-3 border-t border-gray-100 dark:border-gray-700">
         <div class="flex items-start gap-2.5">
-           <img src="${logoPath}" alt="Snaz Store" class="w-8 h-8 rounded-full p-1.5 border border-gray-200 dark:border-gray-600 flex-shrink-0 object-contain bg-gray-800 dark:bg-white">
+           <img src="${logoPath}" alt="Snaz Store" class="w-8 h-8 rounded-full p-1.5 border border-gray-200 dark:border-gray-600 flex-shrink-0 object-contain bg-gray-100 dark:bg-gray-800">
            <div>
               <h5 class="text-[11px] font-bold text-gray-900 dark:text-white flex items-center gap-1">Snaz Store <i class="fas fa-check-circle text-blue-500 text-[10px]"></i></h5>
               <p class="text-[11px] text-gray-600 dark:text-gray-400 mt-0.5 leading-relaxed">${r.adminReply}</p>
@@ -2239,13 +2274,17 @@ async function submitReview(orderId, productId, productName) {
       if (data.status === "success") {
           showToast(currentLang === 'id' ? "Ulasan berhasil dikirim!" : "Review submitted!", "success");
           closeModal("tracking");
-          loadReviews(() => {
-              if (document.getElementById("product-hero")) updateProductReviewStats();
-              if (document.getElementById("popular-products")) {
-                 renderHomeReviews();
-                 updateOverallRating();
-              }
-          });
+          
+          const timestamp = new Date().getTime();
+          const refreshRes = await fetch(`${config.gas_url}?action=getReviews&_t=${timestamp}`);
+          reviews = await refreshRes.json();
+          localStorage.setItem(REVIEWS_CACHE_KEY, JSON.stringify(reviews));
+
+          if (document.getElementById("product-hero")) updateProductReviewStats();
+          if (document.getElementById("popular-products")) {
+             renderHomeReviews();
+             updateOverallRating();
+          }
       } else {
           showToast(data.message || "Gagal mengirim ulasan", "error");
           btn.innerHTML = origText;
