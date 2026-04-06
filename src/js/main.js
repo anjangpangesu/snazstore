@@ -19,10 +19,10 @@ let reviews = [];
 let isReviewsLoaded = false;
 let currentProduct = null;
 let selectedNominal = null;
-let topupDisplayCount = 15;
+let topupDisplayCount = parseInt(sessionStorage.getItem('topup_count')) || 15;
 let previousTopupCount = 0; 
 let currentFilter = "all";
-let currentFilterTopup = "all";
+let currentFilterTopup = sessionStorage.getItem('topup_filter') || "all";
 let currentLang = localStorage.getItem("site_lang") || "id";
 let appliedCoupon = null;
 let pollingInterval = null;
@@ -366,9 +366,17 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (categoryParam) {
         filterGamesTopup(categoryParam);
       } else {
+        updateFilterButtons(".filter-btn-topup", currentFilterTopup); 
         renderAllGames("topup");
       }
       renderFlashSale();
+      
+      setTimeout(() => {
+          const savedScroll = sessionStorage.getItem('topup_scroll_pos');
+          if (savedScroll) {
+              window.scrollTo({ top: parseInt(savedScroll), behavior: 'instant' });
+          }
+      }, 150);
     }
   };
 
@@ -2087,6 +2095,8 @@ function filterGames(category) {
 function filterGamesTopup(category) {
   currentFilterTopup = category;
   topupDisplayCount = 15;
+  sessionStorage.setItem('topup_filter', category);
+  sessionStorage.setItem('topup_count', 15);
   updateFilterButtons(".filter-btn-topup", category);
   renderAllGames("topup");
 }
@@ -2126,6 +2136,7 @@ function updateFilterButtons(selector, active) {
 
 function loadMoreGames() {
   topupDisplayCount += 5;
+  sessionStorage.setItem('topup_count', topupDisplayCount);
   renderAllGames("topup");
 }
 function formatPrice(price) {
@@ -2555,6 +2566,12 @@ function setupEventListeners() {
 
   setupSearch("search-input", "search-results");
   setupSearch("search-input-mobile", "search-results-mobile");
+
+  window.addEventListener("beforeunload", () => {
+    if (document.getElementById("all-games-topup")) {
+      sessionStorage.setItem("topup_scroll_pos", window.scrollY);
+    }
+  });
 }
 
 function setupSearch(inputId, resultsId) {
