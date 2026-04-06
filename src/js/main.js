@@ -2150,7 +2150,7 @@ function toRoman(num) {
   return roman;
 }
 
-function generateOrderId() {
+async function generateOrderId() {
   const now = new Date();
   const yearFull = now.getFullYear();
   const yearShort = yearFull % 100;
@@ -2160,7 +2160,15 @@ function generateOrderId() {
   const yyRoman = toRoman(yearShort);
   const mmRoman = toRoman(month);
 
-  const sequence = String(Math.floor(Math.random() * 90000) + 10000);
+  let sequence = "00001";
+  try {
+    const response = await fetch(`${config.gas_url}?action=getOrderCount`);
+    const data = await response.json();
+    const nextNum = data.count + 1;
+    sequence = String(nextNum).padStart(5, "0");
+  } catch (e) {
+    console.error("Failed to fetch order count", e);
+  }
   return `ISS/${yyyymmdd}/${yyRoman}/${mmRoman}/${sequence}`;
 }
 
@@ -2207,7 +2215,7 @@ async function confirmOrder() {
     (currentProduct.form_type &&
       currentProduct.form_type.toLowerCase() === "voucher");
 
-  const orderId = generateOrderId();
+  const orderId = await generateOrderId();
 
   const orderData = {
     action: "createOrder",
@@ -2956,6 +2964,70 @@ function setupEventListeners() {
       sessionStorage.setItem("home_scroll_pos", window.scrollY);
       sessionStorage.setItem("home_filter", currentFilter);
     }
+  });
+
+  const trackingInput = document.getElementById("tracking-order-id");
+  if (trackingInput) {
+    trackingInput.addEventListener("input", function() {
+      if (this.value.trim() === "") {
+        const resultDiv = document.getElementById("tracking-result");
+        if (resultDiv) {
+          resultDiv.innerHTML = ""; 
+        }
+      }
+    });
+  }
+
+  const dropdowns = document.querySelectorAll('.custom-dropdown');
+  
+  dropdowns.forEach(dropdown => {
+    const trigger = dropdown.querySelector('.dropdown-trigger');
+    const menu = dropdown.querySelector('.dropdown-menu');
+    const arrow = dropdown.querySelector('.dropdown-arrow');
+    const textDisplay = dropdown.querySelector('.dropdown-text');
+    const hiddenInput = dropdown.querySelector('input[type="hidden"]');
+    const options = dropdown.querySelectorAll('.dropdown-option');
+
+    trigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = !menu.classList.contains('invisible');
+
+      document.querySelectorAll('.custom-dropdown .dropdown-menu').forEach(m => {
+         m.classList.add('invisible', 'opacity-0', 'scale-95', 'pointer-events-none');
+      });
+      document.querySelectorAll('.custom-dropdown .dropdown-arrow').forEach(a => {
+         a.classList.remove('rotate-180');
+      });
+
+      if (!isOpen) {
+        menu.classList.remove('invisible', 'opacity-0', 'scale-95', 'pointer-events-none');
+        arrow.classList.add('rotate-180');
+      }
+    });
+
+    // 2. Logika Saat Opsi Dipilih
+    options.forEach(option => {
+      option.addEventListener('click', (e) => {
+         e.stopPropagation();
+         
+         textDisplay.textContent = option.textContent;
+         hiddenInput.value = option.getAttribute('data-val');
+
+         menu.classList.add('invisible', 'opacity-0', 'scale-95', 'pointer-events-none');
+         arrow.classList.remove('rotate-180');
+
+         filterHistoryList();
+      });
+    });
+  });
+
+  document.addEventListener('click', () => {
+     document.querySelectorAll('.custom-dropdown .dropdown-menu').forEach(m => {
+         m.classList.add('invisible', 'opacity-0', 'scale-95', 'pointer-events-none');
+     });
+     document.querySelectorAll('.custom-dropdown .dropdown-arrow').forEach(a => {
+         a.classList.remove('rotate-180'); 
+     });
   });
 }
 
