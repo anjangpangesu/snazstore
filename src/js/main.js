@@ -1,18 +1,16 @@
 const defaultConfig = {
-  site_name: "SnazStore",
-  hero_title: "Instant Game Top Up",
-  admin_whatsapp: "6287775314721",
-  gas_url:
-    "https://script.google.com/macros/s/AKfycbwiwCUuCLFSRxiOlOT_PMPiQxAV7CwuBdIw8FQkhShjmx9z0GNicIZX6xVZefSBw_1yRQ/exec",
-  chat_script_url:
-    "https://script.google.com/macros/s/AKfycbw4LWC5Q-0Zsnxf_nnxUbxz924LyUuOZgbOMSAkBn_g0H9eM8BALWDjSjBN1vnoCrOOwQ/exec",
+    site_name: "SnazStore",
+    hero_title: "Instant Game Top Up",
+    admin_whatsapp: "6287775314721",
+    gas_url: "https://script.google.com/macros/s/AKfycbwiwCUuCLFSRxiOlOT_PMPiQxAV7CwuBdIw8FQkhShjmx9z0GNicIZX6xVZefSBw_1yRQ/exec",
+    chat_script_url: "https://script.google.com/macros/s/AKfycbw4LWC5Q-0Zsnxf_nnxUbxz924LyUuOZgbOMSAkBn_g0H9eM8BALWDjSjBN1vnoCrOOwQ/exec",
 };
 
 const CACHE_KEY = "snazstore_products_v1";
 const REVIEWS_CACHE_KEY = "snazstore_reviews_v1";
 const HISTORY_KEY = "snazstore_order_history";
 
-let config = { ...defaultConfig };
+let config = {...defaultConfig };
 let products = [];
 let reviews = [];
 let isReviewsLoaded = false;
@@ -29,616 +27,606 @@ let appliedCoupon = null;
 let pollingInterval = null;
 
 const sliders = {
-  hero: { current: 0, total: 3, interval: null },
-  topup: { current: 0, total: 3, interval: null },
+    hero: { current: 0, total: 3, interval: null },
+    topup: { current: 0, total: 3, interval: null },
 };
 
 const translations = {
-  id: {
-    sect_why_choose:
-      "Mengapa Memilih <span class='fusion-text-gradient font-bold'>SnazStore</span>?",
-    limited_time: "Waktu Terbatas",
-    starting_from: "Mulai dari IDR",
-    flash_sale_price: "IDR",
-    nav_home: "Beranda",
-    nav_topup: "Top Up",
-    nav_track: "Lacak Pesanan",
-    nav_history: "Histori Pesanan",
-    nav_contact: "Kontak",
-    search_placeholder: "Cari game atau aplikasi...",
-    hero_title: "Top Up Game Instan",
-    hero_subtitle: "Cepat, Aman & Terpercaya",
-    btn_topup_now: "Top Up Sekarang",
-    hero_flash_title: "Flash Sale Mingguan",
-    hero_flash_subtitle: "Diskon hingga 30% untuk item pilihan",
-    btn_view_deals: "Lihat Promo",
-    hero_support_title: "Layanan 24/7",
-    hero_support_subtitle: "Kami siap membantu kapanpun kamu butuh",
-    btn_contact_us: "Hubungi Kami",
-    feat_fast_title: "Proses Cepat",
-    feat_fast_desc: "Pengiriman instan dalam 1-5 menit setelah pembayaran",
-    feat_trusted_title: "100% Terpercaya",
-    feat_trusted_desc: "Partner resmi SnazStore, aman dan 100% legal",
-    feat_guarantee_title: "Garansi Uang Kembali",
-    feat_guarantee_desc: "Refund penuh jika pesanan gagal dalam 24 jam",
-    sec_popular: "Produk Populer",
-    btn_view_all: "Lihat Semua",
-    stats_games: "Total Games",
-    stats_products: "Aplikasi Premium",
-    stats_trans: "Total Transaksi",
-    stats_rating: "Rating",
-    sec_all_games: "Semua Produk",
-    btn_show_more: "Tampilkan Lebih Banyak",
-    btn_load_more: "Muat Lebih Banyak",
-    sec_faq: "Pertanyaan Umum",
-    faq_1_q: "Berapa lama proses top up?",
-    faq_1_a:
-      "Proses hanya memakan waktu 1-5 menit saja setelah konfirmasi pembayaran.",
-    faq_2_q: "Metode pembayaran apa saja yang tersedia?",
-    faq_2_a:
-      "Kami menerima pembayaran via QRIS, E-Wallet (GoPay, ShopeePay), dan Bank Jago.",
-    faq_3_q: "Proses sudah 5 menit, tapi belum masuk?",
-    faq_3_a:
-      "Tenang saja, jika pesanan belum diterima, mohon tunggu 1x24 jam atau hubungi CS kami.",
-    faq_4_q: "Langganan berakhir sebelum waktunya?",
-    faq_4_a: "Silakan hubungi customer service kami untuk klaim garansi.",
-    back_to_topup: "Kembali ke Top Up",
-    label_nominal: "Pilih Nominal",
-    label_account: "Informasi Akun",
-    prod_faq_title: "Cara Top Up & Info Penting",
-    prod_faq_1_q: "Bagaimana cara melakukan pemesanan?",
-    prod_faq_1_a:
-      "Masukkan Data Akun > Pilih Nominal > Masukkan Kontak > Klik Pesan Sekarang > Lakukan Pembayaran.",
-    prod_faq_2_q: "Apakah layanan ini buka 24 Jam?",
-    prod_faq_2_a: "Ya, sistem kami beroperasi otomatis 24 jam non-stop.",
-    prod_faq_3_q: "Butuh bantuan?",
-    prod_faq_3_a: "Hubungi WhatsApp Admin jika mengalami kendala.",
-    label_game_id: "ID Game",
-    label_account_id: "ID Account",
-    label_server: "Server",
-    label_nickname: "Nickname",
-    label_email: "Email",
-    label_whatsapp: "Nomor WhatsApp",
-    text_select_server: "Pilih Server",
-    placeholder_game_id: "Masukkan ID",
-    placeholder_server: "Masukkan Server",
-    placeholder_nickname: "Masukkan Nickname",
-    placeholder_email: "Masukkan email aktif",
-    placeholder_whatsapp: "Contoh: 6287775314721",
-    btn_checkout_default: "Pilih nominal dulu",
-    modal_summary: "Ringkasan Pesanan",
-    label_total: "Total Harga",
-    btn_recheck: "Cek Ulang",
-    btn_confirm: "Pesan Sekarang",
-    modal_track_title: "Lacak Pesanan",
-    label_order_id: "ID Pesanan",
-    placeholder_order_id: "Masukkan Order ID (Ex: ISS/...)",
-    label_product: "Produk",
-    label_status: "Status",
-    label_account_info: "Akun",
-    btn_check_status: "Cek Status",
-    status_pending: "Menunggu Pembayaran",
-    status_process: "Pesanan Diproses",
-    status_success: "Pesanan Selesai",
-    status_canceled: "Pesanan Dibatalkan",
-    footer_desc:
-      "Partner top up game & aplikasi premium terpercaya. Cepat, aman, dan 100% legal.",
-    quick_links: "Link Cepat",
-    categories: "Kategori",
-    contact_us: "Hubungi Kami",
-    rights: "Hak Cipta Dilindungi.",
-    contact_title: "Hubungi Kami",
-    contact_subtitle: "Kami siap membantu 24/7",
-    form_title: "Kirim Pesan",
-    label_fullname: "Nama Lengkap",
-    label_message: "Pesan",
-    placeholder_fullname: "Masukkan nama",
-    placeholder_message: "Tulis pesanmu...",
-    btn_send_wa: "Kirim via WhatsApp",
-    info_title: "Info Kontak",
-    op_hours: "Jam Operasional",
-    op_desc: "Senin - Minggu: 07.00 - 22.00 WIB",
-    follow_us: "Ikuti Kami",
-    text_out_of_stock: "HABIS",
-    product_empty: "Produk sedang tidak tersedia sementara waktu.",
-    label_promo: "Kode Promo",
-    btn_apply: "Gunakan",
-    text_discount_promo: "Diskon Promo",
-    text_history_title: "Riwayat Pesanan Terakhir",
-    label_order_data: "DATA PESANAN",
-    text_copied: "Disalin!",
-    label_start_date: "Mulai",
-    label_expiry_date: "Berakhir",
-    link_view_promo: "Lihat Promo Tersedia",
-    text_valid_until: "S/d",
-    text_hours: "Jam",
-    text_discount_off: "Potongan",
-    text_discount_disc: "Diskon",
-    text_min_purchase: "Min. Belanja",
-    text_no_min_purchase: "Tanpa Minimal Pembelian",
-    btn_use_coupon: "Pakai",
-    text_loading_coupons: "Memuat promo...",
-    text_searching_promo: "Mencari promo terbaik...",
-    text_no_promo_found: "Tidak ada promo yang cocok untuk produk ini",
-    text_failed_load_promo: "Gagal memuat promo.",
-    text_click_to_check: "Klik untuk cek",
-    text_no_flash_sale: "Tidak ada Flash Sale saat ini.",
-    text_coming_soon: "Segera Datang",
-    text_product_empty_label: "Produk Sedang Kosong",
-    err_email: "Email wajib menggunakan @gmail.com",
-    err_whatsapp_prefix: "Nomor WhatsApp wajib diawali 62",
-    err_whatsapp_number: "Nomor WhatsApp hanya boleh angka",
-    err_game_id: "ID Game wajib diisi",
-    err_server_id: "Server ID wajib berupa angka",
-    err_nickname: "Nickname wajib diisi",
-    err_form_check: "Mohon periksa kembali form anda",
-    text_reviews: "ulasan",
-    text_sold: "Terjual",
-    text_submit_review: "Beri Ulasan Pesanan",
-    text_send_review: "Kirim Ulasan",
-    text_from: "dari",
-    text_save_data: "Simpan data ini untuk pembelian berikutnya",
-    subtitle_track_manual: "Lacak Pesanan Manual",
-    subtitle_order_history: "Riwayat Pembelian Kamu",
-    placeholder_search_history: "Cari nama game...",
-    text_filter_all: "Semua Kategori",
-    text_filter_mobile: "Mobile Games",
-    text_filter_pc: "PC Games",
-    text_filter_premium: "Aplikasi Premium",
-    text_sort_newest: "Terbaru",
-    text_sort_oldest: "Terlama",
-    btn_buy_again: "Beli Lagi",
-  },
-  en: {
-    sect_why_choose:
-      "Why Choose <span class='fusion-text-gradient font-bold'>SnazStore</span>?",
-    limited_time: "Limited Time",
-    starting_from: "Starting from IDR",
-    flash_sale_price: "IDR",
-    nav_home: "Home",
-    nav_topup: "Top Up",
-    nav_track: "Track Order",
-    nav_history: "Order History",
-    nav_contact: "Contact",
-    search_placeholder: "Search games or apps...",
-    hero_title: "Instant Game Top Up",
-    hero_subtitle: "Fast, Secure & Reliable",
-    btn_topup_now: "Top Up Now",
-    hero_flash_title: "Weekly Flash Sale",
-    hero_flash_subtitle: "Up to 30% discount on selected items",
-    btn_view_deals: "View Deals",
-    hero_support_title: "24/7 Support",
-    hero_support_subtitle: "We are here to help anytime you need",
-    btn_contact_us: "Contact Us",
-    feat_fast_title: "Fast Process",
-    feat_fast_desc: "Instant delivery within 1-5 minutes after payment",
-    feat_trusted_title: "100% Trusted",
-    feat_trusted_desc: "Official SnazStore partner, secure and 100% legal",
-    feat_guarantee_title: "Money Back Guarantee",
-    feat_guarantee_desc: "Full refund if the order fails within 24 hours",
-    sec_popular: "Popular Products",
-    btn_view_all: "View All",
-    stats_games: "Total Games",
-    stats_products: "Premium Apps",
-    stats_trans: "Total Transactions",
-    stats_rating: "Rating",
-    sec_all_games: "All Products",
-    btn_show_more: "Show More",
-    btn_load_more: "Load More",
-    sec_faq: "Frequently Asked Questions",
-    faq_1_q: "How long does the top up take?",
-    faq_1_a:
-      "The process usually takes 1-5 minutes after payment confirmation.",
-    faq_2_q: "What payment methods are available?",
-    faq_2_a: "We accept QRIS, E-Wallets (GoPay, ShopeePay), and Bank Jago.",
-    faq_3_q: "It's been 5 minutes, order not received?",
-    faq_3_a: "Don't worry, please wait within 1x24 hours or contact our CS.",
-    faq_4_q: "Subscription ended early?",
-    faq_4_a: "Please contact our customer service for warranty claims.",
-    back_to_topup: "Back to Top Up",
-    label_nominal: "Select Nominal",
-    label_account: "Account Information",
-    prod_faq_title: "How to Order & Info",
-    prod_faq_1_q: "How to place an order?",
-    prod_faq_1_a:
-      "Enter Account Data > Select Nominal > Enter Contact > Click Order Now > Make Payment.",
-    prod_faq_2_q: "Is this service available 24/7?",
-    prod_faq_2_a: "Yes, our system operates automatically 24 hours non-stop.",
-    prod_faq_3_q: "Need help?",
-    prod_faq_3_a: "Contact our WhatsApp Admin if you face any issues.",
-    label_game_id: "Game ID",
-    label_account_id: "Account ID",
-    label_server: "Server",
-    label_nickname: "Nickname",
-    label_email: "Email",
-    label_whatsapp: "WhatsApp Number",
-    text_select_server: "Select Server",
-    placeholder_game_id: "Enter ID",
-    placeholder_server: "Enter Server",
-    placeholder_nickname: "Enter Nickname",
-    placeholder_email: "Enter valid email",
-    placeholder_whatsapp: "Example: 6287775314721",
-    btn_checkout_default: "Select a nominal first",
-    modal_summary: "Order Summary",
-    label_total: "Total Price",
-    btn_recheck: "Recheck Data",
-    btn_confirm: "Order Now",
-    modal_track_title: "Track Order",
-    label_order_id: "Order ID",
-    placeholder_order_id: "Enter Order ID (Ex: ISS/...)",
-    label_product: "Product",
-    label_status: "Status",
-    label_account_info: "Account",
-    btn_check_status: "Check Status",
-    status_pending: "Pending Payment",
-    status_process: "Processing",
-    status_success: "Completed",
-    status_canceled: "Canceled",
-    footer_desc:
-      "Trusted premium game & app top-up partner. Fast, secure, and 100% legal.",
-    quick_links: "Quick Links",
-    categories: "Categories",
-    contact_us: "Contact Us",
-    rights: "All rights reserved.",
-    contact_title: "Contact Us",
-    contact_subtitle: "We're here to help you 24/7",
-    form_title: "Send us a message",
-    label_fullname: "Full Name",
-    label_message: "Message",
-    placeholder_fullname: "Enter your name",
-    placeholder_message: "How can we help you?",
-    btn_send_wa: "Send via WhatsApp",
-    info_title: "Get in touch",
-    op_hours: "Operating Hours",
-    op_desc: "Mon - Sun: 07.00 - 22.00 WIB",
-    follow_us: "Follow us",
-    text_out_of_stock: "SOLD OUT",
-    product_empty: "Product is currently unavailable.",
-    label_promo: "Promo Code",
-    btn_apply: "Apply",
-    text_discount_promo: "Promo Discount",
-    text_history_title: "Recent Order History",
-    label_order_data: "ORDER DATA",
-    text_copied: "Copied!",
-    label_start_date: "Start",
-    label_expiry_date: "Ends",
-    link_view_promo: "View Available Promos",
-    text_valid_until: "Valid until",
-    text_hours: "Hours",
-    text_discount_off: "OFF",
-    text_discount_disc: "Discount",
-    text_min_purchase: "Min. Purchase",
-    text_no_min_purchase: "No Minimum Purchase",
-    btn_use_coupon: "Use",
-    text_loading_coupons: "Loading coupons...",
-    text_searching_promo: "Searching for best promos...",
-    text_no_promo_found: "No suitable promos found for this product",
-    text_failed_load_promo: "Failed to load promos.",
-    text_click_to_check: "Click to check",
-    text_no_flash_sale: "No Flash Sale available right now.",
-    text_coming_soon: "Coming Soon",
-    text_product_empty_label: "Product is Currently Out of Stock",
-    err_email: "Email must end with @gmail.com",
-    err_whatsapp_prefix: "WhatsApp number must start with 62",
-    err_whatsapp_number: "WhatsApp number must be digits only",
-    err_game_id: "Game ID is required",
-    err_server_id: "Server ID must be a number",
-    err_nickname: "Nickname is required",
-    err_form_check: "Please check your form again",
-    text_reviews: "reviews",
-    text_sold: "Sold",
-    text_submit_review: "Leave a Review",
-    text_send_review: "Submit Review",
-    text_from: "from",
-    text_save_data: "Save this data for next purchase",
-    subtitle_track_manual: "Manual Order Tracking",
-    subtitle_order_history: "Your Order History",
-    placeholder_search_history: "Search game name...",
-    text_filter_all: "All Categories",
-    text_filter_mobile: "Mobile Games",
-    text_filter_pc: "PC Games",
-    text_filter_premium: "Premium Apps",
-    text_sort_newest: "Newest",
-    text_sort_oldest: "Oldest",
-    btn_buy_again: "Buy Again",
-  },
+    id: {
+        sect_why_choose: "Mengapa Memilih <span class='fusion-text-gradient font-bold'>SnazStore</span>?",
+        limited_time: "Waktu Terbatas",
+        starting_from: "Mulai dari IDR",
+        flash_sale_price: "IDR",
+        nav_home: "Beranda",
+        nav_topup: "Top Up",
+        nav_track: "Lacak Pesanan",
+        nav_history: "Histori Pesanan",
+        nav_contact: "Kontak",
+        search_placeholder: "Cari game atau aplikasi...",
+        hero_title: "Top Up Game Instan",
+        hero_subtitle: "Cepat, Aman & Terpercaya",
+        btn_topup_now: "Top Up Sekarang",
+        hero_flash_title: "Flash Sale Mingguan",
+        hero_flash_subtitle: "Diskon hingga 30% untuk item pilihan",
+        btn_view_deals: "Lihat Promo",
+        hero_support_title: "Layanan 24/7",
+        hero_support_subtitle: "Kami siap membantu kapanpun kamu butuh",
+        btn_contact_us: "Hubungi Kami",
+        feat_fast_title: "Proses Cepat",
+        feat_fast_desc: "Pengiriman instan dalam 1-5 menit setelah pembayaran",
+        feat_trusted_title: "100% Terpercaya",
+        feat_trusted_desc: "Partner resmi SnazStore, aman dan 100% legal",
+        feat_guarantee_title: "Garansi Uang Kembali",
+        feat_guarantee_desc: "Refund penuh jika pesanan gagal dalam 24 jam",
+        sec_popular: "Produk Populer",
+        btn_view_all: "Lihat Semua",
+        stats_games: "Total Games",
+        stats_products: "Aplikasi Premium",
+        stats_trans: "Total Transaksi",
+        stats_rating: "Rating",
+        sec_all_games: "Semua Produk",
+        btn_show_more: "Tampilkan Lebih Banyak",
+        btn_load_more: "Muat Lebih Banyak",
+        sec_faq: "Pertanyaan Umum",
+        faq_1_q: "Berapa lama proses top up?",
+        faq_1_a: "Proses hanya memakan waktu 1-5 menit saja setelah konfirmasi pembayaran.",
+        faq_2_q: "Metode pembayaran apa saja yang tersedia?",
+        faq_2_a: "Kami menerima pembayaran via QRIS, E-Wallet (GoPay, ShopeePay), dan Bank Jago.",
+        faq_3_q: "Proses sudah 5 menit, tapi belum masuk?",
+        faq_3_a: "Tenang saja, jika pesanan belum diterima, mohon tunggu 1x24 jam atau hubungi CS kami.",
+        faq_4_q: "Langganan berakhir sebelum waktunya?",
+        faq_4_a: "Silakan hubungi customer service kami untuk klaim garansi.",
+        back_to_topup: "Kembali ke Top Up",
+        label_nominal: "Pilih Nominal",
+        label_account: "Informasi Akun",
+        prod_faq_title: "Cara Top Up & Info Penting",
+        prod_faq_1_q: "Bagaimana cara melakukan pemesanan?",
+        prod_faq_1_a: "Masukkan Data Akun > Pilih Nominal > Masukkan Kontak > Klik Pesan Sekarang > Lakukan Pembayaran.",
+        prod_faq_2_q: "Apakah layanan ini buka 24 Jam?",
+        prod_faq_2_a: "Ya, sistem kami beroperasi otomatis 24 jam non-stop.",
+        prod_faq_3_q: "Butuh bantuan?",
+        prod_faq_3_a: "Hubungi WhatsApp Admin jika mengalami kendala.",
+        label_game_id: "ID Game",
+        label_account_id: "ID Account",
+        label_server: "Server",
+        label_nickname: "Nickname",
+        label_email: "Email",
+        label_whatsapp: "Nomor WhatsApp",
+        text_select_server: "Pilih Server",
+        placeholder_game_id: "Masukkan ID",
+        placeholder_server: "Masukkan Server",
+        placeholder_nickname: "Masukkan Nickname",
+        placeholder_email: "Masukkan email aktif",
+        placeholder_whatsapp: "Contoh: 6287775314721",
+        btn_checkout_default: "Pilih nominal dulu",
+        modal_summary: "Ringkasan Pesanan",
+        label_total: "Total Harga",
+        btn_recheck: "Cek Ulang",
+        btn_confirm: "Pesan Sekarang",
+        modal_track_title: "Lacak Pesanan",
+        label_order_id: "ID Pesanan",
+        placeholder_order_id: "Masukkan Order ID (Ex: ISS/...)",
+        label_product: "Produk",
+        label_status: "Status",
+        label_account_info: "Akun",
+        btn_check_status: "Cek Status",
+        status_pending: "Menunggu Pembayaran",
+        status_process: "Pesanan Diproses",
+        status_success: "Pesanan Selesai",
+        status_canceled: "Pesanan Dibatalkan",
+        footer_desc: "Partner top up game & aplikasi premium terpercaya. Cepat, aman, dan 100% legal.",
+        quick_links: "Link Cepat",
+        categories: "Kategori",
+        contact_us: "Hubungi Kami",
+        rights: "Hak Cipta Dilindungi.",
+        contact_title: "Hubungi Kami",
+        contact_subtitle: "Kami siap membantu 24/7",
+        form_title: "Kirim Pesan",
+        label_fullname: "Nama Lengkap",
+        label_message: "Pesan",
+        placeholder_fullname: "Masukkan nama",
+        placeholder_message: "Tulis pesanmu...",
+        btn_send_wa: "Kirim via WhatsApp",
+        info_title: "Info Kontak",
+        op_hours: "Jam Operasional",
+        op_desc: "Senin - Minggu: 07.00 - 22.00 WIB",
+        follow_us: "Ikuti Kami",
+        text_out_of_stock: "HABIS",
+        product_empty: "Produk sedang tidak tersedia sementara waktu.",
+        label_promo: "Kode Promo",
+        btn_apply: "Gunakan",
+        text_discount_promo: "Diskon Promo",
+        text_history_title: "Riwayat Pesanan Terakhir",
+        label_order_data: "DATA PESANAN",
+        text_copied: "Disalin!",
+        label_start_date: "Mulai",
+        label_expiry_date: "Berakhir",
+        link_view_promo: "Lihat Promo Tersedia",
+        text_valid_until: "S/d",
+        text_hours: "Jam",
+        text_discount_off: "Potongan",
+        text_discount_disc: "Diskon",
+        text_min_purchase: "Min. Belanja",
+        text_no_min_purchase: "Tanpa Minimal Pembelian",
+        btn_use_coupon: "Pakai",
+        text_loading_coupons: "Memuat promo...",
+        text_searching_promo: "Mencari promo terbaik...",
+        text_no_promo_found: "Tidak ada promo yang cocok untuk produk ini",
+        text_failed_load_promo: "Gagal memuat promo.",
+        text_click_to_check: "Klik untuk cek",
+        text_no_flash_sale: "Tidak ada Flash Sale saat ini.",
+        text_coming_soon: "Segera Datang",
+        text_product_empty_label: "Produk Sedang Kosong",
+        err_email: "Email wajib menggunakan @gmail.com",
+        err_whatsapp_prefix: "Nomor WhatsApp wajib diawali 62",
+        err_whatsapp_number: "Nomor WhatsApp hanya boleh angka",
+        err_game_id: "ID Game wajib diisi",
+        err_server_id: "Server ID wajib berupa angka",
+        err_nickname: "Nickname wajib diisi",
+        err_form_check: "Mohon periksa kembali form anda",
+        text_reviews: "ulasan",
+        text_sold: "Terjual",
+        text_submit_review: "Beri Ulasan Pesanan",
+        text_send_review: "Kirim Ulasan",
+        text_from: "dari",
+        text_save_data: "Simpan data ini untuk pembelian berikutnya",
+        subtitle_track_manual: "Lacak Pesanan Manual",
+        subtitle_order_history: "Riwayat Pembelian Kamu",
+        placeholder_search_history: "Cari nama game...",
+        text_filter_all: "Semua Kategori",
+        text_filter_mobile: "Mobile Games",
+        text_filter_pc: "PC Games",
+        text_filter_premium: "Aplikasi Premium",
+        text_sort_newest: "Terbaru",
+        text_sort_oldest: "Terlama",
+        btn_buy_again: "Beli Lagi",
+    },
+    en: {
+        sect_why_choose: "Why Choose <span class='fusion-text-gradient font-bold'>SnazStore</span>?",
+        limited_time: "Limited Time",
+        starting_from: "Starting from IDR",
+        flash_sale_price: "IDR",
+        nav_home: "Home",
+        nav_topup: "Top Up",
+        nav_track: "Track Order",
+        nav_history: "Order History",
+        nav_contact: "Contact",
+        search_placeholder: "Search games or apps...",
+        hero_title: "Instant Game Top Up",
+        hero_subtitle: "Fast, Secure & Reliable",
+        btn_topup_now: "Top Up Now",
+        hero_flash_title: "Weekly Flash Sale",
+        hero_flash_subtitle: "Up to 30% discount on selected items",
+        btn_view_deals: "View Deals",
+        hero_support_title: "24/7 Support",
+        hero_support_subtitle: "We are here to help anytime you need",
+        btn_contact_us: "Contact Us",
+        feat_fast_title: "Fast Process",
+        feat_fast_desc: "Instant delivery within 1-5 minutes after payment",
+        feat_trusted_title: "100% Trusted",
+        feat_trusted_desc: "Official SnazStore partner, secure and 100% legal",
+        feat_guarantee_title: "Money Back Guarantee",
+        feat_guarantee_desc: "Full refund if the order fails within 24 hours",
+        sec_popular: "Popular Products",
+        btn_view_all: "View All",
+        stats_games: "Total Games",
+        stats_products: "Premium Apps",
+        stats_trans: "Total Transactions",
+        stats_rating: "Rating",
+        sec_all_games: "All Products",
+        btn_show_more: "Show More",
+        btn_load_more: "Load More",
+        sec_faq: "Frequently Asked Questions",
+        faq_1_q: "How long does the top up take?",
+        faq_1_a: "The process usually takes 1-5 minutes after payment confirmation.",
+        faq_2_q: "What payment methods are available?",
+        faq_2_a: "We accept QRIS, E-Wallets (GoPay, ShopeePay), and Bank Jago.",
+        faq_3_q: "It's been 5 minutes, order not received?",
+        faq_3_a: "Don't worry, please wait within 1x24 hours or contact our CS.",
+        faq_4_q: "Subscription ended early?",
+        faq_4_a: "Please contact our customer service for warranty claims.",
+        back_to_topup: "Back to Top Up",
+        label_nominal: "Select Nominal",
+        label_account: "Account Information",
+        prod_faq_title: "How to Order & Info",
+        prod_faq_1_q: "How to place an order?",
+        prod_faq_1_a: "Enter Account Data > Select Nominal > Enter Contact > Click Order Now > Make Payment.",
+        prod_faq_2_q: "Is this service available 24/7?",
+        prod_faq_2_a: "Yes, our system operates automatically 24 hours non-stop.",
+        prod_faq_3_q: "Need help?",
+        prod_faq_3_a: "Contact our WhatsApp Admin if you face any issues.",
+        label_game_id: "Game ID",
+        label_account_id: "Account ID",
+        label_server: "Server",
+        label_nickname: "Nickname",
+        label_email: "Email",
+        label_whatsapp: "WhatsApp Number",
+        text_select_server: "Select Server",
+        placeholder_game_id: "Enter ID",
+        placeholder_server: "Enter Server",
+        placeholder_nickname: "Enter Nickname",
+        placeholder_email: "Enter valid email",
+        placeholder_whatsapp: "Example: 6287775314721",
+        btn_checkout_default: "Select a nominal first",
+        modal_summary: "Order Summary",
+        label_total: "Total Price",
+        btn_recheck: "Recheck Data",
+        btn_confirm: "Order Now",
+        modal_track_title: "Track Order",
+        label_order_id: "Order ID",
+        placeholder_order_id: "Enter Order ID (Ex: ISS/...)",
+        label_product: "Product",
+        label_status: "Status",
+        label_account_info: "Account",
+        btn_check_status: "Check Status",
+        status_pending: "Pending Payment",
+        status_process: "Processing",
+        status_success: "Completed",
+        status_canceled: "Canceled",
+        footer_desc: "Trusted premium game & app top-up partner. Fast, secure, and 100% legal.",
+        quick_links: "Quick Links",
+        categories: "Categories",
+        contact_us: "Contact Us",
+        rights: "All rights reserved.",
+        contact_title: "Contact Us",
+        contact_subtitle: "We're here to help you 24/7",
+        form_title: "Send us a message",
+        label_fullname: "Full Name",
+        label_message: "Message",
+        placeholder_fullname: "Enter your name",
+        placeholder_message: "How can we help you?",
+        btn_send_wa: "Send via WhatsApp",
+        info_title: "Get in touch",
+        op_hours: "Operating Hours",
+        op_desc: "Mon - Sun: 07.00 - 22.00 WIB",
+        follow_us: "Follow us",
+        text_out_of_stock: "SOLD OUT",
+        product_empty: "Product is currently unavailable.",
+        label_promo: "Promo Code",
+        btn_apply: "Apply",
+        text_discount_promo: "Promo Discount",
+        text_history_title: "Recent Order History",
+        label_order_data: "ORDER DATA",
+        text_copied: "Copied!",
+        label_start_date: "Start",
+        label_expiry_date: "Ends",
+        link_view_promo: "View Available Promos",
+        text_valid_until: "Valid until",
+        text_hours: "Hours",
+        text_discount_off: "OFF",
+        text_discount_disc: "Discount",
+        text_min_purchase: "Min. Purchase",
+        text_no_min_purchase: "No Minimum Purchase",
+        btn_use_coupon: "Use",
+        text_loading_coupons: "Loading coupons...",
+        text_searching_promo: "Searching for best promos...",
+        text_no_promo_found: "No suitable promos found for this product",
+        text_failed_load_promo: "Failed to load promos.",
+        text_click_to_check: "Click to check",
+        text_no_flash_sale: "No Flash Sale available right now.",
+        text_coming_soon: "Coming Soon",
+        text_product_empty_label: "Product is Currently Out of Stock",
+        err_email: "Email must end with @gmail.com",
+        err_whatsapp_prefix: "WhatsApp number must start with 62",
+        err_whatsapp_number: "WhatsApp number must be digits only",
+        err_game_id: "Game ID is required",
+        err_server_id: "Server ID must be a number",
+        err_nickname: "Nickname is required",
+        err_form_check: "Please check your form again",
+        text_reviews: "reviews",
+        text_sold: "Sold",
+        text_submit_review: "Leave a Review",
+        text_send_review: "Submit Review",
+        text_from: "from",
+        text_save_data: "Save this data for next purchase",
+        subtitle_track_manual: "Manual Order Tracking",
+        subtitle_order_history: "Your Order History",
+        placeholder_search_history: "Search game name...",
+        text_filter_all: "All Categories",
+        text_filter_mobile: "Mobile Games",
+        text_filter_pc: "PC Games",
+        text_filter_premium: "Premium Apps",
+        text_sort_newest: "Newest",
+        text_sort_oldest: "Oldest",
+        btn_buy_again: "Buy Again",
+    },
 };
 
-document.addEventListener("DOMContentLoaded", async () => {
-  if (localStorage.getItem("darkMode") === null) {
-    localStorage.setItem("darkMode", "true");
-    document.documentElement.classList.add("dark");
-  } else if (localStorage.getItem("darkMode") === "true") {
-    document.documentElement.classList.add("dark");
-  }
-
-  setupLanguage();
-
-  if (document.getElementById("popular-products")) {
-    setActiveNav("nav_home");
-  } else if (document.getElementById("all-games-topup")) {
-    setActiveNav("nav_topup");
-  } else if (document.getElementById("contact-form")) {
-    setActiveNav("nav_contact");
-  } else if (document.getElementById("product-hero")) {
-    setActiveNav("nav_topup");
-  } else if (document.getElementById("page-history")) {
-    setActiveNav("nav_history");
-  }
-
-  const handleRender = () => {
-    if (document.getElementById("product-hero")) {
-      const urlParams = new URLSearchParams(window.location.search);
-      const productId = urlParams.get("id");
-      if (productId) {
-        currentProduct = products.find((p) => p.id === productId);
-        if (currentProduct) {
-          renderProductDetail();
-        } else {
-          window.location.replace("../topup/topup.html");
-        }
-      }
+document.addEventListener("DOMContentLoaded", async() => {
+    if (localStorage.getItem("darkMode") === null) {
+        localStorage.setItem("darkMode", "true");
+        document.documentElement.classList.add("dark");
+    } else if (localStorage.getItem("darkMode") === "true") {
+        document.documentElement.classList.add("dark");
     }
+
+    setupLanguage();
 
     if (document.getElementById("popular-products")) {
-      renderPopularGames();
-      updateFilterButtons(".filter-btn", currentFilter);
-      renderAllGames("home");
-      renderFlashSale();
-      updateRealtimeStats();
-
-      setTimeout(() => {
-        const savedScrollHome = sessionStorage.getItem("home_scroll_pos");
-        if (savedScrollHome) {
-          window.scrollTo({
-            top: parseInt(savedScrollHome),
-            behavior: "instant",
-          });
-        }
-      }, 150);
+        setActiveNav("nav_home");
+    } else if (document.getElementById("all-games-topup")) {
+        setActiveNav("nav_topup");
+    } else if (document.getElementById("contact-form")) {
+        setActiveNav("nav_contact");
+    } else if (document.getElementById("product-hero")) {
+        setActiveNav("nav_topup");
+    } else if (document.getElementById("page-history")) {
+        setActiveNav("nav_history");
     }
 
+    const handleRender = () => {
+        if (document.getElementById("product-hero")) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get("id");
+            if (productId) {
+                currentProduct = products.find((p) => p.id === productId);
+                if (currentProduct) {
+                    renderProductDetail();
+                } else {
+                    window.location.replace("../topup/topup.html");
+                }
+            }
+        }
+
+        if (document.getElementById("popular-products")) {
+            renderPopularGames();
+            updateFilterButtons(".filter-btn", currentFilter);
+            renderAllGames("home");
+            renderFlashSale();
+            updateRealtimeStats();
+
+            setTimeout(() => {
+                const savedScrollHome = sessionStorage.getItem("home_scroll_pos");
+                if (savedScrollHome) {
+                    window.scrollTo({
+                        top: parseInt(savedScrollHome),
+                        behavior: "instant",
+                    });
+                }
+            }, 150);
+        }
+
+        if (document.getElementById("all-games-topup")) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const categoryParam = urlParams.get("category");
+            if (categoryParam) {
+                filterGamesTopup(categoryParam);
+            } else {
+                updateFilterButtons(".filter-btn-topup", currentFilterTopup);
+                renderAllGames("topup");
+            }
+            renderFlashSale();
+
+            setTimeout(() => {
+                const savedScrollTopup = sessionStorage.getItem("topup_scroll_pos");
+                if (savedScrollTopup) {
+                    window.scrollTo({
+                        top: parseInt(savedScrollTopup),
+                        behavior: "instant",
+                    });
+                }
+            }, 150);
+        }
+    };
+
+    if (document.getElementById("popular-products")) {
+        startSlider("hero");
+        animateCounters();
+    }
     if (document.getElementById("all-games-topup")) {
-      const urlParams = new URLSearchParams(window.location.search);
-      const categoryParam = urlParams.get("category");
-      if (categoryParam) {
-        filterGamesTopup(categoryParam);
-      } else {
-        updateFilterButtons(".filter-btn-topup", currentFilterTopup);
-        renderAllGames("topup");
-      }
-      renderFlashSale();
+        startSlider("topup");
+    }
 
-      setTimeout(() => {
-        const savedScrollTopup = sessionStorage.getItem("topup_scroll_pos");
-        if (savedScrollTopup) {
-          window.scrollTo({
-            top: parseInt(savedScrollTopup),
-            behavior: "instant",
-          });
+    await loadProductsWithCache(handleRender);
+
+    loadReviews(() => {
+        if (document.getElementById("popular-products")) {
+            renderHomeReviews();
+            updateOverallRating();
         }
-      }, 150);
+        if (document.getElementById("product-hero")) updateProductReviewStats();
+    });
+
+    startAdaptivePolling(handleRender);
+
+    setupEventListeners();
+    if (!document.getElementById("page-history")) {
+        setupTrackingListener();
     }
-  };
 
-  if (document.getElementById("popular-products")) {
-    startSlider("hero");
-    animateCounters();
-  }
-  if (document.getElementById("all-games-topup")) {
-    startSlider("topup");
-  }
-
-  await loadProductsWithCache(handleRender);
-
-  loadReviews(() => {
-    if (document.getElementById("popular-products")) {
-      renderHomeReviews();
-      updateOverallRating();
+    if (document.getElementById("page-history")) {
+        fetchFullHistory();
     }
-    if (document.getElementById("product-hero")) updateProductReviewStats();
-  });
-
-  startAdaptivePolling(handleRender);
-
-  setupEventListeners();
-  if (!document.getElementById("page-history")) {
-    setupTrackingListener();
-  }
-
-  if (document.getElementById("page-history")) {
-    fetchFullHistory();
-  }
 });
 
 async function pollBackgroundData() {
-  const historyLocal = JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
-  if (historyLocal.length > 0) {
-    const orderIds = historyLocal.map((h) => h.id).join(",");
-    try {
-      const res = await fetch(
-        `${config.gas_url}?action=getHistoryOrders&orderIds=${orderIds}&_t=${Date.now()}`,
-      );
-      const freshData = await res.json();
-      const currentCache = localStorage.getItem("snazstore_history_data");
-      if (JSON.stringify(freshData) !== currentCache) {
-        localStorage.setItem(
-          "snazstore_history_data",
-          JSON.stringify(freshData),
-        );
-        fullHistoryData = freshData;
-        if (document.getElementById("page-history")) filterHistoryList();
-      }
-    } catch (e) {}
-  }
-
-  try {
-    const resRev = await fetch(
-      `${config.gas_url}?action=getReviews&_t=${Date.now()}`,
-    );
-    const freshRev = await resRev.json();
-    const currentRevCache = localStorage.getItem(REVIEWS_CACHE_KEY);
-    if (JSON.stringify(freshRev) !== currentRevCache) {
-      localStorage.setItem(REVIEWS_CACHE_KEY, JSON.stringify(freshRev));
-      reviews = freshRev;
-      isReviewsLoaded = true;
-      if (document.getElementById("product-hero")) updateProductReviewStats();
-      if (document.getElementById("popular-products")) {
-        renderHomeReviews();
-        updateOverallRating();
-      }
+    const historyLocal = JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+    if (historyLocal.length > 0) {
+        const orderIds = historyLocal.map((h) => h.id).join(",");
+        try {
+            const res = await fetch(
+                `${config.gas_url}?action=getHistoryOrders&orderIds=${orderIds}&_t=${Date.now()}`,
+            );
+            const freshData = await res.json();
+            const currentCache = localStorage.getItem("snazstore_history_data");
+            if (JSON.stringify(freshData) !== currentCache) {
+                localStorage.setItem(
+                    "snazstore_history_data",
+                    JSON.stringify(freshData),
+                );
+                fullHistoryData = freshData;
+                if (document.getElementById("page-history")) filterHistoryList();
+            }
+        } catch (e) {}
     }
-  } catch (e) {}
+
+    try {
+        const resRev = await fetch(
+            `${config.gas_url}?action=getReviews&_t=${Date.now()}`,
+        );
+        const freshRev = await resRev.json();
+        const currentRevCache = localStorage.getItem(REVIEWS_CACHE_KEY);
+        if (JSON.stringify(freshRev) !== currentRevCache) {
+            localStorage.setItem(REVIEWS_CACHE_KEY, JSON.stringify(freshRev));
+            reviews = freshRev;
+            isReviewsLoaded = true;
+            if (document.getElementById("product-hero")) updateProductReviewStats();
+            if (document.getElementById("popular-products")) {
+                renderHomeReviews();
+                updateOverallRating();
+            }
+        }
+    } catch (e) {}
 }
 
 function startAdaptivePolling(renderCallback) {
-  const POLLING_INTERVAL = 15000;
+    const POLLING_INTERVAL = 15000;
 
-  const checkVersion = async () => {
-    try {
-      const timestamp = new Date().getTime();
-      const res = await fetch(
-        `${config.gas_url}?action=getVersion&_t=${timestamp}`,
-      );
-      const data = await res.json();
-      const serverVersion = String(data.version);
-      const localVersion = localStorage.getItem("data_version");
+    const checkVersion = async() => {
+        try {
+            const timestamp = new Date().getTime();
+            const res = await fetch(
+                `${config.gas_url}?action=getVersion&_t=${timestamp}`,
+            );
+            const data = await res.json();
+            const serverVersion = String(data.version);
+            const localVersion = localStorage.getItem("data_version");
 
-      if (serverVersion !== localVersion) {
-        console.log("New version found:", serverVersion);
-        localStorage.setItem("data_version", serverVersion);
-        localStorage.removeItem(CACHE_KEY);
-        localStorage.removeItem(REVIEWS_CACHE_KEY);
+            if (serverVersion !== localVersion) {
+                console.log("New version found:", serverVersion);
+                localStorage.setItem("data_version", serverVersion);
+                localStorage.removeItem(CACHE_KEY);
+                localStorage.removeItem(REVIEWS_CACHE_KEY);
 
-        loadProductsWithCache(renderCallback);
-        loadReviews(() => {
-          if (document.getElementById("popular-products")) {
-            renderHomeReviews();
-            updateOverallRating();
-          }
-          if (document.getElementById("product-hero"))
-            updateProductReviewStats();
-        });
-      }
-    } catch (e) {
-      console.error("Version check failed", e);
-    }
-  };
+                loadProductsWithCache(renderCallback);
+                loadReviews(() => {
+                    if (document.getElementById("popular-products")) {
+                        renderHomeReviews();
+                        updateOverallRating();
+                    }
+                    if (document.getElementById("product-hero"))
+                        updateProductReviewStats();
+                });
+            }
+        } catch (e) {
+            console.error("Version check failed", e);
+        }
+    };
 
-  if (!document.hidden) {
-    checkVersion();
-    pollBackgroundData();
-    pollingInterval = setInterval(() => {
-      checkVersion();
-      pollBackgroundData();
-    }, POLLING_INTERVAL);
-  }
-
-  document.addEventListener("visibilitychange", () => {
-    if (document.hidden) {
-      if (pollingInterval) clearInterval(pollingInterval);
-    } else {
-      checkVersion();
-      pollBackgroundData();
-      pollingInterval = setInterval(() => {
+    if (!document.hidden) {
         checkVersion();
         pollBackgroundData();
-      }, POLLING_INTERVAL);
+        pollingInterval = setInterval(() => {
+            checkVersion();
+            pollBackgroundData();
+        }, POLLING_INTERVAL);
     }
-  });
+
+    document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+            if (pollingInterval) clearInterval(pollingInterval);
+        } else {
+            checkVersion();
+            pollBackgroundData();
+            pollingInterval = setInterval(() => {
+                checkVersion();
+                pollBackgroundData();
+            }, POLLING_INTERVAL);
+        }
+    });
 }
 
 async function loadProductsWithCache(renderCallback) {
-  const cachedData = localStorage.getItem(CACHE_KEY);
-  let hasCache = false;
+    const cachedData = localStorage.getItem(CACHE_KEY);
+    let hasCache = false;
 
-  if (products.length === 0 && cachedData) {
-    try {
-      products = JSON.parse(cachedData);
-      if (renderCallback) renderCallback();
-      hasCache = true;
-    } catch (e) {
-      localStorage.removeItem(CACHE_KEY);
-    }
-  }
-
-  if (products.length === 0 && !hasCache) {
-    renderSkeletons();
-  }
-
-  try {
-    const timestamp = new Date().getTime();
-    const response = await fetch(
-      `${config.gas_url}?action=getProducts&_t=${timestamp}`,
-    );
-    if (!response.ok) throw new Error("Network response not ok");
-    const freshData = await response.json();
-
-    const freshDataStr = JSON.stringify(freshData);
-    const currentDataStr = JSON.stringify(products);
-
-    if (freshDataStr !== currentDataStr) {
-      products = freshData;
-      localStorage.setItem(CACHE_KEY, freshDataStr);
-      if (renderCallback) renderCallback();
-    }
-  } catch (error) {
-    console.error("Failed to fetch fresh data:", error);
-    if (products.length === 0) {
-      try {
-        let path = "asset/json/product.json";
-        if (window.location.pathname.includes("/page/")) {
-          path = "../../asset/json/product.json";
+    if (products.length === 0 && cachedData) {
+        try {
+            products = JSON.parse(cachedData);
+            if (renderCallback) renderCallback();
+            hasCache = true;
+        } catch (e) {
+            localStorage.removeItem(CACHE_KEY);
         }
-        const fallbackRes = await fetch(path);
-        products = await fallbackRes.json();
-        if (renderCallback) renderCallback();
-      } catch (e) {}
     }
-  }
+
+    if (products.length === 0 && !hasCache) {
+        renderSkeletons();
+    }
+
+    try {
+        const timestamp = new Date().getTime();
+        const response = await fetch(
+            `${config.gas_url}?action=getProducts&_t=${timestamp}`,
+        );
+        if (!response.ok) throw new Error("Network response not ok");
+        const freshData = await response.json();
+
+        const freshDataStr = JSON.stringify(freshData);
+        const currentDataStr = JSON.stringify(products);
+
+        if (freshDataStr !== currentDataStr) {
+            products = freshData;
+            localStorage.setItem(CACHE_KEY, freshDataStr);
+            if (renderCallback) renderCallback();
+        }
+    } catch (error) {
+        console.error("Failed to fetch fresh data:", error);
+        if (products.length === 0) {
+            try {
+                let path = "asset/json/product.json";
+                if (window.location.pathname.includes("/page/")) {
+                    path = "../../asset/json/product.json";
+                }
+                const fallbackRes = await fetch(path);
+                products = await fallbackRes.json();
+                if (renderCallback) renderCallback();
+            } catch (e) {}
+        }
+    }
 }
 
 async function loadReviews(callback) {
-  const cachedData = localStorage.getItem(REVIEWS_CACHE_KEY);
-  let hasCache = false;
+    const cachedData = localStorage.getItem(REVIEWS_CACHE_KEY);
+    let hasCache = false;
 
-  if (cachedData) {
+    if (cachedData) {
+        try {
+            reviews = JSON.parse(cachedData);
+            isReviewsLoaded = true;
+            if (callback) callback();
+        } catch (e) {
+            localStorage.removeItem(REVIEWS_CACHE_KEY);
+        }
+    }
+
     try {
-      reviews = JSON.parse(cachedData);
-      isReviewsLoaded = true;
-      if (callback) callback();
+        const timestamp = new Date().getTime();
+        const response = await fetch(
+            `${config.gas_url}?action=getReviews&_t=${timestamp}`,
+        );
+        const freshReviews = await response.json();
+
+        const freshDataStr = JSON.stringify(freshReviews);
+        const currentDataStr = JSON.stringify(reviews);
+
+        if (freshDataStr !== currentDataStr || !hasCache) {
+            reviews = freshReviews;
+            localStorage.setItem(REVIEWS_CACHE_KEY, freshDataStr);
+            isReviewsLoaded = true;
+            if (callback) callback();
+        }
     } catch (e) {
-      localStorage.removeItem(REVIEWS_CACHE_KEY);
+        console.error("Failed to fetch fresh reviews", e);
+        if (!hasCache) {
+            isReviewsLoaded = true;
+            if (callback) callback();
+        }
     }
-  }
-
-  try {
-    const timestamp = new Date().getTime();
-    const response = await fetch(
-      `${config.gas_url}?action=getReviews&_t=${timestamp}`,
-    );
-    const freshReviews = await response.json();
-
-    const freshDataStr = JSON.stringify(freshReviews);
-    const currentDataStr = JSON.stringify(reviews);
-
-    if (freshDataStr !== currentDataStr || !hasCache) {
-      reviews = freshReviews;
-      localStorage.setItem(REVIEWS_CACHE_KEY, freshDataStr);
-      isReviewsLoaded = true;
-      if (callback) callback();
-    }
-  } catch (e) {
-    console.error("Failed to fetch fresh reviews", e);
-    if (!hasCache) {
-      isReviewsLoaded = true;
-      if (callback) callback();
-    }
-  }
 }
 
 function renderSkeletons() {
-  const skeletonCard = `
+    const skeletonCard = `
     <div class="bg-white dark:bg-dark rounded-xl overflow-hidden shadow-sm animate-pulse border border-gray-100 dark:border-gray-800">
       <div class="w-full h-32 bg-gray-300 dark:bg-gray-700"></div>
       <div class="p-3 space-y-2">
@@ -648,7 +636,7 @@ function renderSkeletons() {
     </div>
   `;
 
-  const skeletonFlash = `
+    const skeletonFlash = `
     <div class="bg-white dark:bg-dark rounded-xl p-2.5 shadow-sm animate-pulse flex items-center gap-2.5 border border-gray-100 dark:border-gray-800">
         <div class="w-14 h-14 md:w-16 md:h-16 bg-gray-300 dark:bg-gray-700 rounded-lg flex-shrink-0"></div>
         <div class="flex-1 space-y-1.5 py-1 overflow-hidden">
@@ -659,245 +647,245 @@ function renderSkeletons() {
     </div>
   `;
 
-  const containers = [
-    { id: "popular-products", count: 5, html: skeletonCard },
-    { id: "all-products-home", count: 10, html: skeletonCard },
-    { id: "all-games-topup", count: 15, html: skeletonCard },
-    { id: "flash-sale", count: 5, html: skeletonFlash },
-  ];
+    const containers = [
+        { id: "popular-products", count: 5, html: skeletonCard },
+        { id: "all-products-home", count: 10, html: skeletonCard },
+        { id: "all-games-topup", count: 15, html: skeletonCard },
+        { id: "flash-sale", count: 5, html: skeletonFlash },
+    ];
 
-  containers.forEach((target) => {
-    const el = document.getElementById(target.id);
-    if (el) {
-      el.innerHTML = Array(target.count).fill(target.html).join("");
-    }
-  });
+    containers.forEach((target) => {
+        const el = document.getElementById(target.id);
+        if (el) {
+            el.innerHTML = Array(target.count).fill(target.html).join("");
+        }
+    });
 }
 
 function updateOverallRating() {
-  const el = document.getElementById("avg-rating");
-  if (!el) return;
-  if (reviews.length === 0) {
-    el.textContent = "0.0";
-    return;
-  }
-  const sum = reviews.reduce((acc, curr) => acc + curr.rating, 0);
-  const avg = (sum / reviews.length).toFixed(1);
-  el.textContent = avg;
+    const el = document.getElementById("avg-rating");
+    if (!el) return;
+    if (reviews.length === 0) {
+        el.textContent = "0.0";
+        return;
+    }
+    const sum = reviews.reduce((acc, curr) => acc + curr.rating, 0);
+    const avg = (sum / reviews.length).toFixed(1);
+    el.textContent = avg;
 }
 
 async function updateRealtimeStats() {
-  const gamesCount = products.filter(
-    (p) => p.category === "mobile" || p.category === "pc",
-  ).length;
-  const premiumCount = products.filter((p) => p.category === "premium").length;
+    const gamesCount = products.filter(
+        (p) => p.category === "mobile" || p.category === "pc",
+    ).length;
+    const premiumCount = products.filter((p) => p.category === "premium").length;
 
-  const gamesEl = document.getElementById("count-games");
-  if (gamesEl) {
-    gamesEl.textContent = gamesCount;
-    gamesEl.setAttribute("data-target", gamesCount);
-  }
-
-  const premiumEl = document.getElementById("count-premium");
-  if (premiumEl) {
-    premiumEl.textContent = premiumCount;
-    premiumEl.setAttribute("data-target", premiumCount);
-  }
-
-  const transEl = document.getElementById("count-trans");
-  if (transEl) {
-    try {
-      const timestamp = new Date().getTime();
-      const res = await fetch(
-        `${config.gas_url}?action=getOrderCount&_t=${timestamp}`,
-      );
-      const data = await res.json();
-      if (data && data.count !== undefined) {
-        transEl.textContent = data.count;
-        transEl.setAttribute("data-target", data.count);
-      }
-    } catch (e) {
-      console.error("Failed to fetch transaction count:", e);
+    const gamesEl = document.getElementById("count-games");
+    if (gamesEl) {
+        gamesEl.textContent = gamesCount;
+        gamesEl.setAttribute("data-target", gamesCount);
     }
-  }
+
+    const premiumEl = document.getElementById("count-premium");
+    if (premiumEl) {
+        premiumEl.textContent = premiumCount;
+        premiumEl.setAttribute("data-target", premiumCount);
+    }
+
+    const transEl = document.getElementById("count-trans");
+    if (transEl) {
+        try {
+            const timestamp = new Date().getTime();
+            const res = await fetch(
+                `${config.gas_url}?action=getOrderCount&_t=${timestamp}`,
+            );
+            const data = await res.json();
+            if (data && data.count !== undefined) {
+                transEl.textContent = data.count;
+                transEl.setAttribute("data-target", data.count);
+            }
+        } catch (e) {
+            console.error("Failed to fetch transaction count:", e);
+        }
+    }
 }
 
 function setActiveNav(targetKey) {
-  const navLinks = document.querySelectorAll(
-    ".nav-link, #mobile-menu a, #mobile-menu button",
-  );
+    const navLinks = document.querySelectorAll(
+        ".nav-link, #mobile-menu a, #mobile-menu button",
+    );
 
-  navLinks.forEach((link) => {
-    link.classList.remove("fusion-text-gradient");
-    link.classList.remove("font-bold");
-  });
-
-  let activated = false;
-  if (targetKey) {
     navLinks.forEach((link) => {
-      if (link.getAttribute("data-i18n") === targetKey) {
-        link.classList.add("fusion-text-gradient");
-        link.classList.add("font-bold");
-        activated = true;
-      }
+        link.classList.remove("fusion-text-gradient");
+        link.classList.remove("font-bold");
     });
-  }
 
-  if (!activated) {
-    navLinks.forEach((link) => {
-      if (link.getAttribute("href") && link.href === window.location.href) {
-        link.classList.add("fusion-text-gradient");
-        link.classList.add("font-bold");
-      }
-    });
-  }
+    let activated = false;
+    if (targetKey) {
+        navLinks.forEach((link) => {
+            if (link.getAttribute("data-i18n") === targetKey) {
+                link.classList.add("fusion-text-gradient");
+                link.classList.add("font-bold");
+                activated = true;
+            }
+        });
+    }
+
+    if (!activated) {
+        navLinks.forEach((link) => {
+            if (link.getAttribute("href") && link.href === window.location.href) {
+                link.classList.add("fusion-text-gradient");
+                link.classList.add("font-bold");
+            }
+        });
+    }
 }
 
 function setupLanguage() {
-  const btnId = document.getElementById("lang-id");
-  const btnEn = document.getElementById("lang-en");
+    const btnId = document.getElementById("lang-id");
+    const btnEn = document.getElementById("lang-en");
 
-  if (btnId && btnEn) {
-    if (currentLang === "id") {
-      btnId.classList.add("font-bold", "fusion-text-gradient");
-      btnEn.classList.remove("font-bold", "fusion-text-gradient");
-    } else {
-      btnEn.classList.add("font-bold", "fusion-text-gradient");
-      btnId.classList.remove("font-bold", "fusion-text-gradient");
+    if (btnId && btnEn) {
+        if (currentLang === "id") {
+            btnId.classList.add("font-bold", "fusion-text-gradient");
+            btnEn.classList.remove("font-bold", "fusion-text-gradient");
+        } else {
+            btnEn.classList.add("font-bold", "fusion-text-gradient");
+            btnId.classList.remove("font-bold", "fusion-text-gradient");
+        }
     }
-  }
-  applyTranslations();
+    applyTranslations();
 
-  setTimeout(() => {
-    document.body.classList.remove("lang-loading");
-    document.body.classList.add("lang-loaded");
-  }, 50);
+    setTimeout(() => {
+        document.body.classList.remove("lang-loading");
+        document.body.classList.add("lang-loaded");
+    }, 50);
 }
 
 function changeLanguage(lang) {
-  currentLang = lang;
-  localStorage.setItem("site_lang", lang);
-  setupLanguage();
-  if (currentProduct) {
-    renderProductDetail();
-  }
-  renderFlashSale();
-  if (document.getElementById("home-review-track")) renderHomeReviews();
-  if (document.getElementById("page-history")) filterHistoryList();
+    currentLang = lang;
+    localStorage.setItem("site_lang", lang);
+    setupLanguage();
+    if (currentProduct) {
+        renderProductDetail();
+    }
+    renderFlashSale();
+    if (document.getElementById("home-review-track")) renderHomeReviews();
+    if (document.getElementById("page-history")) filterHistoryList();
 }
 
 function applyTranslations() {
-  const elements = document.querySelectorAll("[data-i18n]");
-  elements.forEach((el) => {
-    const key = el.getAttribute("data-i18n");
-    if (translations[currentLang][key]) {
-      if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") {
-        el.placeholder = translations[currentLang][key];
-      } else if (el.tagName === "OPTION") {
-        el.innerText = translations[currentLang][key];
-      } else {
-        const icon = el.querySelector("i");
-        if (icon) {
-          const iconHtml = icon.outerHTML;
-          el.innerHTML = iconHtml + " " + translations[currentLang][key];
-        } else {
-          el.innerHTML = translations[currentLang][key];
+    const elements = document.querySelectorAll("[data-i18n]");
+    elements.forEach((el) => {
+        const key = el.getAttribute("data-i18n");
+        if (translations[currentLang][key]) {
+            if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") {
+                el.placeholder = translations[currentLang][key];
+            } else if (el.tagName === "OPTION") {
+                el.innerText = translations[currentLang][key];
+            } else {
+                const icon = el.querySelector("i");
+                if (icon) {
+                    const iconHtml = icon.outerHTML;
+                    el.innerHTML = iconHtml + " " + translations[currentLang][key];
+                } else {
+                    el.innerHTML = translations[currentLang][key];
+                }
+            }
         }
-      }
-    }
-  });
+    });
 }
 
 function startSlider(sliderId) {
-  if (!document.getElementById(`${sliderId}-slider`)) return;
-  const slider = sliders[sliderId];
-  if (slider.interval) clearInterval(slider.interval);
-  slider.interval = setInterval(() => nextSlide(sliderId), 5000);
+    if (!document.getElementById(`${sliderId}-slider`)) return;
+    const slider = sliders[sliderId];
+    if (slider.interval) clearInterval(slider.interval);
+    slider.interval = setInterval(() => nextSlide(sliderId), 5000);
 }
 
 function nextSlide(sliderId) {
-  const slider = sliders[sliderId];
-  slider.current = (slider.current + 1) % slider.total;
-  updateSlider(sliderId);
+    const slider = sliders[sliderId];
+    slider.current = (slider.current + 1) % slider.total;
+    updateSlider(sliderId);
 }
 
 function prevSlide(sliderId) {
-  const slider = sliders[sliderId];
-  slider.current = (slider.current - 1 + slider.total) % slider.total;
-  updateSlider(sliderId);
+    const slider = sliders[sliderId];
+    slider.current = (slider.current - 1 + slider.total) % slider.total;
+    updateSlider(sliderId);
 }
 
 function goToSlide(sliderId, index) {
-  sliders[sliderId].current = index;
-  updateSlider(sliderId);
+    sliders[sliderId].current = index;
+    updateSlider(sliderId);
 }
 
 function updateSlider(sliderId) {
-  const container = document.getElementById(`${sliderId}-slider`);
-  if (!container) return;
-  const track = container.querySelector(".slider-track");
-  const dots = container.querySelectorAll(".slider-dot");
-  const current = sliders[sliderId].current;
+    const container = document.getElementById(`${sliderId}-slider`);
+    if (!container) return;
+    const track = container.querySelector(".slider-track");
+    const dots = container.querySelectorAll(".slider-dot");
+    const current = sliders[sliderId].current;
 
-  track.style.transform = `translateX(-${current * 100}%)`;
-  dots.forEach((dot, i) => {
-    dot.classList.toggle("active", i === current);
-    dot.classList.toggle("bg-white", i === current);
-  });
+    track.style.transform = `translateX(-${current * 100}%)`;
+    dots.forEach((dot, i) => {
+        dot.classList.toggle("active", i === current);
+        dot.classList.toggle("bg-white", i === current);
+    });
 }
 
 function createGameCard(product, size = "small", animationDelay = 0) {
-  const isSmall = size === "small";
-  const imageClass = isSmall
-    ? "w-full h-48 object-cover"
-    : "w-full h-64 object-cover";
-  const isInnerPage = window.location.pathname.includes("/page/");
-  const productPath = isInnerPage
-    ? `../product/product.html?id=${product.id}`
-    : `page/product/product.html?id=${product.id}`;
+    const isSmall = size === "small";
+    const imageClass = isSmall ?
+        "w-full h-48 object-cover" :
+        "w-full h-64 object-cover";
+    const isInnerPage = window.location.pathname.includes("/page/");
+    const productPath = isInnerPage ?
+        `../product/product.html?id=${product.id}` :
+        `page/product/product.html?id=${product.id}`;
 
-  let rating = parseFloat(product.rating);
-  if (isNaN(rating)) rating = 0;
+    let rating = parseFloat(product.rating);
+    if (isNaN(rating)) rating = 0;
 
-  const hasImage =
-    product.image &&
-    String(product.image).trim() !== "" &&
-    !product.image.endsWith("undefined");
-  const desc =
-    product.description_id ||
-    product.description_en ||
-    product.description ||
-    "";
-  const hasDesc = String(desc).trim() !== "" && String(desc).trim() !== "-";
+    const hasImage =
+        product.image &&
+        String(product.image).trim() !== "" &&
+        !product.image.endsWith("undefined");
+    const desc =
+        product.description_id ||
+        product.description_en ||
+        product.description ||
+        "";
+    const hasDesc = String(desc).trim() !== "" && String(desc).trim() !== "-";
 
-  const validNominals = (product.nominals || []).filter(
-    (n) => n.name && n.price && parseFloat(n.price) > 0,
-  );
-  const hasValidNominals = validNominals.length > 0;
+    const validNominals = (product.nominals || []).filter(
+        (n) => n.name && n.price && parseFloat(n.price) > 0,
+    );
+    const hasValidNominals = validNominals.length > 0;
 
-  let cardStatus = "active";
+    let cardStatus = "active";
 
-  if (!hasValidNominals) {
-    if (!hasImage && !hasDesc) {
-      cardStatus = "coming_soon_no_image";
-    } else if (hasImage && !hasDesc) {
-      cardStatus = "coming_soon_with_image";
-    } else {
-      cardStatus = "out_of_stock";
+    if (!hasValidNominals) {
+        if (!hasImage && !hasDesc) {
+            cardStatus = "coming_soon_no_image";
+        } else if (hasImage && !hasDesc) {
+            cardStatus = "coming_soon_with_image";
+        } else {
+            cardStatus = "out_of_stock";
+        }
     }
-  }
 
-  const animationStyle =
-    animationDelay > 0
-      ? `style="animation: fadeIn 0.5s ease forwards; opacity: 0; animation-delay: ${animationDelay}s"`
-      : "";
-  const textComingSoon = translations[currentLang].text_coming_soon;
-  const textOutOfStock = translations[currentLang].text_product_empty_label;
+    const animationStyle =
+        animationDelay > 0 ?
+        `style="animation: fadeIn 0.5s ease forwards; opacity: 0; animation-delay: ${animationDelay}s"` :
+        "";
+    const textComingSoon = translations[currentLang].text_coming_soon;
+    const textOutOfStock = translations[currentLang].text_product_empty_label;
 
-  let cardHtml = "";
+    let cardHtml = "";
 
-  if (cardStatus === "coming_soon_no_image") {
-    cardHtml = `
+    if (cardStatus === "coming_soon_no_image") {
+        cardHtml = `
       <div class="block bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md border border-gray-100 dark:border-gray-800 h-full relative pointer-events-none select-none">
         <div class="relative ${isSmall ? "h-48" : "h-48 md:h-56"} flex flex-col items-center justify-center bg-gray-200 dark:bg-gray-700">
            <div class="absolute inset-0 flex items-center justify-center bg-black/40">
@@ -915,8 +903,8 @@ function createGameCard(product, size = "small", animationDelay = 0) {
         </div>
       </div>
     `;
-  } else if (cardStatus === "coming_soon_with_image") {
-    cardHtml = `
+    } else if (cardStatus === "coming_soon_with_image") {
+        cardHtml = `
       <div class="block bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md border border-gray-100 dark:border-gray-800 h-full relative pointer-events-none select-none group">
         <div class="relative overflow-hidden rounded-t-xl">
           <img src="${product.image}" alt="${product.name}" class="${imageClass} grayscale brightness-50 object-cover" loading="lazy" onerror="this.style.background='#f3f4f6'; this.alt='Image unavailable';">
@@ -935,8 +923,8 @@ function createGameCard(product, size = "small", animationDelay = 0) {
         </div>
       </div>
     `;
-  } else if (cardStatus === "out_of_stock") {
-    cardHtml = `
+    } else if (cardStatus === "out_of_stock") {
+        cardHtml = `
       <div class="block bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md border border-gray-100 dark:border-gray-800 h-full relative pointer-events-none select-none group">
         <div class="relative overflow-hidden rounded-t-xl">
           <img src="${product.image}" alt="${product.name}" class="${imageClass} grayscale brightness-50 object-cover" loading="lazy" onerror="this.style.background='#f3f4f6'; this.alt='Image unavailable';">
@@ -955,8 +943,8 @@ function createGameCard(product, size = "small", animationDelay = 0) {
         </div>
       </div>
     `;
-  } else if (isSmall) {
-    cardHtml = `
+    } else if (isSmall) {
+        cardHtml = `
       <a href="${productPath}" class="block h-full bg-white dark:bg-gray-800 rounded-xl overflow-visible cursor-pointer relative transition-transform duration-300 hover:scale-[1.02] shadow-md border border-gray-100 dark:border-gray-800">
         <div class="relative overflow-hidden rounded-t-xl">
           <img src="${product.image}" alt="${product.name}" class="${imageClass}" loading="lazy" onerror="this.style.background='#f3f4f6'; this.alt='Image unavailable';">
@@ -1687,7 +1675,8 @@ function selectNominal(nominalId) {
     selectedNominal = null;
     appliedCoupon = null;
     document.querySelectorAll(".nominal-card").forEach((card) => {
-      card.classList.remove("selected");
+      card.classList.remove("selected", "border-primary", "dark:border-primary", "border-2");
+      card.classList.add("border-gray-200", "dark:border-gray-700", "border");
     });
     updateCheckoutButton();
     return;
@@ -1701,13 +1690,15 @@ function selectNominal(nominalId) {
   appliedCoupon = null;
 
   document.querySelectorAll(".nominal-card").forEach((card) => {
-    card.classList.remove("selected");
+    card.classList.remove("selected", "border-primary", "dark:border-primary", "border-2");
+    card.classList.add("border-gray-200", "dark:border-gray-700", "border");
   });
   const selectedCard = document.querySelector(
     `[data-nominal-id="${nominalId}"]`,
   );
   if (selectedCard) {
-    selectedCard.classList.add("selected");
+    selectedCard.classList.add("selected", "border-primary", "dark:border-primary", "border-2");
+    selectedCard.classList.remove("border-gray-200", "dark:border-gray-700", "border");
   }
   updateCheckoutButton();
 }

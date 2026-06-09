@@ -1,183 +1,217 @@
 body {
-  box-sizing: border-box;
-  font-family: "Roboto", sans-serif;
-  transition:
-    background-color 0.3s ease,
-    color 0.3s ease;
-}
-.font-heading {
-  font-family: "Montserrat", sans-serif;
+    box-sizing: border-box;
+    font-family: "Roboto", sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* KOMENTAR: Pembaruan warna gradien menggunakan Warna Utama (FD5B0E), Warna Kedua (005FBC), dan Warna Ketiga (FC141D) */
+.font-heading {
+    font-family: "Montserrat", sans-serif;
+}
+
 .hero-gradient {
-  background: linear-gradient(135deg, #fc141d 0%, #fd5b0e 50%, #005fbc 100%);
+    background: linear-gradient(135deg, #fc141d 0%, #fd5b0e 50%, #005fbc 100%);
 }
+
 .dark .hero-gradient {
-  background: linear-gradient(135deg, #d01016 0%, #d04a0b 50%, #004a94 100%);
+    background: linear-gradient(135deg, #d01016 0%, #d04a0b 50%, #004a94 100%);
 }
+
 .fusion-gradient {
-  background: linear-gradient(135deg, #fc141d, #fd5b0e, #005fbc);
+    background: linear-gradient(135deg, #fc141d, #fd5b0e, #005fbc);
 }
+
 .dark .fusion-gradient {
-  background: linear-gradient(135deg, #d01016, #d04a0b, #004a94);
+    background: linear-gradient(135deg, #d01016, #d04a0b, #004a94);
 }
+
 .fusion-text-gradient {
-  background: linear-gradient(to right, #fc141d, #fd5b0e, #005fbc);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  width: fit-content;
-  display: inline-block;
+    background: linear-gradient(to right, #fc141d, #fd5b0e, #005fbc);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    width: fit-content;
+    display: inline-block;
 }
+
 .dark .fusion-text-gradient {
-  background: linear-gradient(to right, #fc141d, #fd5b0e, #005fbc);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  width: fit-content;
-  display: inline-block;
+    background: linear-gradient(to right, #fc141d, #fd5b0e, #005fbc);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    width: fit-content;
+    display: inline-block;
 }
+
 .card-hover {
-  transition: all 0.3s ease;
-  border: 1px solid rgba(253, 91, 14, 0.1);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(253, 91, 14, 0.1);
 }
+
 .card-hover:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-  border-color: #fd5b0e;
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    border-color: #fd5b0e;
 }
+
 .slider-dot.active {
-  background: #fd5b0e;
+    background: #fd5b0e;
 }
+
 .fade-in {
-  animation: fadeIn 0.5s ease-in-out;
+    animation: fadeIn 0.5s ease-in-out;
 }
+
 html {
-  scroll-behavior: smooth;
+    scroll-behavior: smooth;
 }
+
 .dark body {
-  background-color: #0f172a;
+    background-color: #0f172a;
 }
+
 body.lang-loading #app {
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.2s ease-in-out;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease-in-out;
 }
+
 body.lang-loaded #app {
-  opacity: 1;
-  visibility: visible;
+    opacity: 1;
+    visibility: visible;
 }
+
 .coupon-card {
-  border: 1px dashed #fd5b0e;
-  background-color: rgba(253, 91, 14, 0.05);
-  transition: all 0.2s;
+    border: 1px dashed #fd5b0e;
+    background-color: rgba(253, 91, 14, 0.05);
+    transition: all 0.2s;
 }
+
 .dark .coupon-card {
-  border: 1px dashed #fd5b0e;
-  background-color: rgba(253, 91, 14, 0.1);
+    border: 1px dashed #fd5b0e;
+    background-color: rgba(253, 91, 14, 0.1);
 }
+
 .coupon-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
+
 
 /* KOMENTAR: Animasi slider marquee untuk area Ulasan Pelanggan di Halaman Beranda */
+
 @keyframes marquee {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
 }
+
 .animate-marquee {
-  display: flex;
-  width: max-content;
-  animation: marquee 40s linear infinite;
+    display: flex;
+    width: max-content;
+    animation: marquee 40s linear infinite;
 }
+
 .animate-marquee:hover {
-  animation-play-state: paused;
+    animation-play-state: paused;
 }
+
 .review-card {
-  width: 320px;
-  flex-shrink: 0;
+    width: 320px;
+    flex-shrink: 0;
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
+
 @keyframes countUp {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
+
 .counter-animate {
-  animation: countUp 0.5s ease-out;
+    animation: countUp 0.5s ease-out;
 }
+
 .glass-effect {
-  backdrop-filter: blur(10px);
-  background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.8);
 }
+
 .dark .glass-effect {
-  background: rgba(15, 23, 42, 0.8);
+    background: rgba(15, 23, 42, 0.8);
 }
+
 .nominal-card.selected {
-  border: 2px solid #fd5b0e !important;
-  background-color: rgba(253, 91, 14, 0.05) !important;
-  position: relative;
+    border: 2px solid #fd5b0e;
+    background-color: rgba(253, 91, 14, 0.05);
+    position: relative;
 }
+
 .nominal-card.selected::after {
-  content: "\2713"; /* Unicode character for checkmark */
-  position: absolute;
-  top: -8px;
-  right: -8px;
-  background: #fd5b0e;
-  color: white;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 10px;
-  font-weight: bold;
+    content: "\2713";
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #fd5b0e;
+    color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: bold;
 }
+
 .page {
-  display: none;
+    display: none;
 }
+
 .page.active {
-  display: block;
+    display: block;
 }
+
 .modal {
-  display: none;
+    display: none;
 }
+
 .modal.active {
-  display: flex;
+    display: flex;
 }
+
 ::-webkit-scrollbar {
-  width: 8px;
+    width: 8px;
 }
+
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+    background: #f1f1f1;
 }
+
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, #fc141d, #fd5b0e, #005fbc);
-  border-radius: 4px;
+    background: linear-gradient(to bottom, #fc141d, #fd5b0e, #005fbc);
+    border-radius: 4px;
 }
+
 .dark ::-webkit-scrollbar-track {
-  background: #1e293b;
+    background: #1e293b;
 }
+
 @view-transition {
-  navigation: auto;
+    navigation: auto;
 }
