@@ -1291,6 +1291,9 @@ function renderHomeReviews() {
   container.innerHTML = displayReviews
     .map((r) => createReviewCardHTML(r, true))
     .join("");
+    
+  container.classList.add("animate-marquee");
+  container.classList.remove("w-full", "justify-center");
 }
 
 function createReviewCardHTML(r, isHome = false) {
