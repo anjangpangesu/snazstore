@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.snazstore.com/sitemap.xml
+Sitemap: https://snazstore.my.id/sitemap.xml
