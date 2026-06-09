@@ -1,4 +1,4 @@
-const defaultConfig = {
+﻿const defaultConfig = {
     site_name: "SnazStore",
     hero_title: "Instant Game Top Up",
     admin_whatsapp: "6287775314721",
@@ -363,7 +363,7 @@ document.addEventListener("DOMContentLoaded", async() => {
                 if (currentProduct) {
                     renderProductDetail();
                 } else {
-                    window.location.replace("../topup/topup.html");
+                    window.location.replace("../topup");
                 }
             }
         }
@@ -841,8 +841,8 @@ function createGameCard(product, size = "small", animationDelay = 0) {
         "w-full h-64 object-cover";
     const isInnerPage = window.location.pathname.includes("/page/");
     const productPath = isInnerPage ?
-        `../product/product.html?id=${product.id}` :
-        `page/product/product.html?id=${product.id}`;
+        `../product?id=${product.id}` :
+        `page/product?id=${product.id}`;
 
     let rating = parseFloat(product.rating);
     if (isNaN(rating)) rating = 0;
@@ -1060,8 +1060,8 @@ function renderFlashSale() {
       const p = item.product;
       const n = item.nominal;
       const productPath = isInnerPage
-        ? `../product/product.html?id=${p.id}&nominal=${n.id}`
-        : `page/product/product.html?id=${p.id}&nominal=${n.id}`;
+        ? `../product?id=${p.id}&nominal=${n.id}`
+        : `page/product?id=${p.id}&nominal=${n.id}`;
 
       const disc = parseFloat(n.discount);
       const finalPrice = (n.price * (100 - disc)) / 100;
@@ -2085,7 +2085,7 @@ async function applyCoupon() {
     if (data.valid) {
       appliedCoupon = { code: code, discount: data.discount };
       msg.className = "text-xs mt-2 text-green-500 font-medium";
-      msg.textContent = `✓ ${data.message}`;
+      msg.textContent = `âœ“ ${data.message}`;
 
       let finalPrice = basePrice - data.discount;
       if (finalPrice < 0) finalPrice = 0;
@@ -2099,7 +2099,7 @@ async function applyCoupon() {
     } else {
       appliedCoupon = null;
       msg.className = "text-xs mt-2 text-red-500";
-      msg.textContent = `✕ ${data.message}`;
+      msg.textContent = `âœ• ${data.message}`;
 
       priceContainer.innerHTML = `<div class="flex justify-between items-center"><span class="font-medium text-gray-900 dark:text-white">${lang.label_total}</span><span class="text-xl font-bold fusion-text-gradient">IDR ${formatPrice(basePrice)}</span></div>`;
     }
@@ -2575,7 +2575,7 @@ function buyAgain(productId, nominalName) {
     if (foundNominal) nominalId = foundNominal.id;
   }
 
-  let path = `../product/product.html?id=${productId}`;
+  let path = `../product?id=${productId}`;
   if (nominalId) {
     path += `&nominal=${nominalId}`;
   }
@@ -2913,8 +2913,8 @@ function animateCounters() {
 function navigateToProduct(productId) {
   const isInnerPage = window.location.pathname.includes("/page/");
   const path = isInnerPage
-    ? `../product/product.html?id=${productId}`
-    : `page/product/product.html?id=${productId}`;
+    ? `../product?id=${productId}`
+    : `page/product?id=${productId}`;
   window.location.href = path;
 }
 
@@ -3081,7 +3081,7 @@ function setupSearch(inputId, resultsId) {
               <img src="${p.image}" alt="${p.name}" class="w-12 h-12 rounded-lg object-cover">
               <div class="flex-1">
                 <h4 class="font-medium text-sm text-gray-900 dark:text-white">${p.name}</h4>
-                <p class="text-xs text-gray-500 dark:text-gray-400 capitalize">${p.category} • ${p.developer}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 capitalize">${p.category} â€¢ ${p.developer}</p>
               </div>
               <i class="fas fa-chevron-right text-gray-400 text-sm"></i>
             </div>`,
@@ -3122,8 +3122,8 @@ function setupTrackingListener() {
     trackBtn.addEventListener("click", () => {
       const isInnerPage = window.location.pathname.includes("/page/");
       window.location.href = isInnerPage
-        ? "../history/history.html"
-        : "page/history/history.html";
+        ? "../history"
+        : "page/history";
     });
   }
 }
@@ -3176,7 +3176,7 @@ async function fetchAdminStatus() {
     const data = await res.json();
     const statusEl = document.getElementById("chat-status");
     const indicatorEl = document.getElementById("chat-indicator");
-    const lastSeenText = data.last_seen_text ? `• ${data.last_seen_text}` : "";
+    const lastSeenText = data.last_seen_text ? `â€¢ ${data.last_seen_text}` : "";
 
     if (String(data.status).toUpperCase() === "ONLINE") {
       statusEl.innerText = `Online ${lastSeenText}`;
@@ -3322,7 +3322,7 @@ function buildMessageHTML(msg, isMe, isSending) {
     minute: "2-digit",
   });
   const statusText = isSending
-    ? `<span class="flex items-center gap-1 opacity-80 italic">${timeStr} • <i class="fas fa-paper-plane animate-pulse text-[10px]"></i> Sending...</span>`
+    ? `<span class="flex items-center gap-1 opacity-80 italic">${timeStr} â€¢ <i class="fas fa-paper-plane animate-pulse text-[10px]"></i> Sending...</span>`
     : timeStr;
   const timeColor = isMe ? "text-white/80" : "text-gray-400";
 
