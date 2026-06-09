@@ -1,4 +1,4 @@
-﻿const defaultConfig = {
+const defaultConfig = {
     site_name: "SnazStore",
     hero_title: "Instant Game Top Up",
     admin_whatsapp: "6287775314721",
@@ -1280,8 +1280,9 @@ function renderHomeReviews() {
   const goodReviews = reviews.filter((r) => r.rating >= 4).slice(0, 10);
 
   if (goodReviews.length === 0) {
-    container.innerHTML = `<div class="text-center w-full py-10 text-gray-500">Belum ada ulasan pelanggan.</div>`;
+    container.innerHTML = `<div class="w-full bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 py-12 flex items-center justify-center"><p class="text-sm text-gray-500 dark:text-gray-400">Belum ada ulasan pelanggan.</p></div>`;
     container.classList.remove("animate-marquee");
+    container.classList.add("w-full");
     return;
   }
 
