@@ -133,8 +133,8 @@ body.lang-loaded #app {
   background: rgba(15, 23, 42, 0.8);
 }
 .nominal-card.selected {
-  border: 2px solid #fd5b0e;
-  background-color: rgba(253, 91, 14, 0.05);
+  border: 2px solid #fd5b0e !important;
+  background-color: rgba(253, 91, 14, 0.05) !important;
   position: relative;
 }
 .nominal-card.selected::after {
