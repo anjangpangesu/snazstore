@@ -76,7 +76,7 @@
                 "@type": "SearchAction",
                 "target": {
                   "@type": "EntryPoint",
-                  "urlTemplate": "https://snazstore.site/?s={search_term_string}"
+                  "urlTemplate": "https://snazstore.site/page/topup/topup.html?search={search_term_string}"
                 },
                 "query-input": "required name=search_term_string"
               }
@@ -90,7 +90,7 @@
             "url": "https://snazstore.site/",
             "logo": {
               "@type": "ImageObject",
-              "url": "https://snazstore.site/assets/img/logo.png",
+              "url": "https://snazstore.site/asset/img/landscape-logo.png",
               "width": 112,
               "height": 112
             },
@@ -127,19 +127,66 @@
             ]
           },
           {
-            "@type": "SiteNavigationElement",
-            "name": "Mobile Legends",
-            "url": "https://snazstore.site/page/product/product.html?id=mobile-legends"
-          },
-          {
-            "@type": "SiteNavigationElement",
-            "name": "Netflix Premium",
-            "url": "https://snazstore.site/page/product/product.html?id=netflix-premium"
-          },
-          {
-            "@type": "SiteNavigationElement",
-            "name": "Canva Pro",
-            "url": "https://snazstore.site/page/product/product.html?id=canva-pro"
+            "@type": "ItemList",
+            "name": "Kategori Produk & Layanan SnazStore",
+            "itemListElement": [
+              {
+                "@type": "SiteNavigationElement",
+                "position": 1,
+                "name": "Mobile Games",
+                "description": "Top up ratusan game mobile instan dan terpercaya.",
+                "url": "https://snazstore.site/page/topup/topup.html?category=mobile"
+              },
+              {
+                "@type": "SiteNavigationElement",
+                "position": 2,
+                "name": "Mobile Legends",
+                "description": "Top up Diamond & Weekly Pass Mobile Legends termurah.",
+                "url": "https://snazstore.site/page/product/product.html?id=mobile-legends"
+              },
+              {
+                "@type": "SiteNavigationElement",
+                "position": 3,
+                "name": "Free Fire",
+                "description": "Top up Diamond FF & Membership proses kilat.",
+                "url": "https://snazstore.site/page/product/product.html?id=free-fire"
+              },
+              {
+                "@type": "SiteNavigationElement",
+                "position": 4,
+                "name": "PUBG Mobile",
+                "description": "Top up UC PUBG Mobile legal 100% aman.",
+                "url": "https://snazstore.site/page/product/product.html?id=pubg-mobile"
+              },
+              {
+                "@type": "SiteNavigationElement",
+                "position": 5,
+                "name": "Roblox",
+                "description": "Top up Robux Roblox harga miring pengiriman instan.",
+                "url": "https://snazstore.site/page/product/product.html?id=roblox"
+              },
+              {
+                "@type": "SiteNavigationElement",
+                "position": 6,
+                "name": "Aplikasi Premium",
+                "description": "Langganan Netflix, Canva Pro, Spotify, dan Zoom.",
+                "url": "https://snazstore.site/page/topup/topup.html?category=premium"
+              },
+              {
+                "@type": "SiteNavigationElement",
+                "position": 7,
+                "name": "PC Games",
+                "description": "Top up Valorant, Steam Wallet, dan game PC lainnya.",
+                "url": "https://snazstore.site/page/topup/topup.html?category=pc"
+              },
+              {
+                "@type": "SiteNavigationElement",
+                "position": 8,
+                "name": "Lacak Pesanan",
+                "description": "Cek riwayat transaksi dan status pesanan SnazStore kamu.",
+                "url": "https://snazstore.site/page/history/history.html"
+              }
+            ]
           }
         ]
       }
