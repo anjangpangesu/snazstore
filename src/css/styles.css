@@ -157,8 +157,6 @@ body.lang-loaded #app {
 }
 
 .nominal-card.selected {
-    border: 2px solid #fd5b0e;
-    background-color: rgba(253, 91, 14, 0.05);
     position: relative;
 }
 
