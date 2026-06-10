@@ -20,7 +20,9 @@ let selectedNominal = null;
 let topupDisplayCount = parseInt(sessionStorage.getItem("topup_count")) || 15;
 let previousTopupCount = 0;
 let currentFilter = sessionStorage.getItem("home_filter") || "all";
-let currentFilterTopup = sessionStorage.getItem("topup_filter") || "all";
+const _urlParamsForFilter = new URLSearchParams(window.location.search);
+const _urlCategory = _urlParamsForFilter.get('category');
+let currentFilterTopup = _urlCategory || sessionStorage.getItem("topup_filter") || "all";
 
 let currentLang = localStorage.getItem("site_lang") || "id";
 let appliedCoupon = null;
@@ -2304,6 +2306,15 @@ function filterGamesTopup(category) {
   topupDisplayCount = 15;
   sessionStorage.setItem("topup_filter", category);
   sessionStorage.setItem("topup_count", 15);
+
+  const url = new URL(window.location);
+  if (category === "all") {
+    url.searchParams.delete("category");
+  } else {
+    url.searchParams.set("category", category);
+  }
+  window.history.pushState({}, '', url);
+
   updateFilterButtons(".filter-btn-topup", category);
   renderAllGames("topup");
 }
