@@ -1147,6 +1147,8 @@ function updateProductReviewStats() {
 function renderProductDetail() {
   if (!currentProduct) return;
 
+  document.title = "SnazStore - Top Up " + currentProduct.name;
+  
   document.getElementById("product-banner-img").src = currentProduct.banner;
   document.getElementById("product-image").src = currentProduct.image;
   document.getElementById("product-name").textContent = currentProduct.name;
@@ -1209,7 +1211,7 @@ function renderProductDetail() {
   const autoSelectId = urlParams.get("nominal");
   if (autoSelectId && hasValidNominals) {
     setTimeout(() => {
-      selectNominal(autoSelectId);
+      selectNominal(autoSelectId, true);
     }, 100);
   } else if (!autoSelectId && hasValidNominals) {
     selectedNominal = null;
@@ -1681,7 +1683,7 @@ function renderOrderForm() {
   }
 }
 
-function selectNominal(nominalId) {
+function selectNominal(nominalId, isAutoSelect = false) {
   if (selectedNominal && selectedNominal.id === nominalId) {
     selectedNominal = null;
     appliedCoupon = null;
@@ -1718,6 +1720,15 @@ function selectNominal(nominalId) {
   const url = new URL(window.location);
   url.searchParams.set("nominal", nominalId);
   window.history.replaceState({}, '', url);
+
+  if (!isAutoSelect) {
+    const accountSection = document.getElementById("order-form");
+    if (accountSection) {
+      const yOffset = -100;
+      const y = accountSection.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({top: y, behavior: 'smooth'});
+    }
+  }
 }
 
 function updateCheckoutButton() {
