@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
    <url><loc>https://snazstore.my.id/</loc><priority>1.0</priority><changefreq>daily</changefreq></url>
-   <url><loc>https://snazstore.my.id/page/topup?category=mobile</loc><priority>0.9</priority><changefreq>daily</changefreq></url>
-   <url><loc>https://snazstore.my.id/page/topup?category=pc</loc><priority>0.9</priority><changefreq>daily</changefreq></url>
-   <url><loc>https://snazstore.my.id/page/topup?category=premium</loc><priority>0.9</priority><changefreq>weekly</changefreq></url>
+   <url><loc>https://snazstore.my.id/page/topup/?category=mobile</loc><priority>0.9</priority><changefreq>daily</changefreq></url>
+   <url><loc>https://snazstore.my.id/page/topup/?category=pc</loc><priority>0.9</priority><changefreq>daily</changefreq></url>
+   <url><loc>https://snazstore.my.id/page/topup/?category=premium</loc><priority>0.9</priority><changefreq>weekly</changefreq></url>
 
-   <url><loc>https://snazstore.my.id/page/product?id=mobile-legends</loc><priority>0.9</priority><changefreq>daily</changefreq></url>
-   <url><loc>https://snazstore.my.id/page/product?id=free-fire</loc><priority>0.9</priority><changefreq>daily</changefreq></url>
-   <url><loc>https://snazstore.my.id/page/product?id=pubg-mobile</loc><priority>0.9</priority><changefreq>daily</changefreq></url>
-   <url><loc>https://snazstore.my.id/page/product?id=roblox</loc><priority>0.9</priority><changefreq>daily</changefreq></url>
+   <url><loc>https://snazstore.my.id/page/product/?id=mobile-legends</loc><priority>0.9</priority><changefreq>daily</changefreq></url>
+   <url><loc>https://snazstore.my.id/page/product/?id=free-fire</loc><priority>0.9</priority><changefreq>daily</changefreq></url>
+   <url><loc>https://snazstore.my.id/page/product/?id=pubg-mobile</loc><priority>0.9</priority><changefreq>daily</changefreq></url>
+   <url><loc>https://snazstore.my.id/page/product/?id=roblox-card</loc><priority>0.9</priority><changefreq>daily</changefreq></url>
 
    <url><loc>https://snazstore.my.id/page/history</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
    <url><loc>https://snazstore.my.id/page/contact</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
