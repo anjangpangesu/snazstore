@@ -3151,11 +3151,12 @@ let selectedFiles = [];
 
 if (
   !chatUserId ||
+  chatUserId.startsWith("customer_") ||
   chatUserId.startsWith("guest_") ||
   chatUserId.startsWith("cs-")
 ) {
-  chatUserId = "customer_" + Math.random().toString(36).substr(2, 9);
-  localStorage.setItem("snaz_chat_id", chatUserId);
+  chatUserId = null;
+  localStorage.removeItem("snaz_chat_id");
 }
 
 function toggleChat() {
@@ -3166,6 +3167,15 @@ function toggleChat() {
     modal.classList.remove("hidden");
     btn.classList.add("hidden");
     document.getElementById("chat-badge").classList.add("hidden");
+
+    if (!chatUserId) {
+      showChatRegistration();
+      return;
+    }
+
+    if (document.getElementById("chat-registration-view")) {
+      document.getElementById("chat-registration-view").classList.add("hidden");
+    }
 
     const container = document.getElementById("chat-messages");
     if (container) container.scrollTop = container.scrollHeight;
@@ -3183,6 +3193,100 @@ function toggleChat() {
   }
 }
 
+function showChatRegistration() {
+  let regView = document.getElementById("chat-registration-view");
+  if (!regView) {
+    regView = document.createElement("div");
+    regView.id = "chat-registration-view";
+    regView.className = "absolute inset-0 z-50 bg-white dark:bg-gray-900 flex flex-col p-6 transition-all duration-300";
+    
+    const logoPath = window.location.pathname.includes("page/") ? "../../asset/img/icon-logo.png" : "./asset/img/icon-logo.png";
+    
+    regView.innerHTML = `
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="font-bold text-xl text-gray-900 dark:text-white">Mulai Obrolan</h3>
+        <button onclick="toggleChat()" class="text-gray-400 hover:text-red-500"><i class="fas fa-times text-xl"></i></button>
+      </div>
+      <div class="flex-1 flex flex-col justify-center max-w-sm mx-auto w-full">
+        <img src="${logoPath}" onerror="this.style.display='none'" class="w-20 h-20 mx-auto mb-6 rounded-2xl shadow-lg object-contain">
+        <p class="text-center text-gray-500 text-sm mb-6">Silakan masukkan detail Anda untuk memulai percakapan dengan CS kami.</p>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Nama Lengkap</label>
+            <input type="text" id="chat-reg-name" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-gray-900 dark:text-white" placeholder="Nama Anda" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Nomor WhatsApp</label>
+            <input type="tel" id="chat-reg-phone" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-800 border-0 focus:ring-2 focus:ring-primary outline-none text-gray-900 dark:text-white" placeholder="Contoh: 08123456789" required>
+          </div>
+          <button onclick="submitChatRegistration()" id="chat-reg-submit" class="w-full py-3 mt-2 fusion-gradient text-white rounded-xl font-semibold shadow-lg hover:opacity-90 transition-all flex items-center justify-center gap-2">
+            Mulai Chat <i class="fas fa-paper-plane"></i>
+          </button>
+        </div>
+      </div>
+    `;
+    document.getElementById("chat-widget").appendChild(regView);
+  }
+  regView.classList.remove("hidden");
+}
+
+async function submitChatRegistration() {
+  const nameInput = document.getElementById("chat-reg-name");
+  const phoneInput = document.getElementById("chat-reg-phone");
+  let name = nameInput.value.trim();
+  let phone = phoneInput.value.trim();
+
+  if (!name || !phone) {
+    showToast("Harap lengkapi nama dan nomor WhatsApp", "error");
+    return;
+  }
+
+  phone = phone.replace(/\D/g, "");
+  if (phone.startsWith("0")) phone = "62" + phone.substring(1);
+  if (!phone.startsWith("62")) phone = "62" + phone;
+
+  const btn = document.getElementById("chat-reg-submit");
+  btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Memproses...`;
+  btn.disabled = true;
+
+  try {
+    const response = await fetch(config.chat_script_url, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "registerUser",
+        userId: phone,
+        name: name
+      })
+    });
+    const data = await response.json();
+    
+    if (data.status === "success") {
+      localStorage.setItem("snaz_chat_id", phone);
+      localStorage.setItem("snaz_chat_name", name);
+      chatUserId = phone;
+      
+      document.getElementById("chat-registration-view").classList.add("hidden");
+      
+      const container = document.getElementById("chat-messages");
+      container.innerHTML = "";
+      
+      fetchMessages();
+      fetchAdminStatus();
+      chatInterval = setInterval(() => {
+        fetchMessages(true);
+        fetchAdminStatus();
+      }, 4000);
+    } else {
+      showToast("Gagal memulai chat. Silakan coba lagi.", "error");
+    }
+  } catch (e) {
+    showToast("Koneksi gagal", "error");
+  } finally {
+    btn.innerHTML = `Mulai Chat <i class="fas fa-paper-plane"></i>`;
+    btn.disabled = false;
+  }
+}
+
 async function fetchAdminStatus() {
   try {
     const res = await fetch(
@@ -3191,7 +3295,7 @@ async function fetchAdminStatus() {
     const data = await res.json();
     const statusEl = document.getElementById("chat-status");
     const indicatorEl = document.getElementById("chat-indicator");
-    const lastSeenText = data.last_seen_text ? `â€¢ ${data.last_seen_text}` : "";
+    const lastSeenText = data.last_seen_text ? `\u2022 ${data.last_seen_text}` : "";
 
     if (String(data.status).toUpperCase() === "ONLINE") {
       statusEl.innerText = `Online ${lastSeenText}`;
@@ -3337,7 +3441,7 @@ function buildMessageHTML(msg, isMe, isSending) {
     minute: "2-digit",
   });
   const statusText = isSending
-    ? `<span class="flex items-center gap-1 opacity-80 italic">${timeStr} â€¢ <i class="fas fa-paper-plane animate-pulse text-[10px]"></i> Sending...</span>`
+    ? `<span class="flex items-center gap-1 opacity-80 italic">${timeStr} \u2022 <i class="fas fa-paper-plane animate-pulse text-[10px]"></i> Sending...</span>`
     : timeStr;
   const timeColor = isMe ? "text-white/80" : "text-gray-400";
 
