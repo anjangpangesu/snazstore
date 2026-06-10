@@ -158,10 +158,15 @@
 
                 <div>
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-                        <h3 class="font-heading font-bold text-xl text-gray-900 dark:text-white"
-                            data-i18n="subtitle_order_history">
-                            Riwayat Pembelian Kamu
-                        </h3>
+                        <div class="flex items-center gap-3">
+                            <h3 class="font-heading font-bold text-xl text-gray-900 dark:text-white"
+                                data-i18n="subtitle_order_history">
+                                Riwayat Pembelian Kamu
+                            </h3>
+                            <button onclick="openRestoreModal()" class="text-sm px-4 py-2 bg-primary/10 text-primary hover:bg-primary hover:text-white rounded-lg transition-colors flex items-center gap-2 font-medium border border-primary/20">
+                                <i class="fas fa-sync-alt"></i> Pulihkan
+                            </button>
+                        </div>
                         <div class="flex flex-wrap gap-3 w-full md:w-auto">
                             <div class="relative flex-1 md:w-48">
                                 <input type="text" id="history-search" placeholder="Cari nama game..."
@@ -461,6 +466,78 @@
                 animation: fadeInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             }
         </style>
+
+        <!-- Restore History Modal -->
+        <div id="restore-history-modal" class="fixed inset-0 z-[100] flex items-center justify-center hidden">
+            <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeRestoreModal()"></div>
+            <div class="bg-white dark:bg-dark border dark:border-gray-800 rounded-2xl shadow-2xl w-[90%] max-w-md relative z-10 animate-fade-in-up overflow-hidden">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-5">
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Pulihkan Riwayat</h3>
+                        <button onclick="closeRestoreModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+
+                    <!-- Custom Alert for History Modal -->
+                    <div id="restore-alert" class="hidden mb-4 p-3 rounded-xl text-sm font-medium border flex items-start gap-2 transition-all duration-300">
+                        <i id="restore-alert-icon" class="mt-0.5"></i>
+                        <span id="restore-alert-text" class="flex-1"></span>
+                    </div>
+                    
+                    <div id="restore-step-1">
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Masukkan Email dan WhatsApp yang sering Anda gunakan saat membeli untuk memulihkan riwayat pesanan Anda.</p>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Email <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class="fas fa-envelope text-gray-400"></i>
+                                    </div>
+                                    <input type="email" id="restore-email" oninput="validateRestoreInput()" class="w-full pl-10 pr-3 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-sm transition-all text-gray-900 dark:text-white" placeholder="Contoh: anjangstore23@gmail.com">
+                                </div>
+                                <p id="restore-email-error" class="hidden text-[11px] text-red-500 mt-1.5 font-medium"><i class="fas fa-exclamation-circle mr-1"></i>Email wajib berakhiran @gmail.com</p>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Nomor WhatsApp <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class="fab fa-whatsapp text-gray-400 text-lg"></i>
+                                    </div>
+                                    <input type="tel" id="restore-wa" oninput="validateRestoreInput()" class="w-full pl-10 pr-3 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-sm transition-all text-gray-900 dark:text-white" placeholder="Contoh: 6281234567890">
+                                </div>
+                                <p id="restore-wa-error" class="hidden text-[11px] text-red-500 mt-1.5 font-medium"><i class="fas fa-exclamation-circle mr-1"></i>Nomor wajib diawali dengan 628</p>
+                            </div>
+                            <button id="btn-request-otp" onclick="requestRestoreOTP()" class="w-full py-3 fusion-gradient text-white rounded-xl font-bold shadow-lg hover:shadow-primary/30 transition-all active:scale-[0.98] flex items-center justify-center gap-2 mt-2">
+                                <span>Kirim OTP ke Email</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="restore-step-2" class="hidden">
+                        <div class="bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 p-3 rounded-lg text-sm mb-4 border border-blue-100 dark:border-blue-800 flex gap-2">
+                            <i class="fas fa-info-circle mt-0.5"></i>
+                            <p>Kode OTP 6 digit telah dikirim ke <strong id="restore-email-display"></strong>. Silakan cek Inbox atau folder Spam Anda.</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Kode OTP <span class="text-red-500">*</span></label>
+                            <input type="text" id="restore-otp" class="w-full px-4 py-3 text-center tracking-[0.5em] font-bold text-xl rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-gray-900 dark:text-white" placeholder="------" maxlength="6">
+                        </div>
+                        <div class="flex justify-between items-center mt-3 text-xs">
+                            <span id="otp-timer-text" class="text-gray-500">Kirim ulang dalam <span id="otp-countdown" class="font-bold text-gray-700 dark:text-gray-300">60</span>s</span>
+                            <button id="btn-resend-otp" onclick="requestRestoreOTP(true)" class="text-primary font-semibold hover:underline hidden">Kirim Ulang OTP</button>
+                        </div>
+                        <button id="btn-verify-otp" onclick="verifyRestoreOTP()" class="w-full py-3 mt-4 fusion-gradient text-white rounded-xl font-bold shadow-lg hover:shadow-primary/30 transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+                            <span>Verifikasi & Pulihkan</span>
+                        </button>
+                        <button onclick="backToStep1()" class="w-full py-2 mt-2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 text-sm font-medium transition-colors">
+                            Kembali Edit Data
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
     </div>
     <script src="../../src/js/main.js"></script>
 </body>

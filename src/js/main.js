@@ -2871,8 +2871,7 @@ function showToast(message, type = "success") {
   if (!toast) {
     toast = document.createElement("div");
     toast.id = "toast";
-    toast.className =
-      "fixed top-4 left-1/2 transform -translate-x-1/2 z-50 hidden transition-all duration-300 -translate-y-full opacity-0";
+    toast.className = "fixed top-4 left-1/2 transform -translate-x-1/2 z-[9999] hidden transition-all duration-300 -translate-y-full opacity-0";
     toast.innerHTML = `
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 p-4 flex items-center gap-3 min-w-[300px]">
         <div id="toast-icon" class="text-xl"></div>
@@ -3688,4 +3687,234 @@ function cancelFile() {
 }
 function triggerFileUpload() {
   document.getElementById("chat-file-upload").click();
+}
+
+// ==========================================
+// HISTORY RESTORE VIA OTP LOGIC
+// ==========================================
+let restoreOtpTimer = null;
+
+function showHistoryAlert(message, type = 'info') {
+  const alertBox = document.getElementById('restore-alert');
+  const alertIcon = document.getElementById('restore-alert-icon');
+  const alertText = document.getElementById('restore-alert-text');
+  
+  if (!alertBox) return;
+
+  // Reset classes
+  alertBox.className = 'mb-4 p-3 rounded-xl text-sm font-medium border flex items-start gap-2 transition-all duration-300';
+  
+  if (type === 'error') {
+    alertBox.classList.add('bg-red-50', 'text-red-600', 'border-red-200', 'dark:bg-red-900/20', 'dark:text-red-400', 'dark:border-red-800');
+    alertIcon.className = 'fas fa-exclamation-circle mt-0.5';
+  } else if (type === 'success') {
+    alertBox.classList.add('bg-green-50', 'text-green-600', 'border-green-200', 'dark:bg-green-900/20', 'dark:text-green-400', 'dark:border-green-800');
+    alertIcon.className = 'fas fa-check-circle mt-0.5';
+  } else {
+    alertBox.classList.add('bg-blue-50', 'text-blue-600', 'border-blue-200', 'dark:bg-blue-900/20', 'dark:text-blue-400', 'dark:border-blue-800');
+    alertIcon.className = 'fas fa-info-circle mt-0.5';
+  }
+  
+  alertText.textContent = message;
+  alertBox.classList.remove('hidden');
+  
+  // Auto hide after 5 seconds
+  setTimeout(() => {
+    alertBox.classList.add('hidden');
+  }, 5000);
+}
+
+function openRestoreModal() {
+  document.getElementById('restore-history-modal').classList.remove('hidden');
+  const alertBox = document.getElementById('restore-alert');
+  if (alertBox) alertBox.classList.add('hidden');
+  backToStep1(); // Ensure modal opens at step 1
+}
+
+function closeRestoreModal() {
+  document.getElementById('restore-history-modal').classList.add('hidden');
+  if (restoreOtpTimer) clearInterval(restoreOtpTimer);
+}
+
+function backToStep1() {
+  document.getElementById('restore-step-1').classList.remove('hidden');
+  document.getElementById('restore-step-2').classList.add('hidden');
+  document.getElementById('restore-otp').value = '';
+  document.getElementById('restore-email').value = '';
+  document.getElementById('restore-wa').value = '';
+  validateRestoreInput();
+}
+
+function validateRestoreInput() {
+  const emailInput = document.getElementById('restore-email');
+  const waInput = document.getElementById('restore-wa');
+  const emailError = document.getElementById('restore-email-error');
+  const waError = document.getElementById('restore-wa-error');
+  const btnSubmit = document.getElementById('btn-request-otp');
+
+  if (!emailInput || !waInput) return;
+
+  const emailVal = emailInput.value.trim().toLowerCase();
+  const waVal = waInput.value.trim();
+
+  let emailValid = true;
+  let waValid = true;
+
+  // Validate Email as user types (only if not empty)
+  if (emailVal.length > 0 && !emailVal.endsWith('@gmail.com')) {
+    emailValid = false;
+    emailError.classList.remove('hidden');
+    emailInput.classList.add('border-red-500', 'focus:ring-red-500');
+    emailInput.classList.remove('focus:ring-primary', 'dark:border-gray-700', 'border-gray-200');
+  } else {
+    emailError.classList.add('hidden');
+    emailInput.classList.remove('border-red-500', 'focus:ring-red-500');
+    emailInput.classList.add('focus:ring-primary', 'dark:border-gray-700', 'border-gray-200');
+  }
+
+  // Validate WA as user types (only if not empty)
+  if (waVal.length > 0 && !waVal.startsWith('628')) {
+    waValid = false;
+    waError.classList.remove('hidden');
+    waInput.classList.add('border-red-500', 'focus:ring-red-500');
+    waInput.classList.remove('focus:ring-primary', 'dark:border-gray-700', 'border-gray-200');
+  } else {
+    waError.classList.add('hidden');
+    waInput.classList.remove('border-red-500', 'focus:ring-red-500');
+    waInput.classList.add('focus:ring-primary', 'dark:border-gray-700', 'border-gray-200');
+  }
+
+  // Disable button if invalid or empty
+  if (emailVal === '' || waVal === '' || !emailValid || !waValid) {
+    btnSubmit.disabled = true;
+    btnSubmit.classList.add('opacity-50', 'cursor-not-allowed');
+  } else {
+    btnSubmit.disabled = false;
+    btnSubmit.classList.remove('opacity-50', 'cursor-not-allowed');
+  }
+
+  return emailValid && waValid && emailVal !== '' && waVal !== '';
+}
+
+async function requestRestoreOTP(isResend = false) {
+  if (!validateRestoreInput()) {
+    showHistoryAlert('Pastikan Email berakhiran @gmail.com dan WhatsApp diawali 628', 'error');
+    return;
+  }
+
+  const email = document.getElementById('restore-email').value.trim();
+  const wa = document.getElementById('restore-wa').value.trim();
+
+  const btnId = isResend ? 'btn-resend-otp' : 'btn-request-otp';
+  const btn = document.getElementById(btnId);
+  const originalText = btn.innerHTML;
+  btn.innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> Memproses...`;
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(`${config.gas_url}?action=requestHistoryOTP&whatsapp=${encodeURIComponent(wa)}&email=${encodeURIComponent(email)}`);
+    const data = await res.json();
+
+    if (data.status === 'success') {
+      showHistoryAlert(data.message, 'success');
+      document.getElementById('restore-email-display').textContent = email;
+      document.getElementById('restore-step-1').classList.add('hidden');
+      document.getElementById('restore-step-2').classList.remove('hidden');
+      startOtpTimer();
+    } else {
+      showHistoryAlert(data.message, 'error');
+    }
+  } catch (err) {
+    showHistoryAlert('Terjadi kesalahan jaringan.', 'error');
+  } finally {
+    btn.innerHTML = originalText;
+    btn.disabled = false;
+  }
+}
+
+function startOtpTimer() {
+  const timerText = document.getElementById('otp-timer-text');
+  const countdownSpan = document.getElementById('otp-countdown');
+  const resendBtn = document.getElementById('btn-resend-otp');
+  
+  timerText.classList.remove('hidden');
+  resendBtn.classList.add('hidden');
+  
+  let timeLeft = 60;
+  countdownSpan.textContent = timeLeft;
+  
+  if (restoreOtpTimer) clearInterval(restoreOtpTimer);
+  
+  restoreOtpTimer = setInterval(() => {
+    timeLeft--;
+    countdownSpan.textContent = timeLeft;
+    
+    if (timeLeft <= 0) {
+      clearInterval(restoreOtpTimer);
+      timerText.classList.add('hidden');
+      resendBtn.classList.remove('hidden');
+    }
+  }, 1000);
+}
+
+async function verifyRestoreOTP() {
+  const email = document.getElementById('restore-email').value.trim();
+  const wa = document.getElementById('restore-wa').value.trim();
+  const otp = document.getElementById('restore-otp').value.trim();
+
+  if (!otp || otp.length < 6) {
+    showHistoryAlert('Masukkan 6 digit kode OTP!', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('btn-verify-otp');
+  const originalText = btn.innerHTML;
+  btn.innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> Memverifikasi...`;
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(`${config.gas_url}?action=verifyHistoryOTP&whatsapp=${encodeURIComponent(wa)}&email=${encodeURIComponent(email)}&otp=${encodeURIComponent(otp)}`);
+    const data = await res.json();
+
+    if (data.status === 'success') {
+      const recoveredIds = data.orderIds || [];
+      if (recoveredIds.length === 0) {
+         showHistoryAlert('Berhasil diverifikasi, tapi tidak ada pesanan ditemukan.', 'info');
+      } else {
+         // Merge with local history
+         const currentHistory = JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+         let newHistory = [...currentHistory];
+         
+         let addedCount = 0;
+         recoveredIds.forEach(id => {
+            const exists = newHistory.some(item => String(item.id) === String(id));
+            if (!exists) {
+               newHistory.push({ id: id, timestamp: Date.now() });
+               addedCount++;
+            }
+         });
+         
+         if (addedCount > 0) {
+           localStorage.setItem(HISTORY_KEY, JSON.stringify(newHistory));
+           closeRestoreModal();
+           showToast(`Berhasil! ${addedCount} pesanan dipulihkan.`, 'success');
+           
+           // Fetch history full list again
+           if (typeof fetchFullHistory === 'function') {
+              fetchFullHistory();
+           }
+         } else {
+           closeRestoreModal();
+           showToast('Semua pesanan sudah ada di perangkat Anda.', 'info');
+         }
+      }
+    } else {
+      showHistoryAlert(data.message, 'error');
+    }
+  } catch (err) {
+    showHistoryAlert('Terjadi kesalahan jaringan.', 'error');
+  } finally {
+    btn.innerHTML = originalText;
+    btn.disabled = false;
+  }
 }
