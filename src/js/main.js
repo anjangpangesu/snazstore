@@ -371,9 +371,14 @@ document.addEventListener("DOMContentLoaded", async() => {
         }
 
         if (document.getElementById("popular-products")) {
-            renderPopularGames();
-            updateFilterButtons(".filter-btn", currentFilter);
-            renderAllGames("home");
+            const urlParams = new URLSearchParams(window.location.search);
+            const categoryParam = urlParams.get("category");
+            if (categoryParam) {
+                filterGames(categoryParam);
+            } else {
+                updateFilterButtons(".filter-btn", currentFilter);
+                renderAllGames("home");
+            }
             renderFlashSale();
             updateRealtimeStats();
 
@@ -2297,6 +2302,15 @@ function copyText(text, btnElement) {
 function filterGames(category) {
   currentFilter = category;
   sessionStorage.setItem("home_filter", category);
+
+  const url = new URL(window.location);
+  if (category === "all") {
+    url.searchParams.delete("category");
+  } else {
+    url.searchParams.set("category", category);
+  }
+  window.history.pushState({}, '', url);
+
   updateFilterButtons(".filter-btn", category);
   renderAllGames("home");
 }
@@ -3012,10 +3026,28 @@ function setupEventListeners() {
     });
 
     // 2. Logika Saat Opsi Dipilih
+    // Set status aktif pada inisialisasi awal (default opsi pertama atau berdasarkan hidden input)
+    options.forEach(opt => {
+      if(opt.getAttribute('data-val') === hiddenInput.value) {
+        opt.classList.remove('border-transparent');
+        opt.classList.add('border-orange-500', 'text-orange-600', 'font-bold', 'bg-orange-50', 'dark:bg-orange-900/30', 'dark:text-orange-400');
+      }
+    });
+
     options.forEach(option => {
       option.addEventListener('click', (e) => {
          e.stopPropagation();
          
+         // Hapus kelas aktif dari semua opsi di dropdown ini
+         options.forEach(opt => {
+            opt.classList.remove('border-orange-500', 'text-orange-600', 'font-bold', 'bg-orange-50', 'dark:bg-orange-900/30', 'dark:text-orange-400');
+            opt.classList.add('border-transparent');
+         });
+
+         // Tambahkan kelas aktif ke opsi yang diklik
+         option.classList.remove('border-transparent');
+         option.classList.add('border-orange-500', 'text-orange-600', 'font-bold', 'bg-orange-50', 'dark:bg-orange-900/30', 'dark:text-orange-400');
+
          textDisplay.textContent = option.textContent;
          hiddenInput.value = option.getAttribute('data-val');
 
