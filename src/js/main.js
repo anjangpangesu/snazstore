@@ -1690,6 +1690,9 @@ function selectNominal(nominalId) {
       card.classList.add("border-gray-200", "dark:border-gray-700", "border");
     });
     updateCheckoutButton();
+    const url = new URL(window.location);
+    url.searchParams.delete("nominal");
+    window.history.replaceState({}, '', url);
     return;
   }
 
@@ -1712,6 +1715,9 @@ function selectNominal(nominalId) {
     selectedCard.classList.remove("border-gray-200", "dark:border-gray-700", "border");
   }
   updateCheckoutButton();
+  const url = new URL(window.location);
+  url.searchParams.set("nominal", nominalId);
+  window.history.replaceState({}, '', url);
 }
 
 function updateCheckoutButton() {
