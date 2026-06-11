@@ -22,9 +22,14 @@ let previousTopupCount = 0;
 let currentFilter = sessionStorage.getItem("home_filter") || "all";
 const _urlParamsForFilter = new URLSearchParams(window.location.search);
 const _urlCategory = _urlParamsForFilter.get('category');
+const _urlLang = _urlParamsForFilter.get('lang');
 let currentFilterTopup = _urlCategory || sessionStorage.getItem("topup_filter") || "all";
 
 let currentLang = localStorage.getItem("site_lang") || "id";
+if (_urlLang === "id" || _urlLang === "en") {
+    currentLang = _urlLang;
+    localStorage.setItem("site_lang", _urlLang);
+}
 let appliedCoupon = null;
 let pollingInterval = null;
 
@@ -772,6 +777,11 @@ function setupLanguage() {
 function changeLanguage(lang) {
     currentLang = lang;
     localStorage.setItem("site_lang", lang);
+    
+    const url = new URL(window.location);
+    url.searchParams.set("lang", lang);
+    window.history.replaceState({}, '', url);
+
     setupLanguage();
     if (currentProduct) {
         renderProductDetail();
