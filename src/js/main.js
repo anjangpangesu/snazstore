@@ -29,6 +29,10 @@ let currentLang = localStorage.getItem("site_lang") || "id";
 if (_urlLang === "id" || _urlLang === "en") {
     currentLang = _urlLang;
     localStorage.setItem("site_lang", _urlLang);
+} else {
+    const url = new URL(window.location);
+    url.searchParams.set("lang", currentLang);
+    window.history.replaceState({}, '', url);
 }
 let appliedCoupon = null;
 let pollingInterval = null;
